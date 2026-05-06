@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>A Poem For You</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Departure+Mono&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --cream:#e8f3fb;
+  --ink:#0d1f2d;
+  --ink-light:#3a5a72;
+  --ink-faint:#8aafcc;
+  --accent:#5b9ec9;
+  --accent-dark:#2a6a96;
+  --paper:#d4eaf7;
+  --paper-dark:#b8d8ef;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--cream);
+  color:var(--ink);
+  font-family:'Newsreader',Georgia,serif;
+  overflow-x:hidden;
+}
+
+/* ── TOPBAR ── */
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.9rem 2.5rem;
+  border-bottom:1px solid var(--paper-dark);
+  background:var(--cream);
+  position:sticky;top:0;z-index:100;
+}
+.mono{font-family:'Departure Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint)}
+.topbar-title{font-family:'DM Serif Display',serif;font-size:14px;color:var(--ink)}
+
+/* ── HERO ── */
+.hero{
+  display:grid;grid-template-columns:1fr 1fr;
+  min-height:48vh;
+  border-bottom:1px solid var(--paper-dark);
+}
+.hero-left{
+  padding:3.5rem 3rem 3rem 3.5rem;
+  display:flex;flex-direction:column;justify-content:space-between;
+  border-right:1px solid var(--paper-dark);
+}
+.hero-kicker{
+  font-family:'Departure Mono',monospace;font-size:9px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);
+  margin-bottom:1.4rem;
+}
+.hero-title{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(3rem,6vw,5.5rem);
+  line-height:.93;letter-spacing:-.02em;
+  color:var(--ink);text-transform:uppercase;
+}
+.hero-title em{font-style:italic;color:var(--accent-dark)}
+.hero-meta{display:flex;align-items:center;gap:1rem;margin-top:2.5rem}
+.hero-meta-line{width:28px;height:1px;background:var(--ink-faint)}
+.hero-meta-text{
+  font-family:'Departure Mono',monospace;font-size:9px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);
+}
+.hero-right{
+  padding:3.5rem 3rem 3rem;
+  display:flex;flex-direction:column;justify-content:space-between;
+  background:var(--paper);position:relative;overflow:hidden;
+}
+.hero-right::before{
+  content:'';position:absolute;top:-55px;right:-55px;
+  width:195px;height:195px;
+  border:1px solid var(--paper-dark);border-radius:50%;opacity:.5;
+}
+.hero-right::after{
+  content:'';position:absolute;bottom:-75px;right:-35px;
+  width:245px;height:245px;
+  border:1px solid var(--paper-dark);border-radius:50%;opacity:.35;
+}
+.hero-dedication{
+  font-size:1.05rem;font-style:italic;line-height:1.75;
+  color:var(--ink-light);max-width:330px;position:relative;z-index:1;
+}
+.hero-dedication strong{color:var(--ink);font-style:normal;font-weight:400}
+.stamp{
+  align-self:flex-end;
+  border:1px solid var(--paper-dark);
+  padding:.55rem .85rem;
+  font-family:'Departure Mono',monospace;font-size:9px;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-faint);position:relative;z-index:1;
+}
+
+/* ══════════════════════════════════════════════
+   POEM + IMAGES — the main scroll experience
+══════════════════════════════════════════════ */
+.page{
+  display:grid;
+  /* left gutter | poem | right gutter */
+  grid-template-columns:1fr minmax(0,560px) 1fr;
+  gap:0;
+  padding:0;
+  border-top:1px solid var(--paper-dark);
+}
+
+/* poem spine sits in centre column */
+.poem-spine{
+  grid-column:2;
+  padding:5rem 0 7rem;
+  position:relative;
+  z-index:2;
+}
+
+/* section label */
+.poem-label{
+  font-family:'Departure Mono',monospace;font-size:9px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);
+  display:flex;align-items:center;gap:.75rem;
+  margin-bottom:3rem;
+}
+.poem-label::after{content:'';flex:1;height:1px;background:var(--paper-dark)}
+
+/* each stanza block — can have an image hanging off it */
+.stanza-block{
+  position:relative;
+  margin-bottom:4.5rem;
+}
+.stanza-block:last-of-type{margin-bottom:0}
+
+.stanza{
+  font-size:1.25rem;line-height:2.1;
+  color:var(--ink);font-weight:300;
+}
+.stanza em{font-style:italic;color:var(--accent-dark)}
+.stanza strong{font-weight:400;font-style:italic}
+
+/* ornament between sections */
+.ornament{
+  display:flex;align-items:center;gap:1rem;
+  margin:4rem 0;
+  font-family:'Departure Mono',monospace;font-size:9px;
+  letter-spacing:.2em;color:var(--ink-faint);
+}
+.ornament::before,.ornament::after{content:'';flex:1;height:1px;background:var(--paper-dark)}
+
+/* ── IMAGE PLACEMENT ──
+   Images live OUTSIDE the centre column,
+   floating into the gutters and overlapping
+   slightly into the poem. Each stanza-block
+   that has a .img-left or .img-right child
+   gets positioned relative to the block.
+*/
+
+/* shared image style */
+.poem-img{
+  position:absolute;
+  top:var(--img-top,0);
+  width:var(--img-w,220px);
+  overflow:hidden;
+  transform:rotate(var(--img-rot,0deg));
+  z-index:10;
+  line-height:0;
+}
+.poem-img img,.poem-img .img-slot{
+  display:block;
+  width:100%;
+  aspect-ratio:var(--img-ratio,4/5);
+  object-fit:cover;
+}
+/* upload slot */
+.img-slot{
+  background:var(--paper);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:8px;
+  cursor:pointer;
+  transition:background .15s;
+  aspect-ratio:var(--img-ratio,4/5);
+}
+.img-slot:hover{background:var(--paper-dark)}
+.slot-icon{font-size:20px;opacity:.25;color:var(--ink);font-style:normal}
+.slot-txt{
+  font-family:'Departure Mono',monospace;font-size:8px;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);text-align:center;line-height:1.7;
+}
+.file-inp{display:none}
+
+/* caption below image */
+.img-caption{
+  font-family:'Departure Mono',monospace;font-size:8px;
+  letter-spacing:.08em;color:var(--ink-faint);
+  margin-top:6px;text-align:center;
+  cursor:text;
+}
+.img-caption:focus{outline:none}
+
+/* LEFT — hangs into left gutter, right edge near poem */
+.img-left{
+  right:calc(100% + 2.5rem);
+}
+/* RIGHT — hangs into right gutter, left edge near poem */
+.img-right{
+  left:calc(100% + 2.5rem);
+}
+/* OVERLAP variants — image bleeds slightly over poem text */
+.img-left.overlap{
+  right:calc(100% + 1rem);
+  z-index:1; /* behind text */
+}
+.img-right.overlap{
+  left:calc(100% + 1rem);
+}
+
+/* ── POEM FOOTER ── */
+.poem-footer{
+  margin-top:5rem;
+  padding-top:1.5rem;
+  border-top:1px solid var(--paper-dark);
+  display:flex;justify-content:space-between;align-items:flex-end;
+}
+.poem-author{
+  font-family:'DM Serif Display',serif;
+  font-size:1.5rem;font-style:italic;color:var(--ink);
+}
+.poem-date{
+  font-family:'Departure Mono',monospace;font-size:9px;
+  color:var(--ink-faint);letter-spacing:.1em;text-transform:uppercase;
+  text-align:right;
+}
+
+/* ── ASIDE (right column of the page grid) ── */
+.aside-col{
+  grid-column:3;
+  border-left:1px solid var(--paper-dark);
+  background:var(--paper);
+  padding:4rem 2rem 4rem 2.5rem;
+  position:sticky;
+  top:48px; /* below topbar */
+  height:calc(100vh - 48px);
+  overflow-y:auto;
+  display:flex;flex-direction:column;gap:0;
+  align-self:start;
+}
+.aside-block{
+  padding-bottom:2rem;
+  margin-bottom:2rem;
+  border-bottom:1px solid var(--paper-dark);
+}
+.aside-block:last-child{border-bottom:none;margin-bottom:0}
+.aside-label{
+  font-family:'Departure Mono',monospace;font-size:9px;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:1.1rem;
+}
+.aside-note{font-size:.88rem;line-height:1.85;color:var(--ink-light);font-weight:300}
+.aside-note p{margin-bottom:.9rem}
+.aside-note p:last-child{margin-bottom:0}
+.aside-quote{
+  margin:1.2rem 0;padding-left:1rem;
+  border-left:2px solid var(--accent);
+  font-size:.95rem;font-style:italic;
+  color:var(--ink);line-height:1.7;
+}
+.aside-stat{display:flex;flex-direction:column;gap:.4rem}
+.aside-stat-num{
+  font-family:'DM Serif Display',serif;
+  font-size:2.4rem;color:var(--ink);line-height:1;
+}
+.aside-stat-desc{
+  font-family:'Departure Mono',monospace;font-size:9px;
+  color:var(--ink-faint);letter-spacing:.1em;text-transform:uppercase;
+}
+
+/* add image button */
+.add-img-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-top:2rem;
+  padding:.55rem 1rem;
+  border:1px solid var(--paper-dark);
+  background:transparent;
+  font-family:'Departure Mono',monospace;font-size:9px;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-light);cursor:pointer;
+  transition:background .15s;
+  width:100%;justify-content:center;
+}
+.add-img-btn:hover{background:rgba(255,255,255,.5)}
+
+/* ── TICKER ── */
+.ticker-wrap{
+  overflow:hidden;border-top:1px solid var(--paper-dark);
+  background:#0d1f2d;padding:.65rem 0;
+}
+.ticker{
+  display:flex;gap:3rem;
+  animation:tick 22s linear infinite;white-space:nowrap;
+}
+.ticker-item{
+  font-family:'Departure Mono',monospace;font-size:9px;
+  letter-spacing:.15em;text-transform:uppercase;
+  color:#b8d8ef;opacity:.7;flex-shrink:0;
+}
+.ticker-item span{color:#5b9ec9;opacity:1;margin-right:1.5rem}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr}
+  .hero-right{display:none}
+  .page{grid-template-columns:40px 1fr 40px}
+  .aside-col{display:none}
+  .poem-img{display:none}
+  .topbar{padding:.85rem 1.2rem}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <span class="mono">Vol. I &nbsp;·&nbsp; No. 1</span>
+  <span class="topbar-title">The Private Press</span>
+  <span class="mono">001</span>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div>
+      <div class="hero-kicker">A poem written for —</div>
+      <h1 class="hero-title">
+        Your<br>poem<br><em>title</em><br>here
+      </h1>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-meta-line"></div>
+      <span class="hero-meta-text">Written with care &nbsp;·&nbsp; [ Year ]</span>
+    </div>
+  </div>
+  <div class="hero-right">
+    <p class="hero-dedication">
+      For <strong>[ her name ]</strong> — who deserves more than words,<br>
+      but these are what I have.<br><br>
+      A note before the poem begins:<br>
+      <em>I thought about you when I wrote every line.</em>
+    </p>
+    <div class="stamp">For your eyes only</div>
+  </div>
+</section>
+
+<!-- PAGE: POEM + ASIDE -->
+<div class="page">
+
+  <!-- POEM SPINE (centre) -->
+  <div class="poem-spine">
+    <div class="poem-label">The poem</div>
+
+    <!-- STANZA 1 — image left, portrait -->
+    <div class="stanza-block">
+      <div class="poem-img img-left" style="--img-top:-20px;--img-w:200px;--img-rot:-2.5deg;--img-ratio:3/4">
+        <div class="img-slot" onclick="triggerUpload('1')" id="slot-1">
+          <em class="slot-icon">+</em>
+          <span class="slot-txt">add photo</span>
+        </div>
+        <input type="file" accept="image/*" class="file-inp" id="file-1" onchange="loadImg(this,'1')">
+        <div class="img-caption" id="cap-1" contenteditable="true">— caption —</div>
+      </div>
+      <div class="stanza">
+        Write your first stanza here —<br>
+        let the words come slowly,<br>
+        the way morning light does,<br>
+        <em>unhurried and certain.</em>
+      </div>
+    </div>
+
+    <!-- STANZA 2 — image right, landscape -->
+    <div class="stanza-block">
+      <div class="poem-img img-right" style="--img-top:10px;--img-w:240px;--img-rot:1.8deg;--img-ratio:4/3">
+        <div class="img-slot" onclick="triggerUpload('2')" id="slot-2">
+          <em class="slot-icon">+</em>
+          <span class="slot-txt">add photo</span>
+        </div>
+        <input type="file" accept="image/*" class="file-inp" id="file-2" onchange="loadImg(this,'2')">
+        <div class="img-caption" id="cap-2" contenteditable="true">— caption —</div>
+      </div>
+      <div class="stanza">
+        Something about her —<br>
+        the way she holds a room<br>
+        without trying to,<br>
+        the way she stays.
+      </div>
+    </div>
+
+    <div class="ornament">✦</div>
+
+    <!-- STANZA 3 — image left, small square -->
+    <div class="stanza-block">
+      <div class="poem-img img-left" style="--img-top:30px;--img-w:170px;--img-rot:3.2deg;--img-ratio:1/1">
+        <div class="img-slot" onclick="triggerUpload('3')" id="slot-3">
+          <em class="slot-icon">+</em>
+          <span class="slot-txt">add photo</span>
+        </div>
+        <input type="file" accept="image/*" class="file-inp" id="file-3" onchange="loadImg(this,'3')">
+        <div class="img-caption" id="cap-3" contenteditable="true">— caption —</div>
+      </div>
+      <div class="stanza">
+        A third verse, if you need one —<br>
+        the part you circled back to,<br>
+        the line that kept rewriting itself<br>
+        until it was finally true.
+      </div>
+    </div>
+
+    <!-- STANZA 4 — image right, tall portrait -->
+    <div class="stanza-block">
+      <div class="poem-img img-right" style="--img-top:-40px;--img-w:185px;--img-rot:-1.5deg;--img-ratio:2/3">
+        <div class="img-slot" onclick="triggerUpload('4')" id="slot-4">
+          <em class="slot-icon">+</em>
+          <span class="slot-txt">add photo</span>
+        </div>
+        <input type="file" accept="image/*" class="file-inp" id="file-4" onchange="loadImg(this,'4')">
+        <div class="img-caption" id="cap-4" contenteditable="true">— caption —</div>
+      </div>
+      <div class="stanza">
+        Add your next stanza here —<br>
+        every poem finds its own<br>
+        rhythm in the lines,<br>
+        <em>keep going.</em>
+      </div>
+    </div>
+
+    <div class="ornament">· · ·</div>
+
+    <!-- STANZA 5 — image left, wide -->
+    <div class="stanza-block">
+      <div class="poem-img img-left" style="--img-top:0px;--img-w:210px;--img-rot:-2deg;--img-ratio:5/4">
+        <div class="img-slot" onclick="triggerUpload('5')" id="slot-5">
+          <em class="slot-icon">+</em>
+          <span class="slot-txt">add photo</span>
+        </div>
+        <input type="file" accept="image/*" class="file-inp" id="file-5" onchange="loadImg(this,'5')">
+        <div class="img-caption" id="cap-5" contenteditable="true">— caption —</div>
+      </div>
+      <div class="stanza">
+        And here, the ending.<br>
+        The quiet kind.<br>
+        The kind that doesn't need<br>
+        <em>anything more.</em>
+      </div>
+    </div>
+
+    <!-- poem footer -->
+    <div class="poem-footer">
+      <div class="poem-author">— [ Your name ]</div>
+      <div class="poem-date">[ Place ] &nbsp;·&nbsp; [ Date ]</div>
+    </div>
+  </div><!-- /poem-spine -->
+
+  <!-- ASIDE (right sticky panel) -->
+  <aside class="aside-col">
+    <div class="aside-block">
+      <div class="aside-label">Author's note</div>
+      <div class="aside-note">
+        <p>This is where you speak plainly — not through metaphor, but as yourself.</p>
+        <div class="aside-quote">
+          Write what the poem couldn't quite hold. The reason you started. What you were afraid to say directly.
+        </div>
+        <p>It doesn't have to be long. A few true sentences matter more than paragraphs.</p>
+      </div>
+    </div>
+    <div class="aside-block">
+      <div class="aside-label">On writing this</div>
+      <div class="aside-note">
+        <p>You might write about when this came to you — a specific moment, a particular light, something she said that stuck.</p>
+        <p>Or why poetry and not a letter. Or both.</p>
+      </div>
+    </div>
+    <div class="aside-block">
+      <div class="aside-stat">
+        <span class="aside-stat-num">∞</span>
+        <span class="aside-stat-desc">times I meant this</span>
+      </div>
+    </div>
+  </aside>
+
+</div><!-- /page -->
+
+<!-- TICKER -->
+<div class="ticker-wrap" aria-hidden="true">
+  <div class="ticker">
+    <span class="ticker-item"><span>✦</span> memory wall</span>
+    <span class="ticker-item"><span>✦</span> written by hand, meant for one</span>
+    <span class="ticker-item"><span>✦</span> vol. i · no. 1</span>
+    <span class="ticker-item"><span>✦</span> for your eyes only</span>
+    <span class="ticker-item"><span>✦</span> words find their way</span>
+    <span class="ticker-item"><span>✦</span> memory wall</span>
+    <span class="ticker-item"><span>✦</span> written by hand, meant for one</span>
+    <span class="ticker-item"><span>✦</span> vol. i · no. 1</span>
+    <span class="ticker-item"><span>✦</span> for your eyes only</span>
+    <span class="ticker-item"><span>✦</span> words find their way</span>
+  </div>
+</div>
+
+<script>
+function triggerUpload(id){
+  document.getElementById('file-'+id).click();
+}
+function loadImg(input,id){
+  const file=input.files[0]; if(!file) return;
+  const url=URL.createObjectURL(file);
+  const slot=document.getElementById('slot-'+id);
+  const img=document.createElement('img');
+  img.src=url;
+  // copy the aspect-ratio from the slot's parent's CSS var
+  const parent=slot.closest('.poem-img');
+  const ratio=getComputedStyle(parent).getPropertyValue('--img-ratio').trim();
+  img.style.cssText=`display:block;width:100%;aspect-ratio:${ratio};object-fit:cover`;
+  slot.replaceWith(img);
+  const cap=document.getElementById('cap-'+id);
+  cap.textContent=file.name.replace(/\.[^/.]+$/,'').replace(/[-_]/g,' ');
+}
+</script>
+</body>
+</html>
