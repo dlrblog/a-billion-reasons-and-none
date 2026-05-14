@@ -1,0 +1,78 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:   # lets you trigger it manually from the Actions tab
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── Inject secrets into all HTML files ──────────────────────────────────
+      # Each sed command replaces a %%PLACEHOLDER%% with the matching secret.
+      # We use | as the sed delimiter so slashes in URLs don't need escaping.
+      - name: Inject Firebase & GitHub secrets into HTML
+        env:
+          FIREBASE_API_KEY:            ${{ secrets.FIREBASE_API_KEY }}
+          FIREBASE_AUTH_DOMAIN:        ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          FIREBASE_PROJECT_ID:         ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_STORAGE_BUCKET:     ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
+          FIREBASE_APP_ID:             ${{ secrets.FIREBASE_APP_ID }}
+          NOTES_GITHUB_PAT:            ${{ secrets.NOTES_GITHUB_PAT }}
+          NOTES_GITHUB_REPO:           ${{ secrets.NOTES_GITHUB_REPO }}
+        run: |
+          # Files that contain Firebase config placeholders
+          FIREBASE_FILES=(
+            "calendar/index.html"
+            "text/chat.html"
+            "goals/index.html"
+            "notes/notes.html"
+          )
+
+          for f in "${FIREBASE_FILES[@]}"; do
+            sed -i \
+              -e "s|%%FIREBASE_API_KEY%%|${FIREBASE_API_KEY}|g" \
+              -e "s|%%FIREBASE_AUTH_DOMAIN%%|${FIREBASE_AUTH_DOMAIN}|g" \
+              -e "s|%%FIREBASE_PROJECT_ID%%|${FIREBASE_PROJECT_ID}|g" \
+              -e "s|%%FIREBASE_STORAGE_BUCKET%%|${FIREBASE_STORAGE_BUCKET}|g" \
+              -e "s|%%FIREBASE_MESSAGING_SENDER_ID%%|${FIREBASE_MESSAGING_SENDER_ID}|g" \
+              -e "s|%%FIREBASE_APP_ID%%|${FIREBASE_APP_ID}|g" \
+              "$f"
+          done
+
+          # notes.html also has GitHub PAT & repo for image uploads
+          sed -i \
+            -e "s|%%NOTES_GITHUB_PAT%%|${NOTES_GITHUB_PAT}|g" \
+            -e "s|%%NOTES_GITHUB_REPO%%|${NOTES_GITHUB_REPO}|g" \
+            "notes/notes.html"
+
+      # ── Deploy to GitHub Pages ───────────────────────────────────────────────
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'   # upload the whole repo root (same as "Deploy from branch")
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

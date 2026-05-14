@@ -5,43 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Our Calendar ✦</title>
 
-  <!--
-  ┌─────────────────────────────────────────────────────┐
-  │  🔥 STEP 1 — Paste your Firebase config here        │
-  │  Firebase Console → Project Settings → Your apps    │
-  │  → Add web app → SDK setup & config                 │
-  └─────────────────────────────────────────────────────┘
-  -->
-    <script>
+  <!-- Firebase config is injected by GitHub Actions at deploy time -->
+  <script>
     const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyAl41igz8-_kTQOM5Lw_t03L5L0ixT70wQ",
-    authDomain: "danvanthlovesraksha-de60c.firebaseapp.com",
-    projectId: "danvanthlovesraksha-de60c",
-    storageBucket: "danvanthlovesraksha-de60c.firebasestorage.app",
-    messagingSenderId: "857474946972",
-    appId: "1:857474946972:web:671ec82de7e9e925125a59",
-    measurementId: "G-KH6B3KHSRS"
+      apiKey:            "%%FIREBASE_API_KEY%%",
+      authDomain:        "%%FIREBASE_AUTH_DOMAIN%%",
+      projectId:         "%%FIREBASE_PROJECT_ID%%",
+      storageBucket:     "%%FIREBASE_STORAGE_BUCKET%%",
+      messagingSenderId: "%%FIREBASE_MESSAGING_SENDER_ID%%",
+      appId:             "%%FIREBASE_APP_ID%%"
     };
   </script>
-  <!--
-  ┌─────────────────────────────────────────────────────┐
-  │  🔒 STEP 2 — Firebase Console → Authentication      │
-  │  → Settings → Authorized domains → Add your domain  │
-  │                                                     │
-  │  🗄  STEP 3 — Firestore → Rules → paste:            │
-  │  rules_version = '2';                               │
-  │  service cloud.firestore {                          │
-  │    match /databases/{database}/documents {          │
-  │      match /memories/{doc} {                        │
-  │        allow read, write: if true;                  │
-  │      }                                              │
-  │    }                                                │
-  │  }                                                  │
-  │                                                     │
-  │  📁 STEP 4 — Put this file in /calendar/index.html  │
-  │  in your GitHub repo and push. Done! 🎉             │
-  └─────────────────────────────────────────────────────┘
-  -->
+
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
@@ -313,25 +288,6 @@
 <div class="sync-bar" id="sync-bar"></div>
 <div class="toast"    id="toast"></div>
 
-<!-- ═══════════════════════════════════════════
-     SETUP SCREEN  (shown when config not filled)
-═══════════════════════════════════════════ -->
-<div id="setup-screen" style="display:none">
-  <h2>Almost there ✦</h2>
-  <p>Fill in your Firebase config at the top of this file, then follow these steps:</p>
-  <ol>
-    <li>Go to <a href="https://firebase.google.com" target="_blank">firebase.google.com</a> → create a project named whatever you like</li>
-    <li><strong>Build → Firestore Database → Create database</strong> (choose test mode)</li>
-    <li>
-      <strong>Firestore → Rules</strong> → replace with:
-      <div class="rules-block">rules_version = '2';<br>service cloud.firestore {<br>&nbsp;&nbsp;match /databases/{database}/documents {<br>&nbsp;&nbsp;&nbsp;&nbsp;match /memories/{doc} {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allow read, write: if true;<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;}<br>}</div>
-    </li>
-    <li><strong>Firestore → Indexes → Add composite index</strong><br>Collection: <code>memories</code> &nbsp;|&nbsp; Fields: <code>date ASC</code> + <code>createdAt ASC</code></li>
-    <li><strong>Authentication → Settings → Authorized domains</strong> → add your custom domain</li>
-    <li><strong>Project Settings → Your apps → Add web app</strong> → copy config → paste into <code>FIREBASE_CONFIG</code> at top of this file</li>
-    <li>Put this file at <code>calendar/index.html</code> in your GitHub repo → push → enable GitHub Pages 🎉</li>
-  </ol>
-</div>
 
 <!-- ═══════════════════════════════════════════
      MAIN CALENDAR APP
@@ -431,18 +387,11 @@
            onSnapshot, query, where, orderBy, serverTimestamp }
     from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
-  /* ── Check config ── */
-  const configured =
-    FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey !== "YOUR_API_KEY";
-
-  document.getElementById('setup-screen').style.display = configured ? 'none'  : 'block';
-  document.getElementById('app').style.display          = configured ? 'block' : 'none';
-  document.getElementById('fab').style.display          = configured ? 'flex'  : 'none';
-
-  if (!configured) throw new Error("Fill in FIREBASE_CONFIG to continue.");
-
   /* ── Init ── */
   const db = getFirestore(initializeApp(FIREBASE_CONFIG));
+
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('fab').style.display = 'flex';
 
   /* ── State ── */
   const MONTHS = ['January','February','March','April','May','June',

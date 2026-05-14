@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Notes · Who are you?</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Departure+Mono&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#e8f3fb;
+  --ink:#0d1f2d;
+  --ink-light:#3a5a72;
+  --ink-faint:#8aafcc;
+  --accent:#5b9ec9;
+  --accent-dark:#2a6a96;
+  --paper:#d4eaf7;
+  --paper-dark:#b8d8ef;
+}
+html,body{height:100%}
+body{
+  background:var(--cream);
+  color:var(--ink);
+  font-family:'Newsreader',Georgia,serif;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  min-height:100vh;
+}
+.wrap{
+  width:100%;max-width:380px;
+  padding:3.5rem 2.5rem;
+  border:1px solid var(--paper-dark);
+  background:var(--paper);
+  display:flex;flex-direction:column;gap:2.2rem;
+  position:relative;overflow:hidden;
+}
+.wrap::before{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:200px;height:200px;
+  border:1px solid var(--paper-dark);border-radius:50%;opacity:.45;
+}
+.logo{
+  font-family:'DM Serif Display',serif;
+  font-size:1.6rem;font-style:italic;color:var(--ink);
+  position:relative;z-index:1;
+}
+.logo-sub{
+  font-family:'Departure Mono',monospace;font-size:8px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);
+  margin-top:.4rem;
+}
+.divider{height:1px;background:var(--paper-dark)}
+.who-label{
+  font-family:'Departure Mono',monospace;font-size:9px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);
+  margin-bottom:.9rem;
+}
+.btn-group{display:flex;flex-direction:column;gap:.75rem}
+.user-btn{
+  width:100%;padding:.85rem 1.2rem;
+  border:1px solid var(--paper-dark);
+  background:transparent;
+  font-family:'Newsreader',Georgia,serif;
+  font-size:1.05rem;font-style:italic;
+  color:var(--ink);cursor:pointer;
+  transition:background .15s,border-color .2s;
+  text-align:left;
+  position:relative;z-index:1;
+}
+.user-btn:hover{background:rgba(255,255,255,.6);border-color:var(--accent)}
+.user-btn .mono{
+  display:block;font-family:'Departure Mono',monospace;
+  font-size:8px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);font-style:normal;margin-top:.25rem;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+    <div class="logo">Notes</div>
+    <div class="logo-sub">Private · Just two</div>
+  </div>
+  <div class="divider"></div>
+  <div>
+    <div class="who-label">Who are you?</div>
+    <div class="btn-group">
+      <button class="user-btn" onclick="enter('danvanth')">
+        danvanth
+        <span class="mono">your notes, your thoughts</span>
+      </button>
+      <button class="user-btn" onclick="enter('raksha')">
+        raksha
+        <span class="mono">your notes, your thoughts</span>
+      </button>
+    </div>
+  </div>
+</div>
+<script>
+function enter(name){
+  sessionStorage.setItem('notesUser', name);
+  window.location.href = 'notes.html';
+}
+// If already logged in, skip
+if(sessionStorage.getItem('notesUser')){
+  window.location.href = 'notes.html';
+}
+</script>
+</body>
+</html>
