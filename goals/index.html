@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Our Goals ✦</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Departure+Mono&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --cream: #e8f3fb;
+            --ink: #0d1f2d;
+            --ink-light: #3a5a72;
+            --ink-faint: #8aafcc;
+            --accent: #5b9ec9;
+            --accent-dark: #2a6a96;
+            --paper: #d4eaf7;
+            --paper-dark: #b8d8ef;
+            --done-line: #8aafcc;
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            background: var(--cream);
+            color: var(--ink);
+            font-family: 'Newsreader', Georgia, serif;
+            min-height: 100vh;
+            padding-bottom: 5rem;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: .9rem 2.5rem;
+            border-bottom: 1px solid var(--paper-dark);
+            background: var(--cream);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .mono {
+            font-family: 'Departure Mono', monospace;
+            font-size: 10px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--ink-faint)
+        }
+
+        .topbar-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 14px;
+            color: var(--ink);
+            font-style: italic;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            padding: 3.5rem 2.5rem 2.5rem;
+            border-bottom: 1px solid var(--paper-dark);
+            display: flex;
+            flex-direction: column;
+            gap: .6rem;
+        }
+
+        .hero-kicker {
+            font-family: 'Departure Mono', monospace;
+            font-size: 9px;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--ink-faint)
+        }
+
+        .hero-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(2.2rem, 5vw, 4rem);
+            line-height: .95;
+            letter-spacing: -.02em;
+            color: var(--ink)
+        }
+
+        .hero-title em {
+            font-style: italic;
+            color: var(--accent-dark)
+        }
+
+        .hero-sub {
+            font-size: .9rem;
+            color: var(--ink-light);
+            font-style: italic;
+            margin-top: .4rem;
+            font-weight: 300
+        }
+
+        /* ── PROGRESS BAR ── */
+        .progress-wrap {
+            padding: 1.4rem 2.5rem;
+            border-bottom: 1px solid var(--paper-dark);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .progress-track {
+            flex: 1;
+            height: 3px;
+            background: var(--paper-dark);
+            position: relative;
+            overflow: hidden
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-dark);
+            width: 0%;
+            transition: width .5s cubic-bezier(.4, 0, .2, 1)
+        }
+
+        .progress-label {
+            font-family: 'Departure Mono', monospace;
+            font-size: 9px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            white-space: nowrap
+        }
+
+        /* ── CATEGORY TABS ── */
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--paper-dark);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none
+        }
+
+        .tab {
+            flex-shrink: 0;
+            padding: .75rem 1.4rem;
+            font-family: 'Departure Mono', monospace;
+            font-size: 9px;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: color .15s, border-color .15s;
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            color: var(--ink-light)
+        }
+
+        .tab.active {
+            color: var(--ink);
+            border-bottom-color: var(--ink)
+        }
+
+        /* ── MAIN CONTENT ── */
+        .main {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem;
+        }
+
+        /* ── ADD FORM ── */
+        .add-form {
+            display: flex;
+            gap: .8rem;
+            align-items: flex-start;
+            margin-bottom: 2.5rem;
+        }
+
+        .add-input-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: .5rem
+        }
+
+        .add-input {
+            width: 100%;
+            border: 1px solid var(--paper-dark);
+            background: var(--paper);
+            padding: .75rem 1rem;
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: .97rem;
+            color: var(--ink);
+            outline: none;
+            transition: border-color .15s;
+        }
+
+        .add-input:focus {
+            border-color: var(--accent)
+        }
+
+        .add-input::placeholder {
+            color: var(--ink-faint);
+            font-style: italic
+        }
+
+        .add-meta {
+            display: flex;
+            gap: .6rem;
+            flex-wrap: wrap
+        }
+
+        .add-select {
+            border: 1px solid var(--paper-dark);
+            background: var(--paper);
+            padding: .5rem .8rem;
+            font-family: 'Departure Mono', monospace;
+            font-size: 9px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink-light);
+            outline: none;
+            cursor: pointer;
+            transition: border-color .15s;
+        }
+
+        .add-select:focus {
+            border-color: var(--accent)
+        }
+
+        .add-btn {
+            border: none;
+            cursor: pointer;
+            background: var(--ink);
+            color: var(--cream);
+            padding: .75rem 1.25rem;
+            font-family: 'Departure Mono', monospace;
+            font-size: 9px;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            transition: background .15s, opacity .15s;
+            align-self: flex-start;
+            margin-top: 0;
+            height: 44px;
+        }
+
+        .add-btn:hover {
+            background: var(--accent-dark)
+        }
+
+        .add-btn:active {
+            opacity: .8
+        }
+
+        /* ── GOAL ITEMS ── */
+        .goals-list {
+            display: flex;
+            flex-direction: column;
+            gap: .65rem;
+        }
+
+        .goal-item {
+            display: flex;
+            align-items: flex-start;
+            gap: .9rem;
+            padding: 1rem 1.1rem;
+            background: var(--paper);
+            border: 1px solid var(--paper-dark);
+            transition: background .2s, opacity .3s, transform .3s;
+            animation: slideIn .25s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-6px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .goal-item.done {
+            background: var(--cream);
+            border-color: var(--paper-dark);
+            opacity: .6;
+        }
+
+        /* custom checkbox */
+        .goal-check {
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            border: 1.5px solid var(--paper-dark);
+            background: var(--cream);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 3px;
+            transition: background .15s, border-color .2s;
+        }
+
+        .goal-check.checked {
+            background: var(--ink);
+            border-color: var(--ink);
+        }
+
+        .goal-check.checked::after {
+            content: '✓';
+            color: var(--cream);
+            font-family: 'Departure Mono', monospace;
+            font-size: 10px;
+            line-height: 1;
+        }
+
+        .goal-body {
+            flex: 1;
+            min-width: 0
+        }
+
+        .goal-text {
+            font-size: 1rem;
+            line-height: 1.55;
+            color: var(--ink);
+            font-weight: 300;
+            transition: color .2s;
+        }
+
+        .goal-item.done .goal-text {
+            text-decoration: line-through;
+            text-decoration-color: var(--done-line);
+            color: var(--ink-faint);
+        }
+
+        .goal-footer {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            margin-top: .35rem;
+            flex-wrap: wrap;
+        }
+
+        .goal-cat {
+            font-family: 'Departure Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            padding: .2rem .55rem;
+            border: 1px solid var(--paper-dark);
+            color: var(--ink-faint);
+        }
+
+        .goal-added {
+            font-family: 'Departure Mono', monospace;
+            font-size: 7.5px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+        }
+
+        .goal-del {
+            margin-left: auto;
+            flex-shrink: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--ink-faint);
+            font-size: 16px;
+            line-height: 1;
+            opacity: .3;
+            transition: opacity .15s, color .15s;
+            padding: .1rem .3rem;
+        }
+
+        .goal-del:hover {
+            opacity: 1;
+            color: #c0392b
+        }
+
+        /* ── EMPTY / DONE STATE ── */
+        .empty-section {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--ink-faint);
+        }
+
+        .empty-icon-lg {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: .6rem
+        }
+
+        .empty-text-lg {
+            font-family: 'Departure Mono', monospace;
+            font-size: 9px;
+            letter-spacing: .18em;
+            text-transform: uppercase
+        }
+
+        /* ── SECTION LABEL ── */
+        .section-label {
+            font-family: 'Departure Mono', monospace;
+            font-size: 9px;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--paper-dark)
+        }
+
+        /* ── DONE SECTION ── */
+        .done-toggle {
+            margin-top: 2rem;
+            font-family: 'Departure Mono', monospace;
+            font-size: 9px;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            background: none;
+            border: none;
+            padding: .3rem 0;
+            transition: color .15s;
+        }
+
+        .done-toggle:hover {
+            color: var(--ink-light)
+        }
+
+        .done-section {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: .65rem
+        }
+
+        /* ── TICKER ── */
+        .ticker-wrap {
+            overflow: hidden;
+            border-top: 1px solid var(--paper-dark);
+            background: #0d1f2d;
+            padding: .6rem 0;
+            margin-top: 3rem
+        }
+
+        .ticker {
+            display: flex;
+            gap: 3rem;
+            animation: tick 26s linear infinite;
+            white-space: nowrap
+        }
+
+        .ticker-item {
+            font-family: 'Departure Mono', monospace;
+            font-size: 9px;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: #b8d8ef;
+            opacity: .7;
+            flex-shrink: 0
+        }
+
+        .ticker-item span {
+            color: #5b9ec9;
+            opacity: 1;
+            margin-right: 1.5rem
+        }
+
+        @keyframes tick {
+            from {
+                transform: translateX(0)
+            }
+
+            to {
+                transform: translateX(-50%)
+            }
+        }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:640px) {
+            .topbar {
+                padding: .85rem 1.2rem
+            }
+
+            .hero {
+                padding: 2.5rem 1.2rem 2rem
+            }
+
+            .progress-wrap {
+                padding: 1rem 1.2rem
+            }
+
+            .main {
+                padding: 1.8rem 1.2rem
+            }
+
+            .tabs .tab {
+                padding: .7rem 1rem
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <span class="mono">our world</span>
+        <span class="topbar-title">Goals</span>
+        <span class="mono" id="topCount">0 done</span>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-kicker">Danvanth & Raksha · together</div>
+        <h1 class="hero-title">Things we'll<br>do <em>together.</em></h1>
+        <p class="hero-sub">Dreams, plans, little adventures — one tick at a time.</p>
+    </section>
+
+    <!-- PROGRESS -->
+    <div class="progress-wrap">
+        <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <span class="progress-label" id="progressLabel">loading…</span>
+    </div>
+
+    <!-- CATEGORY TABS -->
+    <nav class="tabs" id="tabs">
+        <button class="tab active" data-cat="all">All</button>
+        <button class="tab" data-cat="travel">✈ Travel</button>
+        <button class="tab" data-cat="together">🫶 Together</button>
+        <button class="tab" data-cat="food">🍜 Food</button>
+        <button class="tab" data-cat="dream">✨ Dreams</button>
+        <button class="tab" data-cat="silly">😂 Silly</button>
+    </nav>
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <!-- ADD FORM -->
+        <form class="add-form" id="addForm" autocomplete="off" onsubmit="return false">
+            <div class="add-input-wrap">
+                <input class="add-input" id="goalInput" type="text" placeholder="Add a goal for us…" maxlength="200"
+                    autocomplete="off" />
+                <div class="add-meta">
+                    <select class="add-select" id="catSelect">
+                        <option value="together">🫶 Together</option>
+                        <option value="travel">✈ Travel</option>
+                        <option value="food">🍜 Food</option>
+                        <option value="dream">✨ Dream</option>
+                        <option value="silly">😂 Silly</option>
+                    </select>
+                    <select class="add-select" id="whoSelect">
+                        <option value="danvanth">danvanth</option>
+                        <option value="raksha">raksha</option>
+                        <option value="us">us ✦</option>
+                    </select>
+                </div>
+            </div>
+            <button class="add-btn" id="addBtn" onclick="addGoal()">Add ✦</button>
+        </form>
+
+        <!-- TODO LIST -->
+        <div class="section-label" id="todoLabel">to do</div>
+        <div class="goals-list" id="todoList"></div>
+        <div class="empty-section" id="emptyTodo" style="display:none">
+            <span class="empty-icon-lg">🌸</span>
+            <span class="empty-text-lg">All done! You two are goals.</span>
+        </div>
+
+        <!-- DONE TOGGLE -->
+        <button class="done-toggle" id="doneToggle" onclick="toggleDone()" style="display:none">
+            <span id="doneToggleIcon">▸</span>
+            <span id="doneToggleLabel">show completed</span>
+        </button>
+        <div class="done-section" id="doneList" style="display:none"></div>
+
+    </div>
+
+    <!-- TICKER -->
+    <div class="ticker-wrap" aria-hidden="true">
+        <div class="ticker">
+            <span class="ticker-item"><span>✦</span> relationship goals</span>
+            <span class="ticker-item"><span>✦</span> one day at a time</span>
+            <span class="ticker-item"><span>✦</span> danvanth loves raksha</span>
+            <span class="ticker-item"><span>✦</span> dreams & plans</span>
+            <span class="ticker-item"><span>✦</span> for us</span>
+            <span class="ticker-item"><span>✦</span> relationship goals</span>
+            <span class="ticker-item"><span>✦</span> one day at a time</span>
+            <span class="ticker-item"><span>✦</span> danvanth loves raksha</span>
+            <span class="ticker-item"><span>✦</span> dreams & plans</span>
+            <span class="ticker-item"><span>✦</span> for us</span>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+     FIRESTORE RULES — add this to your existing rules
+     (in Firebase Console → Firestore → Rules)
+
+     match /goals/{doc} { allow read, write: if true; }
+════════════════════════════════════════════════ -->
+    <script type="module">
+        import { initializeApp }
+            from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import {
+            getFirestore, collection, addDoc, doc, updateDoc, deleteDoc,
+            query, orderBy, onSnapshot, serverTimestamp
+        }
+            from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+        // ─── Firebase config ────────────────────────────────────────────────
+        const firebaseConfig = {
+            apiKey: "AIzaSyAl41igz8-_kTQOM5Lw_t03L5L0ixT70wQ",
+            authDomain: "danvanthlovesraksha-de60c.firebaseapp.com",
+            projectId: "danvanthlovesraksha-de60c",
+            storageBucket: "danvanthlovesraksha-de60c.firebasestorage.app",
+            messagingSenderId: "857474946972",
+            appId: "1:857474946972:web:671ec82de7e9e925125a59"
+        };
+
+        const db = getFirestore(initializeApp(firebaseConfig));
+        const COL = 'goals';
+
+        // ─── State ──────────────────────────────────────────────────────────
+        let allGoals = [];    // { id, text, category, addedBy, done, createdAt }
+        let activeTab = 'all';
+        let doneOpen = false;
+
+        const CAT_LABELS = {
+            travel: '✈ Travel', together: '🫶 Together',
+            food: '🍜 Food', dream: '✨ Dream', silly: '😂 Silly'
+        };
+
+        // ─── Helpers ────────────────────────────────────────────────────────
+        function esc(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+        function relTime(ts) {
+            if (!ts) return '';
+            const d = ts.toDate ? ts.toDate() : new Date(ts);
+            const diff = Math.floor((Date.now() - d) / 1000);
+            if (diff < 60) return 'just now';
+            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+            return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+        }
+
+        // ─── Render ──────────────────────────────────────────────────────────
+        function render() {
+            let visible = activeTab === 'all'
+                ? allGoals
+                : allGoals.filter(g => g.category === activeTab);
+
+            const todo = visible.filter(g => !g.done);
+            const done = visible.filter(g => g.done);
+            const total = allGoals.length;
+            const doneCount = allGoals.filter(g => g.done).length;
+
+            // Progress
+            const pct = total ? Math.round((doneCount / total) * 100) : 0;
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('progressLabel').textContent = `${doneCount} of ${total} done`;
+            document.getElementById('topCount').textContent = `${doneCount} done`;
+
+            // Todo list
+            const todoList = document.getElementById('todoList');
+            todoList.innerHTML = '';
+            if (todo.length === 0) {
+                document.getElementById('emptyTodo').style.display = 'block';
+            } else {
+                document.getElementById('emptyTodo').style.display = 'none';
+                todo.forEach(g => todoList.appendChild(makeItem(g)));
+            }
+
+            // Done section
+            const doneList = document.getElementById('doneList');
+            const doneToggle = document.getElementById('doneToggle');
+            doneList.innerHTML = '';
+            if (done.length) {
+                doneToggle.style.display = 'flex';
+                document.getElementById('doneToggleLabel').textContent =
+                    doneOpen ? `hide completed (${done.length})` : `show completed (${done.length})`;
+                document.getElementById('doneToggleIcon').textContent = doneOpen ? '▾' : '▸';
+                doneList.style.display = doneOpen ? 'flex' : 'none';
+                if (doneOpen) done.forEach(g => doneList.appendChild(makeItem(g)));
+            } else {
+                doneToggle.style.display = 'none';
+                doneList.style.display = 'none';
+            }
+
+            // Todo label
+            document.getElementById('todoLabel').textContent = `to do · ${todo.length}`;
+        }
+
+        function makeItem(g) {
+            const item = document.createElement('div');
+            item.className = 'goal-item' + (g.done ? ' done' : '');
+            item.dataset.id = g.id;
+
+            item.innerHTML = `
+    <div class="goal-check ${g.done ? 'checked' : ''}" data-id="${g.id}"></div>
+    <div class="goal-body">
+      <div class="goal-text">${esc(g.text)}</div>
+      <div class="goal-footer">
+        <span class="goal-cat">${esc(CAT_LABELS[g.category] || g.category)}</span>
+        <span class="goal-added">by ${esc(g.addedBy || 'us')} · ${relTime(g.createdAt)}</span>
+      </div>
+    </div>
+    <button class="goal-del" data-id="${g.id}" title="delete">×</button>
+  `;
+
+            item.querySelector('.goal-check').addEventListener('click', () => toggleGoal(g.id, !g.done));
+            item.querySelector('.goal-del').addEventListener('click', () => removeGoal(g.id));
+            return item;
+        }
+
+        // ─── Firestore actions ───────────────────────────────────────────────
+        window.addGoal = async function () {
+            const text = document.getElementById('goalInput').value.trim();
+            if (!text) return;
+            const cat = document.getElementById('catSelect').value;
+            const who = document.getElementById('whoSelect').value;
+            document.getElementById('goalInput').value = '';
+            await addDoc(collection(db, COL), {
+                text, category: cat, addedBy: who,
+                done: false, createdAt: serverTimestamp()
+            });
+        };
+
+        async function toggleGoal(id, newDone) {
+            await updateDoc(doc(db, COL, id), { done: newDone });
+        }
+
+        async function removeGoal(id) {
+            if (!confirm('Remove this goal?')) return;
+            await deleteDoc(doc(db, COL, id));
+        }
+
+        window.toggleDone = function () {
+            doneOpen = !doneOpen;
+            render();
+        };
+
+        // ─── Tabs ────────────────────────────────────────────────────────────
+        document.getElementById('tabs').addEventListener('click', e => {
+            if (!e.target.dataset.cat) return;
+            activeTab = e.target.dataset.cat;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            e.target.classList.add('active');
+            render();
+        });
+
+        // ─── Enter key to add ────────────────────────────────────────────────
+        document.getElementById('goalInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') window.addGoal();
+        });
+
+        // ─── Real-time listener ──────────────────────────────────────────────
+        const q = query(collection(db, COL), orderBy('createdAt', 'asc'));
+        onSnapshot(q, snap => {
+            allGoals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            render();
+        }, err => console.error('Firestore:', err));
+
+    </script>
+</body>
+
+</html>
