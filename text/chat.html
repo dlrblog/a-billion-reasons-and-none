@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Only Us · Chat</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Departure+Mono&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --cream: #e8f3fb;
+            --ink: #0d1f2d;
+            --ink-light: #3a5a72;
+            --ink-faint: #8aafcc;
+            --accent: #5b9ec9;
+            --accent-dark: #2a6a96;
+            --paper: #d4eaf7;
+            --paper-dark: #b8d8ef;
+            --self-bubble: #0d1f2d;
+            --self-text: #e8f3fb;
+            --other-bubble: #d4eaf7;
+            --other-text: #0d1f2d;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden
+        }
+
+        body {
+            background: var(--cream);
+            color: var(--ink);
+            font-family: 'Newsreader', Georgia, serif;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .9rem 1.6rem;
+            border-bottom: 1px solid var(--paper-dark);
+            background: var(--cream);
+            flex-shrink: 0;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: .2rem
+        }
+
+        .header-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.15rem;
+            font-style: italic;
+            color: var(--ink);
+        }
+
+        .header-sub {
+            font-family: 'Departure Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.1rem
+        }
+
+        .online-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #5cb85c;
+            box-shadow: 0 0 0 2px rgba(92, 184, 92, .25);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 2px rgba(92, 184, 92, .25)
+            }
+
+            50% {
+                box-shadow: 0 0 0 4px rgba(92, 184, 92, .1)
+            }
+        }
+
+        .sign-out {
+            font-family: 'Departure Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: .3rem .5rem;
+            transition: color .15s;
+        }
+
+        .sign-out:hover {
+            color: var(--ink)
+        }
+
+        /* ── USER BANNER ── */
+        .user-banner {
+            padding: .55rem 1.6rem;
+            border-bottom: 1px solid var(--paper-dark);
+            background: var(--paper);
+            font-family: 'Departure Mono', monospace;
+            font-size: 9px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--ink-light);
+            flex-shrink: 0;
+        }
+
+        #userLabel {
+            color: var(--accent-dark);
+            font-weight: bold
+        }
+
+        /* ── MESSAGES AREA ── */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.8rem 1.4rem;
+            display: flex;
+            flex-direction: column;
+            gap: .85rem;
+            scroll-behavior: smooth;
+        }
+
+        /* date dividers */
+        .date-divider {
+            display: flex;
+            align-items: center;
+            gap: .9rem;
+            font-family: 'Departure Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            margin: .6rem 0;
+        }
+
+        .date-divider::before,
+        .date-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--paper-dark);
+        }
+
+        /* message row */
+        .msg-row {
+            display: flex;
+            flex-direction: column;
+            max-width: 72%;
+        }
+
+        .msg-row.self {
+            align-self: flex-end;
+            align-items: flex-end
+        }
+
+        .msg-row.other {
+            align-self: flex-start;
+            align-items: flex-start
+        }
+
+        .msg-sender {
+            font-family: 'Departure Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            margin-bottom: .3rem;
+        }
+
+        /* bubble */
+        .bubble {
+            padding: .7rem 1rem;
+            font-size: .95rem;
+            line-height: 1.65;
+            word-break: break-word;
+            position: relative;
+        }
+
+        .msg-row.self .bubble {
+            background: var(--self-bubble);
+            color: var(--self-text);
+        }
+
+        .msg-row.other .bubble {
+            background: var(--other-bubble);
+            color: var(--other-text);
+            border: 1px solid var(--paper-dark);
+        }
+
+        .msg-time {
+            font-family: 'Departure Mono', monospace;
+            font-size: 7.5px;
+            letter-spacing: .1em;
+            color: var(--ink-faint);
+            margin-top: .3rem;
+        }
+
+        /* empty state */
+        .empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: .6rem;
+            opacity: .45;
+            pointer-events: none;
+        }
+
+        .empty-icon {
+            font-size: 2rem
+        }
+
+        .empty-text {
+            font-family: 'Departure Mono', monospace;
+            font-size: 9px;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+        }
+
+        /* ── INPUT BAR ── */
+        .input-bar {
+            display: flex;
+            align-items: flex-end;
+            gap: .8rem;
+            padding: 1rem 1.4rem;
+            border-top: 1px solid var(--paper-dark);
+            background: var(--cream);
+            flex-shrink: 0;
+        }
+
+        .input-wrap {
+            flex: 1;
+            position: relative
+        }
+
+        textarea {
+            width: 100%;
+            border: 1px solid var(--paper-dark);
+            background: var(--paper);
+            padding: .7rem .95rem;
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: .97rem;
+            color: var(--ink);
+            resize: none;
+            outline: none;
+            line-height: 1.55;
+            max-height: 140px;
+            overflow-y: auto;
+            transition: border-color .15s;
+        }
+
+        textarea:focus {
+            border-color: var(--accent)
+        }
+
+        textarea::placeholder {
+            color: var(--ink-faint);
+            font-style: italic
+        }
+
+        .send-btn {
+            border: none;
+            cursor: pointer;
+            background: var(--ink);
+            color: var(--cream);
+            padding: .7rem 1.1rem;
+            font-family: 'Departure Mono', monospace;
+            font-size: 10px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            transition: background .15s, opacity .15s;
+            white-space: nowrap;
+            align-self: flex-end;
+            height: 42px;
+        }
+
+        .send-btn:hover {
+            background: var(--accent-dark)
+        }
+
+        .send-btn:disabled {
+            opacity: .35;
+            cursor: default
+        }
+
+        .send-btn:active:not(:disabled) {
+            opacity: .7
+        }
+
+        /* keyboard hint */
+        .hint {
+            font-family: 'Departure Mono', monospace;
+            font-size: 7.5px;
+            letter-spacing: .1em;
+            color: var(--ink-faint);
+            padding: .35rem 1.4rem .6rem;
+            background: var(--cream);
+            flex-shrink: 0;
+            border-top: none;
+            margin-top: -.6rem;
+        }
+
+        /* ── SCROLLBAR ── */
+        .messages::-webkit-scrollbar {
+            width: 4px
+        }
+
+        .messages::-webkit-scrollbar-track {
+            background: transparent
+        }
+
+        .messages::-webkit-scrollbar-thumb {
+            background: var(--paper-dark);
+            border-radius: 2px
+        }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:600px) {
+            .msg-row {
+                max-width: 88%
+            }
+
+            .header {
+                padding: .75rem 1rem
+            }
+
+            .messages {
+                padding: 1.2rem .9rem
+            }
+
+            .input-bar {
+                padding: .8rem 1rem
+            }
+
+            .hint {
+                padding: .3rem 1rem .5rem
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-left">
+            <span class="header-title">Only Us</span>
+            <span class="header-sub">Private · End-to-sentiment · Just two</span>
+        </div>
+        <div class="header-right">
+            <span class="online-dot" title="Connected"></span>
+            <button class="sign-out" onclick="signOut()">sign out</button>
+        </div>
+    </header>
+
+    <!-- USER BANNER -->
+    <div class="user-banner">
+        Signed in as &nbsp;<span id="userLabel">—</span>
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="messages" id="messages">
+        <div class="empty" id="emptyState">
+            <span class="empty-icon">✦</span>
+            <span class="empty-text">Say something</span>
+        </div>
+    </div>
+
+    <!-- INPUT BAR -->
+    <div class="input-bar">
+        <div class="input-wrap">
+            <textarea id="msgInput" placeholder="Write something…" rows="1" maxlength="1000"></textarea>
+        </div>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>Send</button>
+    </div>
+    <div class="hint">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</div>
+
+
+    <!--
+  ════════════════════════════════════════════════════════════
+  FIRESTORE RULES — open Firebase Console → Firestore → Rules
+  and make sure the 'messages' collection is allowed:
+
+  rules_version = '2';
+  service cloud.firestore {
+    match /databases/{database}/documents {
+      match /memories/{doc}  { allow read, write: if true; }
+      match /messages/{doc}  { allow read, write: if true; }
+    }
+  }
+  ════════════════════════════════════════════════════════════
+-->
+
+    <!-- Firebase ESM SDK (same version as calendar) -->
+    <script type="module">
+        import { initializeApp }
+            from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import {
+            getFirestore, collection, addDoc, query,
+            orderBy, onSnapshot, serverTimestamp
+        }
+            from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+        // ─── REAL FIREBASE CONFIG (from the calendar project) ──────────────
+        const firebaseConfig = {
+            apiKey: "AIzaSyAl41igz8-_kTQOM5Lw_t03L5L0ixT70wQ",
+            authDomain: "danvanthlovesraksha-de60c.firebaseapp.com",
+            projectId: "danvanthlovesraksha-de60c",
+            storageBucket: "danvanthlovesraksha-de60c.firebasestorage.app",
+            messagingSenderId: "857474946972",
+            appId: "1:857474946972:web:671ec82de7e9e925125a59"
+        };
+        // ───────────────────────────────────────────────────────────────────
+
+        // ─── AUTH CHECK ────────────────────────────────────────────────────
+        const currentUser = sessionStorage.getItem('chatUser');
+        if (!currentUser) {
+            window.location.replace('index.html');
+        }
+
+        // ─── INIT FIREBASE ─────────────────────────────────────────────────
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const MSG_COL = 'messages'; // Firestore collection name
+
+        // ─── UI refs ───────────────────────────────────────────────────────
+        const msgList = document.getElementById('messages');
+        const emptyState = document.getElementById('emptyState');
+        const msgInput = document.getElementById('msgInput');
+        const sendBtn = document.getElementById('sendBtn');
+        document.getElementById('userLabel').textContent = currentUser;
+
+        // ─── AUTO-RESIZE TEXTAREA ──────────────────────────────────────────
+        msgInput.addEventListener('input', () => {
+            msgInput.style.height = 'auto';
+            msgInput.style.height = Math.min(msgInput.scrollHeight, 140) + 'px';
+            sendBtn.disabled = !msgInput.value.trim();
+        });
+
+        // ─── SEND ON ENTER (Shift+Enter = newline) ─────────────────────────
+        msgInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (!sendBtn.disabled) sendMessage();
+            }
+        });
+
+        // ─── HELPER: format time ───────────────────────────────────────────
+        function formatTime(ts) {
+            if (!ts) return '';
+            const d = ts.toDate ? ts.toDate() : new Date(ts);
+            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function formatDateLabel(ts) {
+            if (!ts) return '';
+            const d = ts.toDate ? ts.toDate() : new Date(ts);
+            const now = new Date();
+            const isToday = d.toDateString() === now.toDateString();
+            const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+            const isYesterday = d.toDateString() === yesterday.toDateString();
+            if (isToday) return 'Today';
+            if (isYesterday) return 'Yesterday';
+            return d.toLocaleDateString([], { month: 'long', day: 'numeric' });
+        }
+
+        // ─── RENDER MESSAGES ───────────────────────────────────────────────
+        let lastDateLabel = null;
+        let msgCount = 0;
+
+        function renderMessage(doc) {
+            const { sender, text, timestamp } = doc.data();
+            msgCount++;
+            if (emptyState) emptyState.style.display = 'none';
+
+            const dateLabel = formatDateLabel(timestamp);
+            if (dateLabel !== lastDateLabel) {
+                lastDateLabel = dateLabel;
+                const div = document.createElement('div');
+                div.className = 'date-divider';
+                div.textContent = dateLabel;
+                msgList.appendChild(div);
+            }
+
+            const isSelf = sender === currentUser;
+
+            const row = document.createElement('div');
+            row.className = `msg-row ${isSelf ? 'self' : 'other'}`;
+
+            const senderEl = document.createElement('div');
+            senderEl.className = 'msg-sender';
+            senderEl.textContent = sender;
+
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            // render newlines
+            bubble.innerHTML = text.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+
+            const timeEl = document.createElement('div');
+            timeEl.className = 'msg-time';
+            timeEl.textContent = formatTime(timestamp);
+
+            row.appendChild(senderEl);
+            row.appendChild(bubble);
+            row.appendChild(timeEl);
+            msgList.appendChild(row);
+
+            // scroll to bottom
+            msgList.scrollTop = msgList.scrollHeight;
+        }
+
+        // ─── LISTEN REAL-TIME ──────────────────────────────────────────────
+        const q = query(collection(db, MSG_COL), orderBy('timestamp', 'asc'));
+        onSnapshot(q, snapshot => {
+            snapshot.docChanges().forEach(change => {
+                if (change.type === 'added') {
+                    renderMessage(change.doc);
+                }
+            });
+        }, err => {
+            console.error('Firestore error:', err);
+        });
+
+        // ─── SEND MESSAGE ──────────────────────────────────────────────────
+        async function sendMessage() {
+            const text = msgInput.value.trim();
+            if (!text) return;
+
+            sendBtn.disabled = true;
+            msgInput.value = '';
+            msgInput.style.height = 'auto';
+
+            try {
+                await addDoc(collection(db, MSG_COL), {
+                    sender: currentUser,
+                    text: text,
+                    timestamp: serverTimestamp()
+                });
+            } catch (e) {
+                console.error('Send failed:', e);
+                msgInput.value = text;
+                sendBtn.disabled = false;
+            }
+        }
+
+        // ─── SIGN OUT (exposed globally for onclick) ───────────────────────
+        window.signOut = function () {
+            sessionStorage.removeItem('chatUser');
+            window.location.replace('index.html');
+        };
+
+        // ─── SEND (exposed globally for onclick) ───────────────────────────
+        window.sendMessage = sendMessage;
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Only Us · Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Departure+Mono&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --cream:#e8f3fb;
+  --ink:#0d1f2d;
+  --ink-light:#3a5a72;
+  --ink-faint:#8aafcc;
+  --accent:#5b9ec9;
+  --accent-dark:#2a6a96;
+  --paper:#d4eaf7;
+  --paper-dark:#b8d8ef;
+}
+
+html,body{height:100%}
+body{
+  background:var(--cream);
+  color:var(--ink);
+  font-family:'Newsreader',Georgia,serif;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  padding:2rem;
+}
+
+/* top label */
+.kicker{
+  font-family:'Departure Mono',monospace;
+  font-size:9px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:2rem;text-align:center;
+}
+
+/* card */
+.card{
+  width:100%;max-width:380px;
+  background:var(--paper);
+  border:1px solid var(--paper-dark);
+  padding:2.8rem 2.5rem 2.5rem;
+}
+
+.card-title{
+  font-family:'DM Serif Display',serif;
+  font-size:2rem;font-style:italic;
+  color:var(--ink);margin-bottom:.4rem;
+}
+.card-sub{
+  font-family:'Departure Mono',monospace;
+  font-size:8px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:2.2rem;
+}
+
+/* form */
+label{
+  display:block;
+  font-family:'Departure Mono',monospace;
+  font-size:9px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-light);margin-bottom:.45rem;margin-top:1.2rem;
+}
+label:first-of-type{margin-top:0}
+
+input[type=text],input[type=password]{
+  width:100%;
+  border:1px solid var(--paper-dark);
+  background:var(--cream);
+  padding:.75rem .9rem;
+  font-family:'Newsreader',Georgia,serif;
+  font-size:1rem;color:var(--ink);
+  outline:none;
+  transition:border-color .15s;
+}
+input:focus{border-color:var(--accent)}
+
+/* error */
+.err{
+  font-family:'Departure Mono',monospace;
+  font-size:9px;letter-spacing:.1em;
+  color:#c0392b;margin-top:1.1rem;
+  min-height:14px;opacity:0;
+  transition:opacity .2s;
+}
+.err.show{opacity:1}
+
+/* button */
+.btn{
+  width:100%;margin-top:1.8rem;
+  padding:.8rem;
+  background:var(--ink);color:var(--cream);
+  border:none;cursor:pointer;
+  font-family:'Departure Mono',monospace;
+  font-size:9px;letter-spacing:.18em;text-transform:uppercase;
+  transition:background .15s,opacity .15s;
+}
+.btn:hover{background:var(--accent-dark)}
+.btn:active{opacity:.8}
+
+/* bottom stamp */
+.stamp{
+  margin-top:2.5rem;
+  font-family:'Departure Mono',monospace;
+  font-size:8px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);text-align:center;
+}
+</style>
+</head>
+<body>
+
+<p class="kicker">Private · For two</p>
+
+<div class="card">
+  <div class="card-title">Welcome back.</div>
+  <div class="card-sub">Only us · enter to continue</div>
+
+  <form id="loginForm" autocomplete="off">
+    <label for="usr">Who are you?</label>
+    <input id="usr" type="text" placeholder="your name" autocomplete="off" spellcheck="false"/>
+
+    <label for="pwd">And the word?</label>
+    <input id="pwd" type="password" placeholder="••••••••" autocomplete="new-password"/>
+
+    <p class="err" id="err">That doesn't match. Try again.</p>
+
+    <button type="submit" class="btn">Enter the room →</button>
+  </form>
+</div>
+
+<p class="stamp">✦ &nbsp; a room for two &nbsp; ✦</p>
+
+<script>
+// Credentials — two users, each other's name is the password
+const USERS = {
+  danvanth: 'raksha',
+  raksha:   'danvanth'
+};
+
+const form = document.getElementById('loginForm');
+const err  = document.getElementById('err');
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const user = document.getElementById('usr').value.trim().toLowerCase();
+  const pass = document.getElementById('pwd').value;
+
+  if (USERS[user] && USERS[user] === pass) {
+    sessionStorage.setItem('chatUser', user);
+    window.location.href = 'chat.html';
+  } else {
+    err.classList.add('show');
+    document.getElementById('pwd').value = '';
+    document.getElementById('pwd').focus();
+  }
+});
+
+// If already logged in, skip login
+if (sessionStorage.getItem('chatUser')) {
+  window.location.href = 'chat.html';
+}
+</script>
+</body>
+</html>
