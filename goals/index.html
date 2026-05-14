@@ -69,10 +69,21 @@
             font-style: italic;
         }
 
+        /* ── SHARED WIDTH CONTAINER ── */
+        .wrap {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 2.5rem;
+        }
+
         /* ── HERO ── */
         .hero {
-            padding: 3.5rem 2.5rem 2.5rem;
+            padding-top: 3.5rem;
+            padding-bottom: 2.5rem;
             border-bottom: 1px solid var(--paper-dark);
+        }
+
+        .hero .wrap {
             display: flex;
             flex-direction: column;
             gap: .6rem;
@@ -109,8 +120,12 @@
 
         /* ── PROGRESS BAR ── */
         .progress-wrap {
-            padding: 1.4rem 2.5rem;
+            padding-top: 1.2rem;
+            padding-bottom: 1.2rem;
             border-bottom: 1px solid var(--paper-dark);
+        }
+
+        .progress-wrap .wrap {
             display: flex;
             align-items: center;
             gap: 1.5rem;
@@ -142,8 +157,6 @@
 
         /* ── CATEGORY TABS ── */
         .tabs {
-            display: flex;
-            gap: 0;
             border-bottom: 1px solid var(--paper-dark);
             overflow-x: auto;
             scrollbar-width: none;
@@ -151,6 +164,11 @@
 
         .tabs::-webkit-scrollbar {
             display: none
+        }
+
+        .tabs .wrap {
+            display: flex;
+            gap: 0;
         }
 
         .tab {
@@ -182,9 +200,12 @@
 
         /* ── MAIN CONTENT ── */
         .main {
-            max-width: 680px;
-            margin: 0 auto;
-            padding: 2.5rem 2rem;
+            padding: 2.5rem 0;
+        }
+
+        .main>.wrap {
+            display: flex;
+            flex-direction: column;
         }
 
         /* ── ADD FORM ── */
@@ -516,19 +537,25 @@
                 padding: .85rem 1.2rem
             }
 
+            .wrap {
+                padding: 0 1.2rem
+            }
+
             .hero {
-                padding: 2.5rem 1.2rem 2rem
+                padding-top: 2.5rem;
+                padding-bottom: 2rem
             }
 
             .progress-wrap {
-                padding: 1rem 1.2rem
+                padding-top: .9rem;
+                padding-bottom: .9rem
             }
 
             .main {
-                padding: 1.8rem 1.2rem
+                padding: 1.8rem 0
             }
 
-            .tabs .tab {
+            .tab {
                 padding: .7rem 1rem
             }
         }
@@ -546,70 +573,78 @@
 
     <!-- HERO -->
     <section class="hero">
-        <div class="hero-kicker">Danvanth & Raksha · together</div>
-        <h1 class="hero-title">Things we'll<br>do <em>together.</em></h1>
-        <p class="hero-sub">Dreams, plans, little adventures — one tick at a time.</p>
+        <div class="wrap">
+            <div class="hero-kicker">Danvanth & Raksha · together</div>
+            <h1 class="hero-title">Things we'll<br>do <em>together.</em></h1>
+            <p class="hero-sub">Dreams, plans, little adventures — one tick at a time.</p>
+        </div>
     </section>
 
     <!-- PROGRESS -->
     <div class="progress-wrap">
-        <div class="progress-track">
-            <div class="progress-fill" id="progressFill"></div>
+        <div class="wrap">
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span class="progress-label" id="progressLabel">loading…</span>
         </div>
-        <span class="progress-label" id="progressLabel">loading…</span>
     </div>
 
     <!-- CATEGORY TABS -->
     <nav class="tabs" id="tabs">
-        <button class="tab active" data-cat="all">All</button>
-        <button class="tab" data-cat="travel">✈ Travel</button>
-        <button class="tab" data-cat="together">🫶 Together</button>
-        <button class="tab" data-cat="food">🍜 Food</button>
-        <button class="tab" data-cat="dream">✨ Dreams</button>
-        <button class="tab" data-cat="silly">😂 Silly</button>
+        <div class="wrap">
+            <button class="tab active" data-cat="all">All</button>
+            <button class="tab" data-cat="travel">✈ Travel</button>
+            <button class="tab" data-cat="together">🫶 Together</button>
+            <button class="tab" data-cat="food">🍜 Food</button>
+            <button class="tab" data-cat="dream">✨ Dreams</button>
+            <button class="tab" data-cat="silly">😂 Silly</button>
+        </div>
     </nav>
 
     <!-- MAIN -->
     <div class="main">
+        <div class="wrap">
 
-        <!-- ADD FORM -->
-        <form class="add-form" id="addForm" autocomplete="off" onsubmit="return false">
-            <div class="add-input-wrap">
-                <input class="add-input" id="goalInput" type="text" placeholder="Add a goal for us…" maxlength="200"
-                    autocomplete="off" />
-                <div class="add-meta">
-                    <select class="add-select" id="catSelect">
-                        <option value="together">🫶 Together</option>
-                        <option value="travel">✈ Travel</option>
-                        <option value="food">🍜 Food</option>
-                        <option value="dream">✨ Dream</option>
-                        <option value="silly">😂 Silly</option>
-                    </select>
-                    <select class="add-select" id="whoSelect">
-                        <option value="danvanth">danvanth</option>
-                        <option value="raksha">raksha</option>
-                        <option value="us">us ✦</option>
-                    </select>
+            <!-- ADD FORM -->
+            <form class="add-form" id="addForm" autocomplete="off" onsubmit="return false">
+                <div class="add-input-wrap">
+                    <input class="add-input" id="goalInput" type="text" placeholder="Add a goal for us…" maxlength="200"
+                        autocomplete="off" />
+                    <div class="add-meta">
+                        <select class="add-select" id="catSelect">
+                            <option value="together">🫶 Together</option>
+                            <option value="travel">✈ Travel</option>
+                            <option value="food">🍜 Food</option>
+                            <option value="dream">✨ Dream</option>
+                            <option value="silly">😂 Silly</option>
+                        </select>
+                        <select class="add-select" id="whoSelect">
+                            <option value="danvanth">danvanth</option>
+                            <option value="raksha">raksha</option>
+                            <option value="us">us ✦</option>
+                        </select>
+                    </div>
                 </div>
+                <button class="add-btn" id="addBtn" onclick="addGoal()">Add ✦</button>
+            </form>
+
+            <!-- TODO LIST -->
+            <div class="section-label" id="todoLabel">to do</div>
+            <div class="goals-list" id="todoList"></div>
+            <div class="empty-section" id="emptyTodo" style="display:none">
+                <span class="empty-icon-lg">🌸</span>
+                <span class="empty-text-lg">All done! You two are goals.</span>
             </div>
-            <button class="add-btn" id="addBtn" onclick="addGoal()">Add ✦</button>
-        </form>
 
-        <!-- TODO LIST -->
-        <div class="section-label" id="todoLabel">to do</div>
-        <div class="goals-list" id="todoList"></div>
-        <div class="empty-section" id="emptyTodo" style="display:none">
-            <span class="empty-icon-lg">🌸</span>
-            <span class="empty-text-lg">All done! You two are goals.</span>
+            <!-- DONE TOGGLE -->
+            <button class="done-toggle" id="doneToggle" onclick="toggleDone()" style="display:none">
+                <span id="doneToggleIcon">▸</span>
+                <span id="doneToggleLabel">show completed</span>
+            </button>
+            <div class="done-section" id="doneList" style="display:none"></div>
+
         </div>
-
-        <!-- DONE TOGGLE -->
-        <button class="done-toggle" id="doneToggle" onclick="toggleDone()" style="display:none">
-            <span id="doneToggleIcon">▸</span>
-            <span id="doneToggleLabel">show completed</span>
-        </button>
-        <div class="done-section" id="doneList" style="display:none"></div>
-
     </div>
 
     <!-- TICKER -->
