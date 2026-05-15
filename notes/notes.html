@@ -506,16 +506,8 @@
         }
 
         .editor-body-wrap::-webkit-scrollbar {
-            width: 4px
-        }
-
-        .editor-body-wrap::-webkit-scrollbar-track {
-            background: transparent
-        }
-
-        .editor-body-wrap::-webkit-scrollbar-thumb {
-            background: var(--paper-dark);
-            border-radius: 2px
+            width: 0;
+            display: none
         }
 
         textarea.note-body {
@@ -538,62 +530,92 @@
             font-style: italic;
         }
 
-        /* images strip */
-        .images-strip {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .75rem;
+        /* inline note body (contenteditable) */
+        .note-body-ce {
+            flex: 1;
+            min-height: 320px;
+            outline: none;
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 1.02rem;
+            line-height: 1.85;
+            color: var(--ink);
+            font-weight: 300;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
 
-        .img-thumb {
+        .note-body-ce:empty::before {
+            content: attr(data-placeholder);
+            color: var(--ink-faint);
+            font-style: italic;
+            pointer-events: none;
+        }
+
+        /* inline image wrapper */
+        .inline-img-wrap {
+            display: inline-block;
             position: relative;
-            width: 100px;
-            height: 100px;
-            border: 1px solid var(--paper-dark);
-            overflow: hidden;
-            background: var(--paper);
-            cursor: pointer;
+            line-height: 0;
+            margin: .3rem .2rem;
+            vertical-align: middle;
         }
 
-        .img-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .inline-img-wrap img {
             display: block;
+            max-width: 100%;
+            border: 1px solid var(--paper-dark);
+            cursor: default;
         }
 
-        .img-thumb .remove-img {
+        .inline-img-wrap .img-controls {
+            display: none;
             position: absolute;
-            top: 3px;
-            right: 3px;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: rgba(13, 31, 45, .7);
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(13,31,45,.75);
+            border-radius: 3px;
+            padding: 3px 6px;
+            gap: 5px;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .inline-img-wrap:hover .img-controls {
+            display: flex
+        }
+
+        .img-controls button {
+            font-family: 'Departure Mono', monospace;
+            font-size: 9px;
             color: #e8f3fb;
+            background: none;
             border: none;
             cursor: pointer;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity .15s;
-            font-family: monospace;
+            padding: 1px 4px;
+            letter-spacing: .08em;
         }
 
-        .img-thumb:hover .remove-img {
-            opacity: 1
+        .img-controls button:hover {
+            color: var(--accent)
+        }
+
+        .img-controls span {
+            font-family: 'Departure Mono', monospace;
+            font-size: 9px;
+            color: var(--ink-faint);
         }
 
         .img-thumb-uploading {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 60px;
             border: 1px dashed var(--paper-dark);
             background: var(--paper);
+            vertical-align: middle;
+            margin: .3rem .2rem;
         }
 
         /* confirm dialog */
@@ -797,10 +819,8 @@
                 </div>
 
                 <div class="editor-body-wrap">
-                    <!-- images strip -->
-                    <div class="images-strip" id="imagesStrip"></div>
-                    <!-- body textarea -->
-                    <textarea class="note-body" id="noteBody" placeholder="Write something…" rows="12"></textarea>
+                    <!-- contenteditable body with inline images -->
+                    <div class="note-body-ce" id="noteBody" contenteditable="true" data-placeholder="Write something…" spellcheck="true"></div>
                 </div>
 
             </div>
@@ -858,8 +878,8 @@
         // ─── STATE ────────────────────────────────────────────────────────────────────
         let allNotes = [];   // [{id, data}]
         let activeId = null; // currently open note id
-        let imageUrls = [];   // urls attached to current editing session
         let isDirty = false;
+        let savedRange = null; // saved cursor range for image insertion
 
         // ─── UI REFS ──────────────────────────────────────────────────────────────────
         const notesList = document.getElementById('notesList');
@@ -869,7 +889,6 @@
         const noteTitle = document.getElementById('noteTitle');
         const noteBody = document.getElementById('noteBody');
         const noteMeta = document.getElementById('noteMeta');
-        const imagesStrip = document.getElementById('imagesStrip');
         const saveBtn = document.getElementById('saveBtn');
         const savedTick = document.getElementById('savedTick');
         const uploadProgress = document.getElementById('uploadProgress');
@@ -880,6 +899,22 @@
         // Track dirty state
         noteTitle.addEventListener('input', () => { isDirty = true; });
         noteBody.addEventListener('input', () => { isDirty = true; });
+
+        // Save cursor position before toolbar click (so image inserts at right spot)
+        noteBody.addEventListener('mouseup', saveCursorRange);
+        noteBody.addEventListener('keyup', saveCursorRange);
+        noteBody.addEventListener('focus', saveCursorRange);
+
+        function saveCursorRange() {
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0) {
+                const r = sel.getRangeAt(0);
+                // Only save if range is inside noteBody
+                if (noteBody.contains(r.commonAncestorContainer)) {
+                    savedRange = r.cloneRange();
+                }
+            }
+        }
 
         // ─── REAL-TIME SYNC ───────────────────────────────────────────────────────────
         const q = query(collection(db, NOTES_COL), orderBy('updatedAt', 'desc'));
@@ -949,19 +984,166 @@
         function populateEditor(n) {
             const d = n.data;
             noteTitle.value = d.title || '';
-            noteBody.value = d.body || '';
-            imageUrls = Array.isArray(d.images) ? [...d.images] : [];
-            renderImagesStrip();
+            // body is stored as a special markup: text nodes and ##IMG:url:width## markers
+            deserializeBody(d.body || '', Array.isArray(d.images) ? d.images : []);
             noteMeta.textContent =
                 `${fmtDate(d.createdAt)} · ${d.author || ''}${d.updatedAt && d.updatedAt.seconds !== d.createdAt?.seconds ? ' · edited' : ''}`;
             editorEmpty.style.display = 'none';
             editorInner.classList.add('visible');
         }
 
+        // Serialize noteBody contenteditable -> plain string
+        // Images become ##IMG:url:width## markers inline
+        function serializeBody() {
+            let result = '';
+            noteBody.childNodes.forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    result += node.textContent;
+                } else if (node.nodeName === 'BR') {
+                    result += '\n';
+                } else if (node.classList && node.classList.contains('inline-img-wrap')) {
+                    const img = node.querySelector('img');
+                    const w = img ? (img.style.width || img.getAttribute('data-w') || '') : '';
+                    const url = img ? img.src : '';
+                    result += `##IMG:${url}:${w}##`;
+                } else if (node.nodeName === 'DIV' || node.nodeName === 'P') {
+                    // contenteditable wraps new lines in divs
+                    result += '\n';
+                    node.childNodes.forEach(child => {
+                        if (child.nodeType === Node.TEXT_NODE) result += child.textContent;
+                        else if (child.nodeName === 'BR') result += '';
+                        else if (child.classList && child.classList.contains('inline-img-wrap')) {
+                            const img = child.querySelector('img');
+                            const w = img ? (img.style.width || img.getAttribute('data-w') || '') : '';
+                            const url = img ? img.src : '';
+                            result += `##IMG:${url}:${w}##`;
+                        }
+                    });
+                }
+            });
+            return result;
+        }
+
+        // Deserialize stored string back into contenteditable DOM
+        function deserializeBody(stored, legacyImages) {
+            noteBody.innerHTML = '';
+            if (!stored && legacyImages.length) {
+                // legacy: images array + plain text body
+                legacyImages.forEach(url => insertImgNodeDirect(url, 200));
+                return;
+            }
+            // Split on ##IMG:...:...## markers
+            const parts = stored.split(/(##IMG:[^#]+##)/);
+            parts.forEach(part => {
+                const m = part.match(/^##IMG:(.+):(\d*)##$/);
+                if (m) {
+                    const url = m[1];
+                    const w = parseInt(m[2]) || 200;
+                    insertImgNodeDirect(url, w);
+                } else {
+                    // text — split on newlines, insert as text + BR
+                    const lines = part.split('\n');
+                    lines.forEach((line, i) => {
+                        noteBody.appendChild(document.createTextNode(line));
+                        if (i < lines.length - 1) noteBody.appendChild(document.createElement('br'));
+                    });
+                }
+            });
+        }
+
+        // Insert image node directly into noteBody (used by deserialize)
+        function insertImgNodeDirect(url, w) {
+            const wrap = createImgWrap(url, w);
+            noteBody.appendChild(wrap);
+        }
+
+        // Insert image at saved cursor position (or end)
+        function insertImgAtCursor(url, w) {
+            noteBody.focus();
+            const wrap = createImgWrap(url, w);
+            if (savedRange) {
+                savedRange.deleteContents();
+                savedRange.insertNode(wrap);
+                // Move cursor after the image
+                const r = document.createRange();
+                r.setStartAfter(wrap);
+                r.collapse(true);
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(r);
+                savedRange = r.cloneRange();
+            } else {
+                noteBody.appendChild(wrap);
+            }
+            isDirty = true;
+        }
+
+        function createImgWrap(url, w) {
+            const wrap = document.createElement('span');
+            wrap.className = 'inline-img-wrap';
+            wrap.contentEditable = 'false';
+
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = 'note image';
+            img.loading = 'lazy';
+            img.setAttribute('data-w', w);
+            img.style.width = w + 'px';
+
+            const controls = document.createElement('div');
+            controls.className = 'img-controls';
+
+            const shrinkBtn = document.createElement('button');
+            shrinkBtn.textContent = '−';
+            shrinkBtn.title = 'Shrink';
+            shrinkBtn.addEventListener('click', e => {
+                e.preventDefault();
+                const cur = parseInt(img.style.width) || 200;
+                const nw = Math.max(60, cur - 60);
+                img.style.width = nw + 'px';
+                img.setAttribute('data-w', nw);
+                isDirty = true;
+            });
+
+            const sizeLabel = document.createElement('span');
+            sizeLabel.textContent = 'resize';
+
+            const growBtn = document.createElement('button');
+            growBtn.textContent = '+';
+            growBtn.title = 'Grow';
+            growBtn.addEventListener('click', e => {
+                e.preventDefault();
+                const cur = parseInt(img.style.width) || 200;
+                const nw = Math.min(900, cur + 60);
+                img.style.width = nw + 'px';
+                img.setAttribute('data-w', nw);
+                isDirty = true;
+            });
+
+            const rmBtn = document.createElement('button');
+            rmBtn.textContent = '×';
+            rmBtn.title = 'Remove';
+            rmBtn.addEventListener('click', e => {
+                e.preventDefault();
+                wrap.remove();
+                isDirty = true;
+            });
+
+            controls.appendChild(shrinkBtn);
+            controls.appendChild(sizeLabel);
+            controls.appendChild(growBtn);
+            controls.appendChild(rmBtn);
+
+            wrap.appendChild(img);
+            wrap.appendChild(controls);
+            return wrap;
+        }
+
         function closeEditor() {
             activeId = null;
             isDirty = false;
-            imageUrls = [];
+            savedRange = null;
+            noteBody.innerHTML = '';
             editorInner.classList.remove('visible');
             editorEmpty.style.display = '';
             renderList();
@@ -971,12 +1153,10 @@
         window.newNote = function () {
             activeId = null;
             isDirty = false;
-            imageUrls = [];
+            savedRange = null;
             noteTitle.value = '';
-            noteBody.value = '';
+            noteBody.innerHTML = '';
             noteMeta.textContent = '';
-            renderImagesStrip();
-            // deselect sidebar
             renderList();
             editorEmpty.style.display = 'none';
             editorInner.classList.add('visible');
@@ -987,14 +1167,14 @@
         // ─── SAVE NOTE ────────────────────────────────────────────────────────────────
         window.saveNote = async function () {
             const title = noteTitle.value.trim();
-            const body = noteBody.value.trim();
-            if (!title && !body && !imageUrls.length) return;
+            const body = serializeBody();
+            if (!title && !body) return;
             saveBtn.disabled = true;
             try {
                 const payload = {
                     title: title || 'Untitled',
                     body: body,
-                    images: imageUrls,
+                    images: [], // images now embedded inline in body
                     author: currentUser,
                     updatedAt: serverTimestamp(),
                 };
@@ -1042,6 +1222,8 @@
 
         // ─── IMAGE UPLOAD VIA GITHUB API ─────────────────────────────────────────────
         window.triggerImagePick = function () {
+            // Save cursor before the file dialog steals focus
+            saveCursorRange();
             document.getElementById('imgFileInput').click();
         };
 
@@ -1051,20 +1233,34 @@
             input.value = '';
 
             // check config
-            if (GITHUB_TOKEN === 'YOUR_GITHUB_PAT_HERE' || GITHUB_REPO === 'YOUR_GITHUB_REPO_HERE') {
-                alert('Please set GITHUB_TOKEN and GITHUB_REPO in notes.html before uploading images.');
+            if (GITHUB_TOKEN === '%%NOTES_GITHUB_PAT%%' || GITHUB_REPO === '%%NOTES_GITHUB_REPO%%') {
+                // still at placeholder — likely local dev, just skip
+            }
+            if (!GITHUB_TOKEN || !GITHUB_REPO) {
+                alert('GitHub config not set.');
                 return;
             }
 
-            // show spinner
             uploadProgress.classList.add('visible');
             imgUploadBtn.disabled = true;
 
-            // add uploading placeholder
-            const placeholder = document.createElement('div');
-            placeholder.className = 'img-thumb img-thumb-uploading';
+            // insert a temporary uploading placeholder at cursor
+            const placeholder = document.createElement('span');
+            placeholder.className = 'img-thumb-uploading';
             placeholder.innerHTML = '<div class="spinner"></div>';
-            imagesStrip.appendChild(placeholder);
+            placeholder.contentEditable = 'false';
+            if (savedRange) {
+                savedRange.deleteContents();
+                savedRange.insertNode(placeholder);
+                const r = document.createRange();
+                r.setStartAfter(placeholder);
+                r.collapse(true);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(r);
+                savedRange = r.cloneRange();
+            } else {
+                noteBody.appendChild(placeholder);
+            }
 
             try {
                 const base64 = await toBase64(file);
@@ -1094,15 +1290,12 @@
                 }
 
                 const data = await res.json();
-                // raw URL that always works for public repos; for private repos use download_url
                 const rawUrl = data.content.download_url;
 
-                imageUrls.push(rawUrl);
+                // replace placeholder with real inline image
+                const wrap = createImgWrap(rawUrl, 200);
+                placeholder.replaceWith(wrap);
                 isDirty = true;
-
-                // replace placeholder with real thumb
-                placeholder.remove();
-                addThumb(rawUrl, imageUrls.length - 1);
 
             } catch (e) {
                 console.error('Image upload failed', e);
@@ -1126,37 +1319,7 @@
             });
         }
 
-        // ─── IMAGES STRIP ─────────────────────────────────────────────────────────────
-        function renderImagesStrip() {
-            imagesStrip.innerHTML = '';
-            imageUrls.forEach((url, i) => addThumb(url, i));
-        }
-
-        function addThumb(url, idx) {
-            const wrap = document.createElement('div');
-            wrap.className = 'img-thumb';
-            wrap.title = 'Click to view full size';
-            const img = document.createElement('img');
-            img.src = url;
-            img.alt = 'note image';
-            img.loading = 'lazy';
-            img.addEventListener('click', () => window.open(url, '_blank'));
-
-            const rmBtn = document.createElement('button');
-            rmBtn.className = 'remove-img';
-            rmBtn.textContent = '×';
-            rmBtn.title = 'Remove image';
-            rmBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                imageUrls.splice(idx, 1);
-                isDirty = true;
-                renderImagesStrip();
-            });
-
-            wrap.appendChild(img);
-            wrap.appendChild(rmBtn);
-            imagesStrip.appendChild(wrap);
-        }
+        // (images are now inline in noteBody — no separate strip needed)
 
         // ─── HELPERS ──────────────────────────────────────────────────────────────────
         function fmtDate(ts) {
