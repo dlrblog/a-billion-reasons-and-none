@@ -245,16 +245,17 @@ input.note-title::placeholder{color:var(--ink-faint);font-style:italic}
 </div>
 
 <script type="module">
-// ── CONFIG (injected at deploy time) ─────────────────────────────────────────
-const GITHUB_TOKEN  = '%%NOTES_GITHUB_PAT%%';
-const GITHUB_REPO   = '%%NOTES_GITHUB_REPO%%';
-const GITHUB_BRANCH = 'main';
-
+// ── IMPORTS (must be first in ES module) ─────────────────────────────────────
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 import {
   getFirestore, collection, addDoc, updateDoc, deleteDoc,
   doc, query, orderBy, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+// ── CONFIG (injected at deploy time) ─────────────────────────────────────────
+const GITHUB_TOKEN  = '%%NOTES_GITHUB_PAT%%';
+const GITHUB_REPO   = '%%NOTES_GITHUB_REPO%%';
+const GITHUB_BRANCH = 'main';
 
 const firebaseConfig = {
   apiKey:            "%%FIREBASE_API_KEY%%",
@@ -270,9 +271,15 @@ const currentUser = sessionStorage.getItem('notesUser');
 if (!currentUser) window.location.replace('index.html');
 document.getElementById('userChip').textContent = currentUser;
 
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
+// ── FIREBASE INIT (graceful — placeholders won't crash UI) ───────────────────
+let db = null;
 const NOTES_COL = 'notes';
+try {
+  const app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+} catch(e) {
+  console.warn('Firebase init failed (likely local dev with placeholder config):', e.message);
+}
 
 // ── BLOCK EDITOR ─────────────────────────────────────────────────────────────
 // Blocks: [{id, type:"text"|"image", content?:"", url?:"", width?:200}]
@@ -555,26 +562,30 @@ const editor = new BlockEditor(blockEditorEl, () => { isDirty = true; });
 noteTitle.addEventListener('input', () => { isDirty = true; });
 
 // ── REAL-TIME SYNC ────────────────────────────────────────────────────────────
-const q = query(collection(db, NOTES_COL), orderBy('updatedAt', 'desc'));
-onSnapshot(q, snapshot => {
-  snapshot.docChanges().forEach(change => {
-    if (change.type === 'added' || change.type === 'modified') {
-      const idx = allNotes.findIndex(n => n.id === change.doc.id);
-      if (idx >= 0) allNotes[idx] = { id: change.doc.id, data: change.doc.data() };
-      else allNotes.unshift({ id: change.doc.id, data: change.doc.data() });
+if (db) {
+  const q = query(collection(db, NOTES_COL), orderBy('updatedAt', 'desc'));
+  onSnapshot(q, snapshot => {
+    snapshot.docChanges().forEach(change => {
+      if (change.type === 'added' || change.type === 'modified') {
+        const idx = allNotes.findIndex(n => n.id === change.doc.id);
+        if (idx >= 0) allNotes[idx] = { id: change.doc.id, data: change.doc.data() };
+        else allNotes.unshift({ id: change.doc.id, data: change.doc.data() });
+      }
+      if (change.type === 'removed') {
+        allNotes = allNotes.filter(n => n.id !== change.doc.id);
+        if (activeId === change.doc.id) closeEditor();
+      }
+    });
+    allNotes.sort((a, b) => (b.data.updatedAt?.seconds ?? 0) - (a.data.updatedAt?.seconds ?? 0));
+    renderList();
+    if (activeId && !isDirty) {
+      const active = allNotes.find(n => n.id === activeId);
+      if (active) populateEditor(active);
     }
-    if (change.type === 'removed') {
-      allNotes = allNotes.filter(n => n.id !== change.doc.id);
-      if (activeId === change.doc.id) closeEditor();
-    }
-  });
-  allNotes.sort((a, b) => (b.data.updatedAt?.seconds ?? 0) - (a.data.updatedAt?.seconds ?? 0));
-  renderList();
-  if (activeId && !isDirty) {
-    const active = allNotes.find(n => n.id === activeId);
-    if (active) populateEditor(active);
-  }
-}, err => console.error('Firestore:', err));
+  }, err => console.error('Firestore:', err));
+} else {
+  renderList(); // show empty state locally
+}
 
 // ── RENDER LIST ──────────────────────────────────────────────────────────────
 function renderList() {
