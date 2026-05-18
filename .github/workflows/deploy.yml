@@ -45,6 +45,7 @@ jobs:
             "text/chat.html"
             "goals/index.html"
             "notes/notes.html"
+            "lovedle/index.html"
           )
 
           for f in "${FIREBASE_FILES[@]}"; do
