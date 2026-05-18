@@ -626,10 +626,9 @@
       VALID_SETS[a.word.length].add(a.word);
     });
 
-    const MAX_GUESSES = 6;
     const WINS = ['god damn'];
 
-    let answer, entry, wordLen, row, col, curGuess, letterState, over, usedAnswers;
+    let answer, entry, wordLen, MAX_GUESSES, row, col, curGuess, letterState, over, usedAnswers;
 
     // ── Async boot: fetch ANSWERS from Firestore (with localStorage cache) ──────
     const CACHE_KEY   = 'lovedle_answers_v1';
@@ -693,6 +692,7 @@
 
       answer = entry.word;
       wordLen = answer.length;
+      MAX_GUESSES = wordLen;   // NxN rule: guesses = word length
       usedAnswers.add(answer);
       row = 0; col = 0; curGuess = []; letterState = {}; over = false;
 
