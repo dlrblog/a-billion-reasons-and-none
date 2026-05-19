@@ -622,22 +622,6 @@
         </div>
         <div class="result-note" id="result-note"></div>
 
-        <!-- Streak display -->
-        <div class="streak-bar" id="streak-bar">
-          <div class="streak-stat">
-            <div class="streak-num" id="stat-streak">0</div>
-            <div class="streak-lbl">Streak 🔥</div>
-          </div>
-          <div class="streak-stat">
-            <div class="streak-num" id="stat-best">0</div>
-            <div class="streak-lbl">Best</div>
-          </div>
-          <div class="streak-stat">
-            <div class="streak-num" id="stat-wins">0</div>
-            <div class="streak-lbl">Wins</div>
-          </div>
-        </div>
-
         <button class="play-btn" onclick="window.newGame()">Play Again 💙</button>
       </div>
     </div>
@@ -966,8 +950,8 @@
 
       const more = entry.whoMore;
       const note = guessedRight
-        ? '✅ You got it! ' + more + ' said "' + answer + '" ' + (more === 'Danvanth' ? d : r) + ' times vs ' + (more === 'Danvanth' ? r : d) + '.'
-        : '❌ It was ' + more + '! They said it ' + (more === 'Danvanth' ? d : r) + ' times, vs ' + (more === 'Danvanth' ? r : d) + '.';
+        ? ' You got it! ' + more + ' said "' + answer + '" ' + (more === 'Danvanth' ? d : r) + ' times vs ' + (more === 'Danvanth' ? r : d) + '.'
+        : ' It was ' + more + '! They said it ' + (more === 'Danvanth' ? d : r) + ' times, vs ' + (more === 'Danvanth' ? r : d) + '.';
       document.getElementById('result-note').textContent = note;
 
       // Render streak (already recorded in showModal)
