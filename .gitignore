@@ -1,0 +1,6 @@
+# Local upload scripts — NEVER commit these
+lovedle/upload_to_firestore.mjs
+lovedle/wordledata.json
+lovedle/node_modules/
+lovedle/package.json
+lovedle/package-lock.json

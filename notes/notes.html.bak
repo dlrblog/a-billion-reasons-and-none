@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notes · The Private Press</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Departure+Mono&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --cream: #e8f3fb;
+            --ink: #0d1f2d;
+            --ink-light: #3a5a72;
+            --ink-faint: #8aafcc;
+            --accent: #5b9ec9;
+            --accent-dark: #2a6a96;
+            --paper: #d4eaf7;
+            --paper-dark: #b8d8ef;
+            --sidebar-w: 280px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden
+        }
+
+        body {
+            background: var(--cream);
+            color: var(--ink);
+            font-family: 'Newsreader', Georgia, serif;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .85rem 1.6rem;
+            border-bottom: 1px solid var(--paper-dark);
+            background: var(--cream);
+            flex-shrink: 0;
+            z-index: 20;
+        }
+
+        .topbar-left {
+            display: flex;
+            flex-direction: column;
+            gap: .15rem
+        }
+
+        .topbar-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.1rem;
+            font-style: italic;
+            color: var(--ink);
+        }
+
+        .topbar-sub {
+            font-family: 'Departure Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem
+        }
+
+        .user-chip {
+            font-family: 'Departure Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--accent-dark);
+            border: 1px solid var(--paper-dark);
+            padding: .28rem .65rem;
+        }
+
+        .sign-out-btn {
+            font-family: 'Departure Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: .3rem .4rem;
+            transition: color .15s;
+        }
+
+        .sign-out-btn:hover {
+            color: var(--ink)
+        }
+
+        /* ── MAIN LAYOUT ── */
+        .main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            border-right: 1px solid var(--paper-dark);
+            background: var(--paper);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .9rem 1.2rem;
+            border-bottom: 1px solid var(--paper-dark);
+            flex-shrink: 0;
+        }
+
+        .sidebar-label {
+            font-family: 'Departure Mono', monospace;
+            font-size: 8.5px;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+        }
+
+        .new-btn {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            font-family: 'Departure Mono', monospace;
+            font-size: 8.5px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--ink);
+            border: 1px solid var(--paper-dark);
+            background: transparent;
+            padding: .35rem .7rem;
+            cursor: pointer;
+            transition: background .15s, border-color .15s;
+        }
+
+        .new-btn:hover {
+            background: rgba(255, 255, 255, .65);
+            border-color: var(--accent)
+        }
+
+        .new-btn-icon {
+            font-style: normal;
+            font-size: 14px;
+            margin-bottom: 1px
+        }
+
+        .notes-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: .5rem 0;
+        }
+
+        .notes-list::-webkit-scrollbar {
+            width: 3px
+        }
+
+        .notes-list::-webkit-scrollbar-track {
+            background: transparent
+        }
+
+        .notes-list::-webkit-scrollbar-thumb {
+            background: var(--paper-dark)
+        }
+
+        .note-item {
+            padding: .85rem 1.2rem;
+            cursor: pointer;
+            border-bottom: 1px solid transparent;
+            transition: background .12s;
+            position: relative;
+        }
+
+        .note-item:hover {
+            background: rgba(255, 255, 255, .55)
+        }
+
+        .note-item.active {
+            background: var(--cream);
+            border-bottom: 1px solid var(--paper-dark);
+        }
+
+        .note-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--accent);
+        }
+
+        .note-item-title {
+            font-size: .9rem;
+            font-weight: 400;
+            color: var(--ink);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.4;
+        }
+
+        .note-item-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: .3rem;
+        }
+
+        .note-item-date {
+            font-family: 'Departure Mono', monospace;
+            font-size: 7.5px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+        }
+
+        .note-item-author {
+            font-family: 'Departure Mono', monospace;
+            font-size: 7.5px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .note-item-preview {
+            font-size: .8rem;
+            color: var(--ink-light);
+            margin-top: .3rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            opacity: .75;
+            font-weight: 300;
+        }
+
+        .sidebar-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: .6rem;
+            padding: 3rem 1.5rem;
+            opacity: .4;
+        }
+
+        .sidebar-empty-icon {
+            font-size: 1.5rem
+        }
+
+        .sidebar-empty-text {
+            font-family: 'Departure Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            text-align: center;
+        }
+
+        /* ── EDITOR ── */
+        .editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--cream);
+        }
+
+        /* empty state (no note selected) */
+        .editor-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: .7rem;
+            opacity: .35;
+            pointer-events: none;
+        }
+
+        .editor-empty-icon {
+            font-size: 2.2rem
+        }
+
+        .editor-empty-text {
+            font-family: 'Departure Mono', monospace;
+            font-size: 9px;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+        }
+
+        /* editor content */
+        .editor-inner {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .editor-inner.visible {
+            display: flex
+        }
+
+        .editor-toolbar {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            padding: .75rem 1.8rem;
+            border-bottom: 1px solid var(--paper-dark);
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+
+        .img-upload-btn {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            font-family: 'Departure Mono', monospace;
+            font-size: 8.5px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--ink-light);
+            border: 1px solid var(--paper-dark);
+            background: transparent;
+            padding: .38rem .8rem;
+            cursor: pointer;
+            transition: background .15s, border-color .15s;
+        }
+
+        .img-upload-btn:hover:not(:disabled) {
+            background: var(--paper);
+            border-color: var(--accent)
+        }
+
+        .img-upload-btn:disabled {
+            opacity: .4;
+            cursor: not-allowed
+        }
+
+        .img-upload-btn .icon {
+            font-style: normal
+        }
+
+        .upload-progress {
+            display: none;
+            align-items: center;
+            gap: .5rem;
+            font-family: 'Departure Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .upload-progress.visible {
+            display: flex
+        }
+
+        .spinner {
+            width: 12px;
+            height: 12px;
+            border: 1.5px solid var(--paper-dark);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .toolbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: .6rem
+        }
+
+        .save-btn {
+            font-family: 'Departure Mono', monospace;
+            font-size: 8.5px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            background: var(--ink);
+            color: var(--cream);
+            border: none;
+            padding: .42rem 1.1rem;
+            cursor: pointer;
+            transition: background .15s, opacity .15s;
+        }
+
+        .save-btn:hover {
+            background: var(--accent-dark)
+        }
+
+        .save-btn:disabled {
+            opacity: .35;
+            cursor: default
+        }
+
+        .saved-tick {
+            font-family: 'Departure Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            opacity: 0;
+            transition: opacity .3s;
+        }
+
+        .saved-tick.show {
+            opacity: 1
+        }
+
+        .delete-btn {
+            font-family: 'Departure Mono', monospace;
+            font-size: 8.5px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            border: 1px solid var(--paper-dark);
+            background: transparent;
+            padding: .42rem .8rem;
+            cursor: pointer;
+            transition: color .15s, border-color .15s, background .15s;
+        }
+
+        .delete-btn:hover {
+            color: #c94040;
+            border-color: #c94040;
+            background: rgba(201, 64, 64, .06)
+        }
+
+        /* title */
+        .editor-title-wrap {
+            padding: 2rem 2.5rem .8rem;
+            border-bottom: 1px solid var(--paper-dark);
+            flex-shrink: 0;
+        }
+
+        input.note-title {
+            width: 100%;
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.9rem;
+            font-style: italic;
+            color: var(--ink);
+            border: none;
+            outline: none;
+            background: transparent;
+            line-height: 1.2;
+        }
+
+        input.note-title::placeholder {
+            color: var(--ink-faint);
+            font-style: italic
+        }
+
+        .note-meta-line {
+            margin-top: .55rem;
+            font-family: 'Departure Mono', monospace;
+            font-size: 7.5px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            display: flex;
+            gap: 1.4rem;
+        }
+
+        /* body */
+        .editor-body-wrap {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.6rem 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .editor-body-wrap::-webkit-scrollbar {
+            width: 0;
+            display: none
+        }
+
+        textarea.note-body {
+            width: 100%;
+            flex: 1;
+            min-height: 320px;
+            border: none;
+            outline: none;
+            resize: none;
+            background: transparent;
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 1.02rem;
+            line-height: 1.85;
+            color: var(--ink);
+            font-weight: 300;
+        }
+
+        textarea.note-body::placeholder {
+            color: var(--ink-faint);
+            font-style: italic;
+        }
+
+        /* inline note body (contenteditable) */
+        .note-body-ce {
+            flex: 1;
+            min-height: 320px;
+            outline: none;
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 1.02rem;
+            line-height: 1.85;
+            color: var(--ink);
+            font-weight: 300;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .note-body-ce:empty::before {
+            content: attr(data-placeholder);
+            color: var(--ink-faint);
+            font-style: italic;
+            pointer-events: none;
+        }
+
+        /* inline image wrapper */
+        .inline-img-wrap {
+            display: inline-block;
+            position: relative;
+            line-height: 0;
+            margin: .3rem .2rem;
+            vertical-align: middle;
+        }
+
+        .inline-img-wrap img {
+            display: block;
+            max-width: 100%;
+            border: 1px solid var(--paper-dark);
+            cursor: default;
+        }
+
+        .inline-img-wrap .img-controls {
+            display: none;
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(13,31,45,.75);
+            border-radius: 3px;
+            padding: 3px 6px;
+            gap: 5px;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .inline-img-wrap:hover .img-controls {
+            display: flex
+        }
+
+        .img-controls button {
+            font-family: 'Departure Mono', monospace;
+            font-size: 9px;
+            color: #e8f3fb;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 1px 4px;
+            letter-spacing: .08em;
+        }
+
+        .img-controls button:hover {
+            color: var(--accent)
+        }
+
+        .img-controls span {
+            font-family: 'Departure Mono', monospace;
+            font-size: 9px;
+            color: var(--ink-faint);
+        }
+
+        .img-thumb-uploading {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 60px;
+            border: 1px dashed var(--paper-dark);
+            background: var(--paper);
+            vertical-align: middle;
+            margin: .3rem .2rem;
+        }
+
+        /* confirm dialog */
+        .confirm-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(13, 31, 45, .35);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-overlay.open {
+            display: flex
+        }
+
+        .confirm-box {
+            background: var(--cream);
+            border: 1px solid var(--paper-dark);
+            padding: 2rem 2.2rem;
+            max-width: 340px;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .confirm-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.15rem;
+            font-style: italic;
+            color: var(--ink);
+        }
+
+        .confirm-text {
+            font-size: .9rem;
+            line-height: 1.75;
+            color: var(--ink-light);
+        }
+
+        .confirm-btns {
+            display: flex;
+            gap: .7rem;
+            justify-content: flex-end
+        }
+
+        .btn-cancel {
+            font-family: 'Departure Mono', monospace;
+            font-size: 8.5px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            border: 1px solid var(--paper-dark);
+            background: transparent;
+            padding: .42rem .9rem;
+            cursor: pointer;
+            transition: color .15s;
+        }
+
+        .btn-cancel:hover {
+            color: var(--ink)
+        }
+
+        .btn-confirm-del {
+            font-family: 'Departure Mono', monospace;
+            font-size: 8.5px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: #e8f3fb;
+            border: none;
+            background: #c94040;
+            padding: .42rem .9rem;
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+        .btn-confirm-del:hover {
+            background: #a33030
+        }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:640px) {
+            .sidebar {
+                width: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                z-index: 10;
+                transform: translateX(0);
+                transition: transform .25s;
+            }
+
+            .sidebar.hidden-mobile {
+                transform: translateX(-100%)
+            }
+
+            .editor {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0
+            }
+
+            .back-btn {
+                display: flex !important
+            }
+        }
+
+        .back-btn {
+            display: none;
+            font-family: 'Departure Mono', monospace;
+            font-size: 8.5px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: .38rem 0;
+            transition: color .15s;
+            align-items: center;
+            gap: .4rem;
+        }
+
+        .back-btn:hover {
+            color: var(--ink)
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <span class="topbar-title">Notes</span>
+            <span class="topbar-sub">Private · Just two</span>
+        </div>
+        <div class="topbar-right">
+            <span class="user-chip" id="userChip">—</span>
+            <button class="sign-out-btn" onclick="signOut()">sign out</button>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <div class="main" id="mainLayout">
+
+        <!-- SIDEBAR -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-label">All notes</span>
+                <button class="new-btn" onclick="newNote()">
+                    <em class="new-btn-icon">+</em> New
+                </button>
+            </div>
+            <div class="notes-list" id="notesList">
+                <div class="sidebar-empty" id="sidebarEmpty">
+                    <span class="sidebar-empty-icon">✦</span>
+                    <span class="sidebar-empty-text">No notes yet.<br>Start writing.</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- EDITOR -->
+        <div class="editor" id="editor">
+
+            <!-- empty state -->
+            <div class="editor-empty" id="editorEmpty">
+                <span class="editor-empty-icon">✦</span>
+                <span class="editor-empty-text">Select or create a note</span>
+            </div>
+
+            <!-- actual editor -->
+            <div class="editor-inner" id="editorInner">
+
+                <div class="editor-toolbar">
+                    <button class="back-btn" id="backBtn" onclick="showSidebarMobile()">← Back</button>
+                    <button class="img-upload-btn" id="imgUploadBtn" onclick="triggerImagePick()" title="Attach image">
+                        <em class="icon">📎</em> Add Image
+                    </button>
+                    <input type="file" id="imgFileInput" accept="image/*" style="display:none"
+                        onchange="handleImagePick(this)">
+                    <div class="upload-progress" id="uploadProgress">
+                        <div class="spinner"></div>
+                        <span>Uploading…</span>
+                    </div>
+                    <div class="toolbar-right">
+                        <span class="saved-tick" id="savedTick">✓ Saved</span>
+                        <button class="delete-btn" id="deleteBtn" onclick="confirmDelete()">Delete</button>
+                        <button class="save-btn" id="saveBtn" onclick="saveNote()">Save</button>
+                    </div>
+                </div>
+
+                <div class="editor-title-wrap">
+                    <input class="note-title" id="noteTitle" type="text" placeholder="Title…" maxlength="120" />
+                    <div class="note-meta-line" id="noteMeta"></div>
+                </div>
+
+                <div class="editor-body-wrap">
+                    <!-- contenteditable body with inline images -->
+                    <div class="note-body-ce" id="noteBody" contenteditable="true" data-placeholder="Write something…" spellcheck="true"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- DELETE CONFIRM -->
+    <div class="confirm-overlay" id="confirmOverlay">
+        <div class="confirm-box">
+            <div class="confirm-title">Delete this note?</div>
+            <div class="confirm-text">This can't be undone. The note will be removed for both of you.</div>
+            <div class="confirm-btns">
+                <button class="btn-cancel" onclick="closeConfirm()">Cancel</button>
+                <button class="btn-confirm-del" onclick="deleteNote()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- GitHub & Firebase config injected by GitHub Actions at deploy time -->
+    <script type="module">
+        // ─── GITHUB IMAGE STORAGE CONFIG (injected at deploy time) ───────────────────
+        const GITHUB_TOKEN  = '%%NOTES_GITHUB_PAT%%';
+        const GITHUB_REPO   = '%%NOTES_GITHUB_REPO%%';
+        const GITHUB_BRANCH = 'main';
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        import { initializeApp }
+            from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import {
+            getFirestore, collection, addDoc, updateDoc, deleteDoc,
+            doc, query, orderBy, onSnapshot, serverTimestamp
+        }
+            from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+        // ─── FIREBASE CONFIG (injected at deploy time) ───────────────────────────────
+        const firebaseConfig = {
+            apiKey:            "%%FIREBASE_API_KEY%%",
+            authDomain:        "%%FIREBASE_AUTH_DOMAIN%%",
+            projectId:         "%%FIREBASE_PROJECT_ID%%",
+            storageBucket:     "%%FIREBASE_STORAGE_BUCKET%%",
+            messagingSenderId: "%%FIREBASE_MESSAGING_SENDER_ID%%",
+            appId:             "%%FIREBASE_APP_ID%%"
+        };
+
+        // Auth gate
+        const currentUser = sessionStorage.getItem('notesUser');
+        if (!currentUser) { window.location.replace('index.html'); }
+        document.getElementById('userChip').textContent = currentUser;
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const NOTES_COL = 'notes';
+
+        // ─── STATE ────────────────────────────────────────────────────────────────────
+        let allNotes = [];   // [{id, data}]
+        let activeId = null; // currently open note id
+        let isDirty = false;
+        let savedRange = null; // saved cursor range for image insertion
+
+        // ─── UI REFS ──────────────────────────────────────────────────────────────────
+        const notesList = document.getElementById('notesList');
+        const sidebarEmpty = document.getElementById('sidebarEmpty');
+        const editorEmpty = document.getElementById('editorEmpty');
+        const editorInner = document.getElementById('editorInner');
+        const noteTitle = document.getElementById('noteTitle');
+        const noteBody = document.getElementById('noteBody');
+        const noteMeta = document.getElementById('noteMeta');
+        const saveBtn = document.getElementById('saveBtn');
+        const savedTick = document.getElementById('savedTick');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const imgUploadBtn = document.getElementById('imgUploadBtn');
+        const confirmOverlay = document.getElementById('confirmOverlay');
+        const sidebar = document.getElementById('sidebar');
+
+        // Track dirty state
+        noteTitle.addEventListener('input', () => { isDirty = true; });
+        noteBody.addEventListener('input', () => { isDirty = true; });
+
+        // Save cursor position before toolbar click (so image inserts at right spot)
+        noteBody.addEventListener('mouseup', saveCursorRange);
+        noteBody.addEventListener('keyup', saveCursorRange);
+        noteBody.addEventListener('focus', saveCursorRange);
+
+        function saveCursorRange() {
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0) {
+                const r = sel.getRangeAt(0);
+                // Only save if range is inside noteBody
+                if (noteBody.contains(r.commonAncestorContainer)) {
+                    savedRange = r.cloneRange();
+                }
+            }
+        }
+
+        // ─── REAL-TIME SYNC ───────────────────────────────────────────────────────────
+        const q = query(collection(db, NOTES_COL), orderBy('updatedAt', 'desc'));
+        onSnapshot(q, snapshot => {
+            snapshot.docChanges().forEach(change => {
+                if (change.type === 'added' || change.type === 'modified') {
+                    const idx = allNotes.findIndex(n => n.id === change.doc.id);
+                    if (idx >= 0) allNotes[idx] = { id: change.doc.id, data: change.doc.data() };
+                    else allNotes.unshift({ id: change.doc.id, data: change.doc.data() });
+                }
+                if (change.type === 'removed') {
+                    allNotes = allNotes.filter(n => n.id !== change.doc.id);
+                    if (activeId === change.doc.id) closeEditor();
+                }
+            });
+            // re-sort by updatedAt desc
+            allNotes.sort((a, b) => {
+                const ta = a.data.updatedAt?.seconds ?? 0;
+                const tb = b.data.updatedAt?.seconds ?? 0;
+                return tb - ta;
+            });
+            renderList();
+            // if active note was modified by the other user and we're not dirty, refresh view
+            if (activeId && !isDirty) {
+                const active = allNotes.find(n => n.id === activeId);
+                if (active) populateEditor(active);
+            }
+        }, err => console.error('Firestore error:', err));
+
+        // ─── RENDER LIST ─────────────────────────────────────────────────────────────
+        function renderList() {
+            // clear existing items (keep sidebarEmpty)
+            Array.from(notesList.querySelectorAll('.note-item')).forEach(el => el.remove());
+            sidebarEmpty.style.display = allNotes.length ? 'none' : '';
+            allNotes.forEach(n => {
+                const item = document.createElement('div');
+                item.className = 'note-item' + (n.id === activeId ? ' active' : '');
+                item.dataset.id = n.id;
+                const titleText = n.data.title?.trim() || 'Untitled';
+                const preview = (n.data.body || '').replace(/!\[.*?\]\(.*?\)/g, '[image]') // strip md images
+                    .replace(/\n/g, ' ').slice(0, 80);
+                const date = fmtDate(n.data.updatedAt);
+                item.innerHTML = `
+      <div class="note-item-title">${esc(titleText)}</div>
+      <div class="note-item-meta">
+        <span class="note-item-date">${date}</span>
+        <span class="note-item-author">${esc(n.data.author || '')}</span>
+      </div>
+      ${preview ? `<div class="note-item-preview">${esc(preview)}</div>` : ''}
+    `;
+                item.addEventListener('click', () => openNote(n.id));
+                notesList.appendChild(item);
+            });
+        }
+
+        // ─── OPEN NOTE ────────────────────────────────────────────────────────────────
+        function openNote(id) {
+            activeId = id;
+            isDirty = false;
+            const n = allNotes.find(n => n.id === id);
+            if (!n) return;
+            populateEditor(n);
+            renderList(); // highlight active
+            hideSidebarMobile();
+        }
+
+        function populateEditor(n) {
+            const d = n.data;
+            noteTitle.value = d.title || '';
+            // body is stored as a special markup: text nodes and ##IMG:url:width## markers
+            deserializeBody(d.body || '', Array.isArray(d.images) ? d.images : []);
+            noteMeta.textContent =
+                `${fmtDate(d.createdAt)} · ${d.author || ''}${d.updatedAt && d.updatedAt.seconds !== d.createdAt?.seconds ? ' · edited' : ''}`;
+            editorEmpty.style.display = 'none';
+            editorInner.classList.add('visible');
+        }
+
+        // Serialize noteBody contenteditable -> plain string
+        // Images become ##IMG:url:width## markers inline
+        function serializeBody() {
+            let result = '';
+            noteBody.childNodes.forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    result += node.textContent;
+                } else if (node.nodeName === 'BR') {
+                    result += '\n';
+                } else if (node.classList && node.classList.contains('inline-img-wrap')) {
+                    const img = node.querySelector('img');
+                    const w = img ? (img.style.width || img.getAttribute('data-w') || '') : '';
+                    const url = img ? img.src : '';
+                    result += `##IMG:${url}:${w}##`;
+                } else if (node.nodeName === 'DIV' || node.nodeName === 'P') {
+                    // contenteditable wraps new lines in divs
+                    result += '\n';
+                    node.childNodes.forEach(child => {
+                        if (child.nodeType === Node.TEXT_NODE) result += child.textContent;
+                        else if (child.nodeName === 'BR') result += '';
+                        else if (child.classList && child.classList.contains('inline-img-wrap')) {
+                            const img = child.querySelector('img');
+                            const w = img ? (img.style.width || img.getAttribute('data-w') || '') : '';
+                            const url = img ? img.src : '';
+                            result += `##IMG:${url}:${w}##`;
+                        }
+                    });
+                }
+            });
+            return result;
+        }
+
+        // Deserialize stored string back into contenteditable DOM
+        function deserializeBody(stored, legacyImages) {
+            noteBody.innerHTML = '';
+            if (!stored && legacyImages.length) {
+                // legacy: images array + plain text body
+                legacyImages.forEach(url => insertImgNodeDirect(url, 200));
+                return;
+            }
+            // Split on ##IMG:...:...## markers
+            const parts = stored.split(/(##IMG:[^#]+##)/);
+            parts.forEach(part => {
+                const m = part.match(/^##IMG:(.+):(\d*)##$/);
+                if (m) {
+                    const url = m[1];
+                    const w = parseInt(m[2]) || 200;
+                    insertImgNodeDirect(url, w);
+                } else {
+                    // text — split on newlines, insert as text + BR
+                    const lines = part.split('\n');
+                    lines.forEach((line, i) => {
+                        noteBody.appendChild(document.createTextNode(line));
+                        if (i < lines.length - 1) noteBody.appendChild(document.createElement('br'));
+                    });
+                }
+            });
+        }
+
+        // Insert image node directly into noteBody (used by deserialize)
+        function insertImgNodeDirect(url, w) {
+            const wrap = createImgWrap(url, w);
+            noteBody.appendChild(wrap);
+        }
+
+        // Insert image at saved cursor position (or end)
+        function insertImgAtCursor(url, w) {
+            noteBody.focus();
+            const wrap = createImgWrap(url, w);
+            if (savedRange) {
+                savedRange.deleteContents();
+                savedRange.insertNode(wrap);
+                // Move cursor after the image
+                const r = document.createRange();
+                r.setStartAfter(wrap);
+                r.collapse(true);
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(r);
+                savedRange = r.cloneRange();
+            } else {
+                noteBody.appendChild(wrap);
+            }
+            isDirty = true;
+        }
+
+        function createImgWrap(url, w) {
+            const wrap = document.createElement('span');
+            wrap.className = 'inline-img-wrap';
+            wrap.contentEditable = 'false';
+
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = 'note image';
+            img.loading = 'lazy';
+            img.setAttribute('data-w', w);
+            img.style.width = w + 'px';
+
+            const controls = document.createElement('div');
+            controls.className = 'img-controls';
+
+            const shrinkBtn = document.createElement('button');
+            shrinkBtn.textContent = '−';
+            shrinkBtn.title = 'Shrink';
+            shrinkBtn.addEventListener('click', e => {
+                e.preventDefault();
+                const cur = parseInt(img.style.width) || 200;
+                const nw = Math.max(60, cur - 60);
+                img.style.width = nw + 'px';
+                img.setAttribute('data-w', nw);
+                isDirty = true;
+            });
+
+            const sizeLabel = document.createElement('span');
+            sizeLabel.textContent = 'resize';
+
+            const growBtn = document.createElement('button');
+            growBtn.textContent = '+';
+            growBtn.title = 'Grow';
+            growBtn.addEventListener('click', e => {
+                e.preventDefault();
+                const cur = parseInt(img.style.width) || 200;
+                const nw = Math.min(900, cur + 60);
+                img.style.width = nw + 'px';
+                img.setAttribute('data-w', nw);
+                isDirty = true;
+            });
+
+            const rmBtn = document.createElement('button');
+            rmBtn.textContent = '×';
+            rmBtn.title = 'Remove';
+            rmBtn.addEventListener('click', e => {
+                e.preventDefault();
+                wrap.remove();
+                isDirty = true;
+            });
+
+            controls.appendChild(shrinkBtn);
+            controls.appendChild(sizeLabel);
+            controls.appendChild(growBtn);
+            controls.appendChild(rmBtn);
+
+            wrap.appendChild(img);
+            wrap.appendChild(controls);
+            return wrap;
+        }
+
+        function closeEditor() {
+            activeId = null;
+            isDirty = false;
+            savedRange = null;
+            noteBody.innerHTML = '';
+            editorInner.classList.remove('visible');
+            editorEmpty.style.display = '';
+            renderList();
+        }
+
+        // ─── NEW NOTE ─────────────────────────────────────────────────────────────────
+        window.newNote = function () {
+            activeId = null;
+            isDirty = false;
+            savedRange = null;
+            noteTitle.value = '';
+            noteBody.innerHTML = '';
+            noteMeta.textContent = '';
+            renderList();
+            editorEmpty.style.display = 'none';
+            editorInner.classList.add('visible');
+            noteTitle.focus();
+            hideSidebarMobile();
+        };
+
+        // ─── SAVE NOTE ────────────────────────────────────────────────────────────────
+        window.saveNote = async function () {
+            const title = noteTitle.value.trim();
+            const body = serializeBody();
+            if (!title && !body) return;
+            saveBtn.disabled = true;
+            try {
+                const payload = {
+                    title: title || 'Untitled',
+                    body: body,
+                    images: [], // images now embedded inline in body
+                    author: currentUser,
+                    updatedAt: serverTimestamp(),
+                };
+                if (activeId) {
+                    await updateDoc(doc(db, NOTES_COL, activeId), payload);
+                } else {
+                    payload.createdAt = serverTimestamp();
+                    const ref = await addDoc(collection(db, NOTES_COL), payload);
+                    activeId = ref.id;
+                }
+                isDirty = false;
+                flashSaved();
+            } catch (e) {
+                console.error('Save failed', e);
+                alert('Save failed: ' + e.message);
+            } finally {
+                saveBtn.disabled = false;
+            }
+        };
+
+        function flashSaved() {
+            savedTick.classList.add('show');
+            setTimeout(() => savedTick.classList.remove('show'), 2000);
+        }
+
+        // ─── DELETE ───────────────────────────────────────────────────────────────────
+        window.confirmDelete = function () {
+            if (!activeId) return;
+            confirmOverlay.classList.add('open');
+        };
+        window.closeConfirm = function () {
+            confirmOverlay.classList.remove('open');
+        };
+        window.deleteNote = async function () {
+            if (!activeId) return;
+            confirmOverlay.classList.remove('open');
+            try {
+                await deleteDoc(doc(db, NOTES_COL, activeId));
+                closeEditor();
+            } catch (e) {
+                console.error('Delete failed', e);
+                alert('Delete failed: ' + e.message);
+            }
+        };
+
+        // ─── IMAGE UPLOAD VIA GITHUB API ─────────────────────────────────────────────
+        window.triggerImagePick = function () {
+            // Save cursor before the file dialog steals focus
+            saveCursorRange();
+            document.getElementById('imgFileInput').click();
+        };
+
+        window.handleImagePick = async function (input) {
+            const file = input.files[0];
+            if (!file) return;
+            input.value = '';
+
+            // check config
+            if (GITHUB_TOKEN === '%%NOTES_GITHUB_PAT%%' || GITHUB_REPO === '%%NOTES_GITHUB_REPO%%') {
+                // still at placeholder — likely local dev, just skip
+            }
+            if (!GITHUB_TOKEN || !GITHUB_REPO) {
+                alert('GitHub config not set.');
+                return;
+            }
+
+            uploadProgress.classList.add('visible');
+            imgUploadBtn.disabled = true;
+
+            // insert a temporary uploading placeholder at cursor
+            const placeholder = document.createElement('span');
+            placeholder.className = 'img-thumb-uploading';
+            placeholder.innerHTML = '<div class="spinner"></div>';
+            placeholder.contentEditable = 'false';
+            if (savedRange) {
+                savedRange.deleteContents();
+                savedRange.insertNode(placeholder);
+                const r = document.createRange();
+                r.setStartAfter(placeholder);
+                r.collapse(true);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(r);
+                savedRange = r.cloneRange();
+            } else {
+                noteBody.appendChild(placeholder);
+            }
+
+            try {
+                const base64 = await toBase64(file);
+                const ext = file.name.split('.').pop().split('?')[0];
+                const fname = `notes-images/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+
+                const res = await fetch(
+                    `https://api.github.com/repos/${GITHUB_REPO}/contents/${fname}`,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            Authorization: `Bearer ${GITHUB_TOKEN}`,
+                            'Content-Type': 'application/json',
+                            'X-GitHub-Api-Version': '2022-11-28'
+                        },
+                        body: JSON.stringify({
+                            message: `Add note image ${Date.now()}`,
+                            content: base64,
+                            branch: GITHUB_BRANCH
+                        })
+                    }
+                );
+
+                if (!res.ok) {
+                    const errBody = await res.json().catch(() => ({}));
+                    throw new Error(errBody.message || `GitHub API ${res.status}`);
+                }
+
+                const data = await res.json();
+                const rawUrl = data.content.download_url;
+
+                // replace placeholder with real inline image
+                const wrap = createImgWrap(rawUrl, 200);
+                placeholder.replaceWith(wrap);
+                isDirty = true;
+
+            } catch (e) {
+                console.error('Image upload failed', e);
+                placeholder.remove();
+                alert('Image upload failed: ' + e.message);
+            } finally {
+                uploadProgress.classList.remove('visible');
+                imgUploadBtn.disabled = false;
+            }
+        };
+
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    // strip data:image/*;base64, prefix
+                    resolve(reader.result.split(',')[1]);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // (images are now inline in noteBody — no separate strip needed)
+
+        // ─── HELPERS ──────────────────────────────────────────────────────────────────
+        function fmtDate(ts) {
+            if (!ts) return '';
+            const d = ts.toDate ? ts.toDate() : new Date(ts);
+            const now = new Date();
+            if (d.toDateString() === now.toDateString()) {
+                return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+        }
+
+        function esc(s) {
+            return String(s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // ─── SIGN OUT ─────────────────────────────────────────────────────────────────
+        window.signOut = function () {
+            sessionStorage.removeItem('notesUser');
+            window.location.replace('index.html');
+        };
+
+        // ─── MOBILE SIDEBAR TOGGLE ───────────────────────────────────────────────────
+        function hideSidebarMobile() {
+            if (window.innerWidth <= 640) sidebar.classList.add('hidden-mobile');
+        }
+        function showSidebarMobile() {
+            sidebar.classList.remove('hidden-mobile');
+        }
+        window.showSidebarMobile = showSidebarMobile;
+
+        // Keyboard shortcut: Cmd/Ctrl+S to save
+        document.addEventListener('keydown', e => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+                e.preventDefault();
+                if (editorInner.classList.contains('visible')) saveNote();
+            }
+        });
+
+        // Confirm before closing with unsaved changes
+        window.addEventListener('beforeunload', e => {
+            if (isDirty) { e.preventDefault(); e.returnValue = ''; }
+        });
+    </script>
+</body>
+
+</html>
