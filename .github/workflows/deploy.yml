@@ -38,6 +38,8 @@ jobs:
           FIREBASE_APP_ID:             ${{ secrets.FIREBASE_APP_ID }}
           NOTES_GITHUB_PAT:            ${{ secrets.NOTES_GITHUB_PAT }}
           NOTES_GITHUB_REPO:           ${{ secrets.NOTES_GITHUB_REPO }}
+          GOOGLE_CLIENT_ID:            ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_API_KEY:              ${{ secrets.GOOGLE_API_KEY }}
         run: |
           # Files that contain Firebase config placeholders
           FIREBASE_FILES=(
@@ -64,6 +66,12 @@ jobs:
             -e "s|%%NOTES_GITHUB_PAT%%|${NOTES_GITHUB_PAT}|g" \
             -e "s|%%NOTES_GITHUB_REPO%%|${NOTES_GITHUB_REPO}|g" \
             "notes/notes.html"
+
+          # music/index.html needs Google OAuth client ID & API key
+          sed -i \
+            -e "s|%%GOOGLE_CLIENT_ID%%|${GOOGLE_CLIENT_ID}|g" \
+            -e "s|%%GOOGLE_API_KEY%%|${GOOGLE_API_KEY}|g" \
+            "music/index.html"
 
       # ── Deploy to GitHub Pages ───────────────────────────────────────────────
       - name: Setup Pages
