@@ -48,7 +48,6 @@
             opacity: 0.4;
         }
 
-        /* Header */
         header.app-header {
             padding: 1.4rem 2rem 1.1rem;
             display: flex;
@@ -79,7 +78,6 @@
             align-items: center;
         }
 
-        /* Buttons shared */
         .hdr-btn {
             background: none;
             border: 1px solid var(--paper-dark);
@@ -114,7 +112,23 @@
             border-color: var(--accent-dark);
         }
 
-        /* Layout */
+        /* sign-out link */
+        #signout-btn {
+            font-size: 0.6rem;
+            color: var(--ink-faint);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: 'DM Mono', monospace;
+            letter-spacing: 0.04em;
+            padding: 0.2rem 0.4rem;
+            transition: color 0.15s;
+        }
+
+        #signout-btn:hover {
+            color: var(--accent);
+        }
+
         main {
             display: grid;
             grid-template-columns: 300px 1fr;
@@ -123,7 +137,6 @@
             height: calc(100vh - 57px);
         }
 
-        /* Sidebar */
         aside {
             border-right: 1px solid var(--paper-dark);
             display: flex;
@@ -188,34 +201,6 @@
             background: rgba(91, 158, 201, 0.08);
         }
 
-        /* Queue tabs */
-        .queue-tabs {
-            display: flex;
-            border-bottom: 1px solid var(--paper-dark);
-            flex-shrink: 0;
-        }
-
-        .q-tab {
-            flex: 1;
-            padding: 0.5rem 0;
-            font-size: 0.62rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--ink-faint);
-            background: none;
-            border: none;
-            border-bottom: 2px solid transparent;
-            cursor: pointer;
-            font-family: 'DM Mono', monospace;
-            transition: color 0.15s, border-color 0.15s;
-        }
-
-        .q-tab.active {
-            color: var(--ink);
-            border-bottom-color: var(--accent);
-        }
-
-        /* Track list */
         #queue {
             list-style: none;
             overflow-y: auto;
@@ -295,7 +280,6 @@
             gap: 0.5rem;
         }
 
-        /* Player panel */
         section.player-panel {
             display: flex;
             flex-direction: column;
@@ -373,7 +357,6 @@
             white-space: nowrap;
         }
 
-        /* Seek */
         .seek-wrap {
             width: 100%;
             max-width: 420px;
@@ -416,7 +399,6 @@
             font-variant-numeric: tabular-nums;
         }
 
-        /* Controls */
         .controls {
             display: flex;
             align-items: center;
@@ -471,7 +453,6 @@
             transform: scale(1.06);
         }
 
-        /* Volume */
         .vol-wrap {
             display: flex;
             align-items: center;
@@ -565,7 +546,6 @@
             display: none !important;
         }
 
-        /* Loading bar */
         #loading-bar {
             position: fixed;
             top: 0;
@@ -578,7 +558,6 @@
             pointer-events: none;
         }
 
-        /* Toast */
         #toast {
             position: fixed;
             bottom: 1.5rem;
@@ -619,7 +598,6 @@
     <div id="loading-bar"></div>
     <div id="toast"></div>
 
-    <!-- Auth overlay -->
     <div id="auth-overlay">
         <h2>drive.fm</h2>
         <p>Stream your music directly from Google Drive. Sign in to get started.</p>
@@ -636,6 +614,7 @@
         <div class="header-btns">
             <button class="hdr-btn" id="pick-files-btn" disabled>+ files</button>
             <button class="hdr-btn" id="pick-folder-btn" disabled>+ folder</button>
+            <button id="signout-btn" class="hidden">sign out</button>
         </div>
     </header>
 
@@ -645,12 +624,11 @@
                 <h2>Queue</h2>
                 <span class="count" id="track-count"></span>
                 <div class="sidebar-actions">
-                    <button class="icon-btn" id="shuffle-btn" disabled title="Shuffle">shuffle</button>
-                    <button class="icon-btn" id="repeat-btn" disabled title="Repeat">repeat</button>
-                    <button class="icon-btn" id="clear-btn" disabled title="Clear queue">clear</button>
+                    <button class="icon-btn" id="shuffle-btn" disabled>shuffle</button>
+                    <button class="icon-btn" id="repeat-btn" disabled>repeat</button>
+                    <button class="icon-btn" id="clear-btn" disabled>clear</button>
                 </div>
             </div>
-
             <ul id="queue"></ul>
         </aside>
 
@@ -678,7 +656,6 @@
             </div>
 
             <div class="controls">
-                <!-- Shuffle -->
                 <button class="ctrl-btn" id="ctrl-shuffle" title="Shuffle" disabled>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="1.8">
@@ -686,14 +663,12 @@
                     </svg>
                 </button>
 
-                <!-- Prev -->
                 <button class="ctrl-btn" id="prev-btn" title="Previous" disabled>
                     <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" />
                     </svg>
                 </button>
 
-                <!-- Play/Pause -->
                 <button class="ctrl-btn" id="play-btn" title="Play / Pause" disabled>
                     <svg id="play-icon" width="21" height="21" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M8 5v14l11-7z" />
@@ -703,14 +678,12 @@
                     </svg>
                 </button>
 
-                <!-- Next -->
                 <button class="ctrl-btn" id="next-btn" title="Next" disabled>
                     <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M6 18l8.5-6L6 6v12zm2-8.14 5.51 3.64L8 15.14V9.86zM16 6h2v12h-2z" />
                     </svg>
                 </button>
 
-                <!-- Repeat -->
                 <button class="ctrl-btn" id="ctrl-repeat" title="Repeat" disabled>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="1.8">
@@ -721,7 +694,6 @@
                     </svg>
                 </button>
 
-                <!-- Volume -->
                 <div class="vol-wrap">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
@@ -746,17 +718,17 @@
 
         const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
         const DISCOVERY = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
-        const AUDIO_MIME = 'audio/mpeg,audio/ogg,audio/wav,audio/flac,audio/aac,audio/x-m4a,audio/mp4,audio/webm';
+        const LS_TRACKS = 'drivefm_tracks';
+        const LS_STATE = 'drivefm_state';
 
         // State
         let tokenClient, accessToken = null;
         let tracks = [];
         let current = -1;
         let shuffled = false;
-        let repeatMode = 0; // 0=off 1=all 2=one
+        let repeatMode = 0;
         let dragging = false;
         let shuffleOrder = [];
-        let currentObjectURL = null;
 
         // DOM
         const audio = document.getElementById('audio');
@@ -780,6 +752,7 @@
         const ctrlRepeat = document.getElementById('ctrl-repeat');
         const overlay = document.getElementById('auth-overlay');
         const signinBtn = document.getElementById('signin-btn');
+        const signoutBtn = document.getElementById('signout-btn');
         const pickFilesBtn = document.getElementById('pick-files-btn');
         const pickFolderBtn = document.getElementById('pick-folder-btn');
         const trackCount = document.getElementById('track-count');
@@ -796,32 +769,139 @@
         }
 
         // ── Loading bar ───────────────────────────
-        function loadingStart() {
-            loadingBar.style.width = '40%';
-            loadingBar.style.opacity = '1';
-        }
+        function loadingStart() { loadingBar.style.width = '40%'; loadingBar.style.opacity = '1'; }
         function loadingEnd() {
             loadingBar.style.width = '100%';
             setTimeout(() => { loadingBar.style.opacity = '0'; loadingBar.style.width = '0%'; }, 400);
         }
 
+        // ── Persistence helpers ───────────────────
+        function saveTracks() {
+            try { localStorage.setItem(LS_TRACKS, JSON.stringify(tracks)); } catch (e) { }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(LS_STATE, JSON.stringify({
+                    current, shuffled, repeatMode,
+                    volume: audio.volume,
+                    shuffleOrder
+                }));
+            } catch (e) { }
+        }
+
+        function loadPersistedTracks() {
+            try {
+                const raw = localStorage.getItem(LS_TRACKS);
+                if (raw) tracks = JSON.parse(raw);
+            } catch (e) { tracks = []; }
+        }
+
+        function loadPersistedState() {
+            try {
+                const raw = localStorage.getItem(LS_STATE);
+                if (!raw) return;
+                const s = JSON.parse(raw);
+                shuffled = s.shuffled ?? false;
+                repeatMode = s.repeatMode ?? 0;
+                audio.volume = s.volume ?? 1;
+                volEl.value = audio.volume;
+                shuffleOrder = s.shuffleOrder ?? [];
+                // restore current track index if valid
+                if (typeof s.current === 'number' && s.current >= 0 && s.current < tracks.length) {
+                    current = s.current;
+                }
+            } catch (e) { }
+        }
+
         // ── Google API init ───────────────────────
         gapi.load('client:picker', async () => {
             await gapi.client.init({ apiKey: API_KEY, discoveryDocs: [DISCOVERY] });
+
             tokenClient = google.accounts.oauth2.initTokenClient({
                 client_id: CLIENT_ID,
                 scope: SCOPES,
+                // prompt='' means: reuse existing consent, don't show account picker again
+                prompt: '',
                 callback: (resp) => {
                     if (resp.error) { toast('sign-in failed'); return; }
                     accessToken = resp.access_token;
-                    overlay.classList.add('hidden');
-                    enableControls(true);
-                    toast('signed in');
+                    onSignedIn();
                 }
             });
+
+            // Try silent token refresh on page load (no prompt)
+            tryAutoSignIn();
         });
 
-        signinBtn.addEventListener('click', () => tokenClient.requestAccessToken());
+        function tryAutoSignIn() {
+            // requestAccessToken with prompt='' will silently return a token
+            // if the user already granted consent before — no popup shown.
+            tokenClient.requestAccessToken({ prompt: '' });
+        }
+
+        function onSignedIn() {
+            overlay.classList.add('hidden');
+            signoutBtn.classList.remove('hidden');
+            enableControls(true);
+
+            // Restore persisted queue & state
+            loadPersistedTracks();
+            loadPersistedState();
+            rebuildShuffleOrder();
+            renderQueue();
+
+            if (tracks.length > 0) {
+                // Restore the last-playing track name in the UI, don't auto-play
+                if (current >= 0 && current < tracks.length) {
+                    const t = tracks[current];
+                    titleEl.textContent = t.name;
+                    subEl.textContent = t.raw;
+                    playBtn.disabled = false;
+                    prevBtn.disabled = false;
+                    nextBtn.disabled = false;
+                    // Set streaming src so play button works immediately
+                    audio.src = streamUrl(t.id);
+                } else {
+                    current = 0;
+                }
+                toast('queue restored');
+            } else {
+                toast('signed in');
+            }
+
+            // Schedule silent token refresh before it expires (~55 min)
+            scheduleTokenRefresh();
+        }
+
+        function scheduleTokenRefresh() {
+            // Google access tokens last ~1 hour; refresh at 55 min silently
+            setTimeout(() => {
+                tokenClient.requestAccessToken({ prompt: '' });
+            }, 55 * 60 * 1000);
+        }
+
+        signinBtn.addEventListener('click', () => {
+            tokenClient.requestAccessToken({ prompt: 'select_account' });
+        });
+
+        signoutBtn.addEventListener('click', () => {
+            google.accounts.oauth2.revoke(accessToken, () => { });
+            accessToken = null;
+            localStorage.removeItem(LS_TRACKS);
+            localStorage.removeItem(LS_STATE);
+            tracks = []; current = -1;
+            audio.pause(); audio.src = '';
+            setPlaying(false);
+            titleEl.textContent = 'nothing playing';
+            subEl.textContent = '— add tracks from the queue —';
+            seekEl.value = 0; timeCur.textContent = '0:00'; timeTotal.textContent = '0:00';
+            renderQueue();
+            overlay.classList.remove('hidden');
+            signoutBtn.classList.add('hidden');
+            enableControls(false);
+            enablePlaybackControls(false);
+        });
 
         function enableControls(on) {
             pickFilesBtn.disabled = !on;
@@ -839,10 +919,15 @@
             ctrlRepeat.disabled = !on;
         }
 
+        // ── Streaming URL ─────────────────────────
+        function streamUrl(fileId) {
+            return `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&access_token=${accessToken}`;
+        }
+
         // ── Picker ────────────────────────────────
         function openFilePicker() {
+            // No MIME filter — shows all files (mp4 audio works fine)
             const view = new google.picker.DocsView(google.picker.ViewId.DOCS)
-                .setMimeTypes(AUDIO_MIME)
                 .setMode(google.picker.DocsViewMode.LIST)
                 .setSelectFolderEnabled(false);
 
@@ -879,7 +964,8 @@
                 tracks.push({ id: doc.id, name: stripExt(doc.name), raw: doc.name });
                 added++;
             });
-            if (added) { toast(`added ${added} track${added > 1 ? 's' : ''}`); }
+            if (added) toast(`added ${added} track${added > 1 ? 's' : ''}`);
+            saveTracks();
             rebuildShuffleOrder();
             renderQueue();
             if (current === -1 && tracks.length > 0) loadTrack(0);
@@ -898,6 +984,7 @@
                 console.error(e);
             }
             loadingEnd();
+            saveTracks();
             rebuildShuffleOrder();
             renderQueue();
             if (current === -1 && tracks.length > 0) loadTrack(0);
@@ -905,10 +992,9 @@
 
         async function scanFolder(folderId) {
             let pageToken = null;
-            const mimeTypes = AUDIO_MIME.split(',').map(m => `mimeType='${m}'`).join(' or ');
             do {
                 const params = {
-                    q: `'${folderId}' in parents and (${mimeTypes}) and trashed=false`,
+                    q: `'${folderId}' in parents and trashed=false`,
                     fields: 'nextPageToken, files(id, name)',
                     pageSize: 100,
                     orderBy: 'name',
@@ -929,14 +1015,20 @@
 
         // ── Shuffle order ─────────────────────────
         function rebuildShuffleOrder() {
-            shuffleOrder = tracks.map((_, i) => i);
-            if (shuffled) {
-                for (let i = shuffleOrder.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [shuffleOrder[i], shuffleOrder[j]] = [shuffleOrder[j], shuffleOrder[i]];
-                }
+            // Preserve existing order if already built and same length
+            if (shuffleOrder.length !== tracks.length) {
+                shuffleOrder = tracks.map((_, i) => i);
+                if (shuffled) fisherYates(shuffleOrder);
             }
             updateTrackCount();
+            saveState();
+        }
+
+        function fisherYates(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
         }
 
         function stripExt(name) { return name.replace(/\.[^/.]+$/, ''); }
@@ -956,6 +1048,13 @@
             }
             enablePlaybackControls(true);
 
+            // sync UI toggles
+            shuffleBtn.classList.toggle('active', shuffled);
+            ctrlShuffle.classList.toggle('on', shuffled);
+            repeatBtn.textContent = repeatMode === 2 ? 'repeat 1' : 'repeat';
+            repeatBtn.classList.toggle('active', repeatMode > 0);
+            ctrlRepeat.classList.toggle('on', repeatMode > 0);
+
             const order = shuffled ? shuffleOrder : tracks.map((_, i) => i);
             order.forEach((trackIdx, pos) => {
                 const t = tracks[trackIdx];
@@ -963,10 +1062,10 @@
                 li.className = trackIdx === current ? 'active' : '';
                 if (trackIdx === current && !audio.paused) li.classList.add('playing-indicator');
                 li.innerHTML = `
-      <span class="track-num">${trackIdx === current ? '▶' : String(pos + 1).padStart(2, '0')}</span>
-      <span class="track-name" title="${t.raw}">${t.name}</span>
-      <span class="track-dur">${t.duration || '—'}</span>
-    `;
+                    <span class="track-num">${trackIdx === current ? '▶' : String(pos + 1).padStart(2, '0')}</span>
+                    <span class="track-name" title="${t.raw}">${t.name}</span>
+                    <span class="track-dur">${t.duration || '—'}</span>
+                `;
                 li.addEventListener('click', () => loadTrack(trackIdx));
                 queueEl.appendChild(li);
             });
@@ -975,9 +1074,9 @@
         // ── Shuffle / Repeat ──────────────────────
         function toggleShuffle() {
             shuffled = !shuffled;
-            shuffleBtn.classList.toggle('active', shuffled);
-            ctrlShuffle.classList.toggle('on', shuffled);
-            rebuildShuffleOrder();
+            shuffleOrder = tracks.map((_, i) => i);
+            if (shuffled) fisherYates(shuffleOrder);
+            saveState();
             toast(shuffled ? 'shuffle on' : 'shuffle off');
             renderQueue();
         }
@@ -985,11 +1084,9 @@
         function toggleRepeat() {
             repeatMode = (repeatMode + 1) % 3;
             const labels = ['repeat off', 'repeat all', 'repeat one'];
-            const icons = ['repeat', 'repeat', 'repeat one'];
-            repeatBtn.textContent = repeatMode === 2 ? 'repeat 1' : 'repeat';
-            repeatBtn.classList.toggle('active', repeatMode > 0);
-            ctrlRepeat.classList.toggle('on', repeatMode > 0);
             toast(labels[repeatMode]);
+            saveState();
+            renderQueue();
         }
 
         shuffleBtn.addEventListener('click', toggleShuffle);
@@ -1001,55 +1098,40 @@
             if (!tracks.length) return;
             tracks = []; current = -1;
             audio.pause(); audio.src = '';
-            if (currentObjectURL) { URL.revokeObjectURL(currentObjectURL); currentObjectURL = null; }
             setPlaying(false);
             titleEl.textContent = 'nothing playing';
             subEl.textContent = '— add tracks from the queue —';
             seekEl.value = 0; timeCur.textContent = '0:00'; timeTotal.textContent = '0:00';
+            saveTracks(); saveState();
             rebuildShuffleOrder();
             renderQueue();
             toast('queue cleared');
         });
 
         // ── Playback ──────────────────────────────
-        async function loadTrack(idx) {
+        function loadTrack(idx) {
             if (idx < 0 || idx >= tracks.length) return;
             current = idx;
             const t = tracks[idx];
 
             titleEl.textContent = t.name;
-            subEl.textContent = 'loading…';
+            subEl.textContent = t.raw;
             playBtn.disabled = false;
             prevBtn.disabled = false;
             nextBtn.disabled = false;
-            loadingStart();
-            renderQueue();
 
-            if (currentObjectURL) { URL.revokeObjectURL(currentObjectURL); currentObjectURL = null; }
-
-            try {
-                const blob = await fetchBlob(t.id);
-                currentObjectURL = URL.createObjectURL(blob);
-                audio.src = currentObjectURL;
-                audio.play();
+            // Stream directly — no blob download needed
+            audio.src = streamUrl(t.id);
+            audio.play().then(() => {
                 setPlaying(true);
-                subEl.textContent = t.raw;
-            } catch (e) {
+            }).catch(e => {
                 subEl.textContent = 'error loading — check permissions';
                 console.error(e);
                 toast('failed to load track');
-            }
-            loadingEnd();
-            renderQueue();
-        }
+            });
 
-        async function fetchBlob(fileId) {
-            const resp = await fetch(
-                `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
-                { headers: { Authorization: `Bearer ${accessToken}` } }
-            );
-            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-            return resp.blob();
+            saveState();
+            renderQueue();
         }
 
         function setPlaying(state) {
@@ -1083,11 +1165,9 @@
             else setPlaying(false);
         });
 
-        function getPlayOrder() {
-            return shuffled ? shuffleOrder : tracks.map((_, i) => i);
-        }
+        function getPlayOrder() { return shuffled ? shuffleOrder : tracks.map((_, i) => i); }
 
-        function getNextIdx(fromEnd = false) {
+        function getNextIdx() {
             const order = getPlayOrder();
             const pos = order.indexOf(current);
             if (pos === -1) return order[0] ?? -1;
@@ -1118,6 +1198,7 @@
             timeTotal.textContent = fmt(audio.duration);
             if (audio.duration && !tracks[current]?.duration) {
                 tracks[current].duration = fmt(audio.duration);
+                saveTracks();
                 renderQueue();
             }
         });
@@ -1133,7 +1214,7 @@
         });
 
         // ── Volume ────────────────────────────────
-        volEl.addEventListener('input', () => { audio.volume = volEl.value; });
+        volEl.addEventListener('input', () => { audio.volume = volEl.value; saveState(); });
 
         // ── Keyboard shortcuts ─────────────────────
         document.addEventListener('keydown', e => {
@@ -1145,7 +1226,7 @@
             if (e.code === 'ArrowDown') { e.preventDefault(); audio.volume = Math.max(0, audio.volume - 0.1); volEl.value = audio.volume; }
         });
 
-        // init
+        // ── Init ──────────────────────────────────
         renderQueue();
     </script>
 </body>
