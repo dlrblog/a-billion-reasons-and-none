@@ -65,7 +65,7 @@ jobs:
           sed -i \
             -e "s|%%NOTES_GITHUB_PAT%%|${NOTES_GITHUB_PAT}|g" \
             -e "s|%%NOTES_GITHUB_REPO%%|${NOTES_GITHUB_REPO}|g" \
-            "notes/notes.html"
+            "notnotes/notes.html"
 
           # music/index.html needs Google OAuth client ID & API key
           sed -i \
