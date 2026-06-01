@@ -46,7 +46,7 @@ jobs:
             "calendar/index.html"
             "text/chat.html"
             "goals/index.html"
-            "notes/notes.html"
+            "notnotes/notes.html"
             "lovedle/index.html"
           )
 
