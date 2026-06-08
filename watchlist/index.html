@@ -2,189 +2,193 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>our watchlist ✦</title>
+<title>our watchlist</title>
 <script>const FIREBASE_CONFIG={apiKey:"%%FIREBASE_API_KEY%%",authDomain:"%%FIREBASE_AUTH_DOMAIN%%",projectId:"%%FIREBASE_PROJECT_ID%%",storageBucket:"%%FIREBASE_STORAGE_BUCKET%%",messagingSenderId:"%%FIREBASE_MESSAGING_SENDER_ID%%",appId:"%%FIREBASE_APP_ID%%"};</script>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@300&family=Caveat:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@300;400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--cream:#e8f3fb;--ink:#0d1f2d;--il:#3a5a72;--if:#8aafcc;--ac:#5b9ec9;--ad:#2a6a96;--pa:#d4eaf7;--pb:#b8d8ef;--lb0:#f0f8ff;--lb1:#daeeff;--lb2:#b8dcf7;--lb3:#87bfe8;--lb4:#5ba3d9;--lb5:#3585c0;--lb6:#1a6aa8;--mu:#5a7e99;--pk:#e8a4b8}
-body{font-family:'Cormorant Garamond',serif;min-height:100vh;background:var(--cream);color:var(--ink);overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.6}
-.ruled{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:repeating-linear-gradient(to bottom,transparent,transparent calc(1.95em*1.3 - 1px),rgba(139,175,204,.1) calc(1.95em*1.3 - 1px),rgba(139,175,204,.1) calc(1.95em*1.3));background-size:100% calc(1.95em*1.3);background-position:0 5.5rem}
+:root{--cr:#e8f3fb;--ink:#0d1f2d;--il:#3a5a72;--mu:#5a7e99;--lb0:#f0f8ff;--lb1:#daeeff;--lb2:#b8dcf7;--lb3:#87bfe8;--lb4:#5ba3d9;--lb6:#1a6aa8;--pk:#c0627a;--rd:8px}
+body{font-family:'Inter',sans-serif;min-height:100vh;background:var(--cr);color:var(--ink)}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.5}
 .wash{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(90px);opacity:0;transition:opacity 3s}
-.w1{width:600px;height:500px;background:radial-gradient(ellipse,#c8e4f5 0%,transparent 70%);top:-80px;left:-120px}
-.w2{width:500px;height:450px;background:radial-gradient(ellipse,#daeef8 0%,transparent 70%);bottom:-60px;right:-100px}
+.w1{width:500px;height:400px;background:radial-gradient(ellipse,#c8e4f5,transparent 70%);top:-80px;left:-100px}
+.w2{width:450px;height:380px;background:radial-gradient(ellipse,#daeef8,transparent 70%);bottom:-60px;right:-80px}
 .show{opacity:1!important}
-.page{position:relative;z-index:2;max-width:640px;margin:0 auto;padding:3rem 1.25rem 6rem}
-.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--mu);text-align:center;margin-bottom:.4rem}
-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,6vw,2.8rem);font-weight:400;color:var(--lb6);text-align:center;margin-bottom:1.8rem}
-h1 em{font-style:italic;color:var(--ac)}
-/* tabs */
-.tabs{display:flex;gap:.4rem;background:#fff;border:1px solid var(--lb1);border-radius:12px;padding:.35rem;margin-bottom:1.5rem;overflow-x:auto}
-.tab{flex:1;min-width:fit-content;padding:.45rem .7rem;border:none;border-radius:9px;background:none;font-family:'DM Mono',monospace;font-size:10.5px;letter-spacing:.06em;color:var(--mu);cursor:pointer;white-space:nowrap;transition:all .18s}
-.tab.on{background:var(--lb4);color:#fff;box-shadow:0 2px 8px rgba(91,163,217,.3)}
-/* filter bar */
-.fbar{display:flex;gap:.5rem;margin-bottom:1.2rem;flex-wrap:wrap}
-.fbtn{padding:.3rem .75rem;border:1px solid var(--lb2);border-radius:99px;background:var(--lb0);font-family:'DM Mono',monospace;font-size:10px;color:var(--mu);cursor:pointer;transition:all .15s}
-.fbtn.on{background:var(--lb4);color:#fff;border-color:var(--lb4)}
-/* cards */
-.cards{display:flex;flex-direction:column;gap:.85rem}
-.card{background:#fff;border:1px solid var(--lb1);border-radius:14px;padding:1rem 1.1rem 1rem 1.3rem;display:flex;gap:1rem;align-items:flex-start;cursor:pointer;transition:all .18s;position:relative}
-.card:hover{transform:translateY(-2px);box-shadow:0 4px 18px rgba(91,158,201,.14);border-color:var(--lb2)}
-.card-bar{width:4px;border-radius:4px;background:var(--lb4);flex-shrink:0;align-self:stretch;min-height:48px}
-.card-bar.tv{background:var(--pk)}
-.card-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;background:var(--lb0)}
-.card-body{flex:1;min-width:0}
-.card-title{font-size:1.1rem;font-weight:500;color:var(--ink);margin-bottom:.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu);letter-spacing:.04em;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
-.badge{padding:.15rem .45rem;border-radius:99px;font-size:9.5px;font-family:'DM Mono',monospace;letter-spacing:.05em}
-.badge-movie{background:#daeeff;color:var(--lb6)}
-.badge-tv{background:#fce8ef;color:#a04060}
-.badge-want{background:#f0f8ff;color:var(--mu)}
-.badge-watching{background:#fff8e1;color:#8a6500}
-.badge-watched{background:#f0fff4;color:#2e7d52}
-.who{display:flex;gap:.3rem;margin-top:.4rem}
-.who-dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-family:'DM Mono',monospace;font-weight:600;border:1.5px solid var(--lb3);background:#fff;color:var(--mu);transition:all .2s}
-.who-dot.on{background:var(--lb4);color:#fff;border-color:var(--lb4)}
-.stars{color:var(--ac);font-size:.8rem;letter-spacing:.05rem}
-/* timeline */
-.timeline{overflow-x:auto;padding-bottom:1rem}
-.tl-grid{display:flex;gap:1.2rem;min-width:max-content}
-.tl-month{width:160px}
-.tl-label{font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--mu);margin-bottom:.6rem;border-bottom:1px solid var(--lb2);padding-bottom:.3rem}
-.tl-card{background:#fff;border:1px solid var(--lb1);border-radius:10px;padding:.6rem .7rem;margin-bottom:.5rem;font-size:.85rem;color:var(--il)}
-.tl-card small{display:block;font-family:'DM Mono',monospace;font-size:9px;color:var(--mu);margin-top:2px}
+.pg{position:relative;z-index:2;max-width:680px;margin:0 auto;padding:2.5rem 1.25rem 6rem}
+/* header */
+.hdr{margin-bottom:2rem}
+.eyebrow{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mu);margin-bottom:.5rem}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,2.6rem);font-weight:400;color:var(--lb6);line-height:1.2}
+h1 span{font-style:italic;color:var(--lb4)}
+.stats{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu);margin-top:.5rem;letter-spacing:.05em}
+/* nav tabs — underline style */
+.nav{display:flex;gap:0;border-bottom:1px solid var(--lb2);margin-bottom:1.5rem;overflow-x:auto}
+.ntab{padding:.65rem 1.1rem;border:none;background:none;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:500;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .18s;letter-spacing:.01em}
+.ntab:hover{color:var(--lb4)}
+.ntab.on{color:var(--lb6);border-bottom-color:var(--lb4)}
+/* type filter */
+.tbar{display:flex;gap:.5rem;margin-bottom:1.2rem}
+.tpill{padding:.3rem .85rem;border:1px solid var(--lb2);border-radius:99px;background:#fff;font-family:'Inter',sans-serif;font-size:.75rem;font-weight:500;color:var(--mu);cursor:pointer;transition:all .15s}
+.tpill:hover{border-color:var(--lb4);color:var(--lb4)}
+.tpill.on{background:var(--lb4);color:#fff;border-color:var(--lb4)}
+/* cards list */
+.list{display:flex;flex-direction:column;gap:.6rem}
+.card{background:#fff;border:1px solid #e8f0f7;border-radius:12px;display:flex;align-items:stretch;overflow:hidden;cursor:pointer;transition:all .18s}
+.card:hover{box-shadow:0 4px 20px rgba(91,158,201,.15);transform:translateY(-1px);border-color:var(--lb2)}
+.card-accent{width:3px;flex-shrink:0}
+.film .card-accent{background:var(--lb4)}
+.tv .card-accent{background:var(--pk)}
+.card-thumb{width:48px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--lb0);font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:500;color:var(--lb6)}
+.card-body{flex:1;padding:.85rem 1rem;min-width:0}
+.card-top{display:flex;align-items:baseline;gap:.6rem;margin-bottom:.3rem;flex-wrap:wrap}
+.card-title{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+.type-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:.15rem .45rem;border-radius:4px;flex-shrink:0}
+.type-film{background:#daeeff;color:var(--lb6)}
+.type-tv{background:#fce8ef;color:var(--pk)}
+.card-meta{font-family:'Inter',sans-serif;font-size:.73rem;color:var(--mu);display:flex;gap:.7rem;align-items:center;flex-wrap:wrap}
+.status-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;display:inline-block}
+.dot-want{background:#aac}
+.dot-watching{background:#e6b84a}
+.dot-watched{background:#5cb88a}
+/* who-badges */
+.who{display:flex;gap:.3rem;margin-top:.5rem}
+.who-av{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:8px;font-weight:400;border:1.5px solid var(--lb3);background:#fff;color:var(--mu);transition:all .18s}
+.who-av.on{background:var(--lb4);color:#fff;border-color:var(--lb4)}
+/* rating dots */
+.rdots{display:flex;gap:3px;margin-top:.4rem}
+.rdot{width:6px;height:6px;border-radius:50%;background:var(--lb2);transition:background .15s}
+.rdot.on{background:var(--lb4)}
 /* empty */
-.empty{text-align:center;padding:3rem 1rem;color:var(--mu);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em}
+.empty{text-align:center;padding:4rem 1rem;color:var(--mu);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.08em;line-height:2}
+/* timeline */
+.tl{overflow-x:auto;padding-bottom:1rem}
+.tl-wrap{display:flex;gap:1rem;min-width:max-content;align-items:flex-start}
+.tl-col{width:170px}
+.tl-month{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--mu);padding-bottom:.4rem;margin-bottom:.5rem;border-bottom:1px solid var(--lb2)}
+.tl-item{background:#fff;border:1px solid #e8f0f7;border-radius:8px;padding:.55rem .7rem;margin-bottom:.4rem;cursor:pointer;transition:all .15s}
+.tl-item:hover{border-color:var(--lb3);box-shadow:0 2px 8px rgba(91,158,201,.1)}
+.tl-ttl{font-family:'Cormorant Garamond',serif;font-size:.95rem;color:var(--ink)}
+.tl-meta{font-family:'DM Mono',monospace;font-size:9px;color:var(--mu);margin-top:2px}
 /* fab */
-.fab{position:fixed;bottom:28px;right:28px;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--lb4),var(--lb6));color:#fff;font-size:26px;border:none;cursor:pointer;box-shadow:0 4px 18px rgba(91,163,217,.4);display:flex;align-items:center;justify-content:center;z-index:20;transition:all .2s}
-.fab:hover{transform:scale(1.08)}
+.fab{position:fixed;bottom:1.8rem;right:1.8rem;background:var(--lb6);color:#fff;border:none;border-radius:50%;width:52px;height:52px;font-size:1.6rem;cursor:pointer;box-shadow:0 4px 18px rgba(26,106,168,.35);z-index:20;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.fab:hover{transform:scale(1.07);background:var(--lb4)}
 /* modal */
-.overlay{display:none;position:fixed;inset:0;background:rgba(20,50,80,.22);backdrop-filter:blur(8px);z-index:30;align-items:center;justify-content:center;padding:1rem}
-.overlay.on{display:flex;animation:fi .2s ease}
+.ov{display:none;position:fixed;inset:0;background:rgba(13,31,45,.3);backdrop-filter:blur(6px);z-index:30;align-items:center;justify-content:center;padding:1rem}
+.ov.on{display:flex;animation:fi .2s ease}
 @keyframes fi{from{opacity:0}to{opacity:1}}
-.modal{background:#fff;border-radius:20px;padding:1.8rem;width:100%;max-width:420px;border:1px solid var(--lb1);max-height:90vh;overflow-y:auto;box-shadow:0 12px 48px rgba(91,158,201,.18)}
-.modal h3{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:400;color:var(--lb6);margin-bottom:1.2rem}
-label{display:block;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--mu);margin:.9rem 0 .3rem}
-input[type=text],input[type=date],select,textarea{width:100%;border:1px solid var(--lb2);border-radius:8px;padding:.65rem .85rem;font-size:14px;font-family:inherit;color:var(--ink);background:var(--lb0);outline:none;transition:border .18s}
+.mdl{background:#fff;border-radius:18px;padding:1.75rem;width:100%;max-width:400px;border:1px solid var(--lb1);max-height:88vh;overflow-y:auto;box-shadow:0 16px 48px rgba(26,106,168,.15)}
+.mdl-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:400;color:var(--lb6);margin-bottom:1.25rem}
+lbl,label{display:block;font-family:'DM Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--mu);margin:.85rem 0 .3rem}
+input[type=text],input[type=date],select,textarea{width:100%;border:1px solid var(--lb2);border-radius:8px;padding:.6rem .8rem;font-size:.9rem;font-family:'Inter',sans-serif;color:var(--ink);background:var(--lb0);outline:none;transition:border .18s;-webkit-appearance:none}
 input:focus,select:focus,textarea:focus{border-color:var(--lb4)}
 textarea{min-height:60px;resize:vertical}
-.row{display:flex;gap:.7rem;margin-top:1.3rem}
-.btn{flex:1;padding:.75rem;border-radius:10px;border:none;font-family:'Cormorant Garamond',serif;font-size:1rem;cursor:pointer;transition:all .18s}
-.btn-p{background:var(--lb4);color:#fff;box-shadow:0 3px 12px rgba(91,163,217,.3)}
-.btn-p:hover{background:var(--lb6)}
+.mrow{display:flex;gap:.6rem;margin-top:1.2rem}
+.btn{flex:1;padding:.7rem;border-radius:9px;border:none;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .18s}
+.btn-p{background:var(--lb6);color:#fff}
+.btn-p:hover{background:var(--lb4)}
 .btn-s{background:var(--lb0);color:var(--mu);border:1px solid var(--lb2)}
-.btn-d{background:#fff0f0;color:#c0392b;border:1px solid #f5c6c6}
-/* who toggle in modal */
-.who-row{display:flex;gap:.6rem;margin-top:.3rem}
-.who-toggle{padding:.4rem .9rem;border-radius:99px;border:1.5px solid var(--lb2);background:var(--lb0);font-family:'DM Mono',monospace;font-size:11px;color:var(--mu);cursor:pointer;transition:all .18s}
-.who-toggle.on{background:var(--lb4);color:#fff;border-color:var(--lb4)}
-/* heart rating */
-.hearts{display:flex;gap:.3rem;margin-top:.3rem}
-.heart{font-size:1.3rem;cursor:pointer;opacity:.3;transition:opacity .15s}
-.heart.on{opacity:1}
-/* toast */
-.toast{position:fixed;bottom:1.8rem;left:50%;transform:translateX(-50%);background:var(--lb6);color:#fff;padding:.5rem 1.3rem;border-radius:99px;font-family:'DM Mono',monospace;font-size:11px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;z-index:50}
+.btn-d{background:#fff5f5;color:#b03030;border:1px solid #f0c0c0}
+/* who toggles in modal */
+.who-row{display:flex;gap:.6rem;margin-top:.35rem}
+.wtog{padding:.4rem 1rem;border-radius:8px;border:1.5px solid var(--lb2);background:var(--lb0);font-family:'Inter',sans-serif;font-size:.8rem;color:var(--mu);cursor:pointer;transition:all .18s}
+.wtog.on{background:var(--lb4);color:#fff;border-color:var(--lb4)}
+/* rating in modal */
+.rrow{display:flex;gap:.4rem;margin-top:.35rem}
+.rstar{width:24px;height:24px;border-radius:50%;background:var(--lb1);border:1.5px solid var(--lb2);cursor:pointer;transition:all .15s;font-family:'DM Mono',monospace;font-size:10px;display:flex;align-items:center;justify-content:center;color:var(--mu)}
+.rstar.on{background:var(--lb4);border-color:var(--lb4);color:#fff}
+/* toast + sync */
+.toast{position:fixed;bottom:1.6rem;left:50%;transform:translateX(-50%);background:var(--lb6);color:#fff;padding:.5rem 1.25rem;border-radius:99px;font-family:'DM Mono',monospace;font-size:10.5px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;z-index:50;letter-spacing:.06em}
 .toast.on{opacity:1}
 .sync{position:fixed;top:0;left:0;right:0;height:2px;background:var(--lb3);z-index:100;display:none}
 .sync.on{display:block;animation:sp 1s ease-in-out infinite alternate}
 @keyframes sp{from{opacity:.4}to{opacity:1}}
+@media(max-width:500px){.card-title{max-width:180px}.nav{gap:0}}
 </style>
 </head>
 <body>
-<div class="ruled"></div>
 <div class="wash w1" id="wa"></div>
 <div class="wash w2" id="wb"></div>
 <div class="sync" id="sync"></div>
 <div class="toast" id="toast"></div>
 
-<div class="page">
-  <div class="eyebrow">our little world</div>
-  <h1>our watchlist <em>✦</em></h1>
-
-  <div class="tabs">
-    <button class="tab on" data-tab="all" onclick="switchTab('all')">✦ all</button>
-    <button class="tab" data-tab="want" onclick="switchTab('want')">🎬 to watch</button>
-    <button class="tab" data-tab="watching" onclick="switchTab('watching')">▶ watching</button>
-    <button class="tab" data-tab="watched" onclick="switchTab('watched')">✅ watched</button>
-    <button class="tab" data-tab="timeline" onclick="switchTab('timeline')">📅 timeline</button>
+<div class="pg">
+  <div class="hdr">
+    <div class="eyebrow">our little world</div>
+    <h1>our watchlist <span>&#10022;</span></h1>
+    <div class="stats" id="stats"></div>
   </div>
 
-  <div class="fbar" id="fbar">
-    <button class="fbtn on" data-f="all" onclick="setFilter('all')">all types</button>
-    <button class="fbtn" data-f="movie" onclick="setFilter('movie')">🎬 movies</button>
-    <button class="fbtn" data-f="tv" onclick="setFilter('tv')">📺 tv shows</button>
+  <nav class="nav">
+    <button class="ntab on" data-t="all" onclick="switchTab('all')">All</button>
+    <button class="ntab" data-t="want" onclick="switchTab('want')">To Watch</button>
+    <button class="ntab" data-t="watching" onclick="switchTab('watching')">Watching</button>
+    <button class="ntab" data-t="watched" onclick="switchTab('watched')">Watched</button>
+    <button class="ntab" data-t="timeline" onclick="switchTab('timeline')">Timeline</button>
+  </nav>
+
+  <div class="tbar" id="tbar">
+    <button class="tpill on" data-f="all" onclick="setF('all')">All</button>
+    <button class="tpill" data-f="movie" onclick="setF('movie')">Films</button>
+    <button class="tpill" data-f="tv" onclick="setF('tv')">Series</button>
   </div>
 
-  <div class="cards" id="cards"></div>
-  <div class="timeline" id="timeline" style="display:none"></div>
+  <div class="list" id="list"></div>
+  <div class="tl" id="tl" style="display:none"></div>
 </div>
 
-<button class="fab" onclick="openAdd()">+</button>
+<button class="fab" onclick="openAdd()" title="Add">+</button>
 
-<!-- Add Modal -->
-<div class="overlay" id="add-modal">
-  <div class="modal">
-    <h3>add something ✦</h3>
-    <label>title</label>
-    <input type="text" id="in-title" placeholder="e.g. Spirited Away">
-    <label>type</label>
-    <select id="in-type">
-      <option value="movie">🎬 movie</option>
-      <option value="tv">📺 tv show</option>
-    </select>
-    <label>genre</label>
-    <select id="in-genre">
+<div class="ov" id="add-ov">
+  <div class="mdl">
+    <div class="mdl-title">Add to watchlist</div>
+    <label>Title</label><input type="text" id="a-ttl" placeholder="e.g. Portrait of a Lady on Fire">
+    <label>Type</label>
+    <select id="a-type"><option value="movie">Film</option><option value="tv">Series</option></select>
+    <label>Genre</label>
+    <select id="a-genre">
       <option>romance</option><option>comedy</option><option>drama</option>
       <option>thriller</option><option>horror</option><option>sci-fi</option>
       <option>fantasy</option><option>animation</option><option>documentary</option>
       <option>action</option><option>mystery</option><option>other</option>
     </select>
-    <label>added by</label>
-    <select id="in-addedby">
-      <option value="Danvanth">Danvanth</option>
-      <option value="Raksha">Raksha</option>
-    </select>
-    <label>notes</label>
-    <textarea id="in-notes" placeholder="why we should watch this…"></textarea>
-    <div class="row">
-      <button class="btn btn-s" onclick="closeModals()">cancel</button>
-      <button class="btn btn-p" onclick="saveItem()">add ✦</button>
+    <label>Added by</label>
+    <select id="a-by"><option>Danvanth</option><option>Raksha</option></select>
+    <label>Notes</label><textarea id="a-notes" placeholder="Why we should watch this..."></textarea>
+    <div class="mrow">
+      <button class="btn btn-s" onclick="closeAll()">Cancel</button>
+      <button class="btn btn-p" onclick="saveNew()">Add</button>
     </div>
   </div>
 </div>
 
-<!-- Detail Modal -->
-<div class="overlay" id="det-modal">
-  <div class="modal">
-    <h3 id="det-title"></h3>
-    <label>status</label>
-    <select id="det-status">
-      <option value="want">🎬 to watch</option>
-      <option value="watching">▶ watching</option>
-      <option value="watched">✅ watched</option>
+<div class="ov" id="det-ov">
+  <div class="mdl">
+    <div class="mdl-title" id="d-ttl"></div>
+    <label>Status</label>
+    <select id="d-status">
+      <option value="want">To Watch</option>
+      <option value="watching">Watching</option>
+      <option value="watched">Watched</option>
     </select>
-    <label>watched by</label>
+    <label>Watched by</label>
     <div class="who-row">
-      <button class="who-toggle" id="wt-d" onclick="toggleWho('Danvanth')">Danvanth</button>
-      <button class="who-toggle" id="wt-r" onclick="toggleWho('Raksha')">Raksha</button>
+      <button class="wtog" id="wt-d" onclick="togWho('Danvanth')">Danvanth</button>
+      <button class="wtog" id="wt-r" onclick="togWho('Raksha')">Raksha</button>
     </div>
-    <label>date watched</label>
-    <input type="date" id="det-date">
-    <label>rating</label>
-    <div class="hearts" id="det-hearts">
-      <span class="heart" data-v="1" onclick="setRating(1)">♥</span>
-      <span class="heart" data-v="2" onclick="setRating(2)">♥</span>
-      <span class="heart" data-v="3" onclick="setRating(3)">♥</span>
-      <span class="heart" data-v="4" onclick="setRating(4)">♥</span>
-      <span class="heart" data-v="5" onclick="setRating(5)">♥</span>
+    <label>Date watched</label><input type="date" id="d-date">
+    <label>Rating (1-5)</label>
+    <div class="rrow" id="d-stars">
+      <button class="rstar" data-v="1" onclick="setR(1)">1</button>
+      <button class="rstar" data-v="2" onclick="setR(2)">2</button>
+      <button class="rstar" data-v="3" onclick="setR(3)">3</button>
+      <button class="rstar" data-v="4" onclick="setR(4)">4</button>
+      <button class="rstar" data-v="5" onclick="setR(5)">5</button>
     </div>
-    <label>notes</label>
-    <textarea id="det-notes" placeholder="thoughts after watching…"></textarea>
-    <div class="row">
-      <button class="btn btn-d" onclick="deleteItem()">delete</button>
-      <button class="btn btn-s" onclick="closeModals()">cancel</button>
-      <button class="btn btn-p" onclick="updateItem()">save ✦</button>
+    <label>Notes / Review</label><textarea id="d-notes"></textarea>
+    <div class="mrow">
+      <button class="btn btn-d" onclick="delItem()">Delete</button>
+      <button class="btn btn-s" onclick="closeAll()">Cancel</button>
+      <button class="btn btn-p" onclick="saveEdit()">Save</button>
     </div>
   </div>
 </div>
@@ -192,166 +196,141 @@ textarea{min-height:60px;resize:vertical}
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 import{getFirestore,collection,doc,addDoc,setDoc,deleteDoc,onSnapshot,orderBy,query,serverTimestamp}from"https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
-
 const db=getFirestore(initializeApp(FIREBASE_CONFIG));
 const col=collection(db,'watchlist');
+let items=[],tab='all',flt='all',eid=null,eWho=[],eR=0;
 
-let items=[],curTab='all',curFilter='all',editId=null,detWho=[],detRating=0;
-
-const GENRE_EMOJI={romance:'💕',comedy:'😂',drama:'🎭',thriller:'😱',horror:'👻','sci-fi':'🚀',fantasy:'🧙',animation:'✨',documentary:'📽️',action:'💥',mystery:'🔍',other:'🎞️'};
-
-// realtime
-onSnapshot(query(col,orderBy('createdAt','desc')),snap=>{
-  items=snap.docs.map(d=>({id:d.id,...d.data()}));
-  render();
+onSnapshot(query(col,orderBy('createdAt','desc')),s=>{
+  items=s.docs.map(d=>({id:d.id,...d.data()}));
+  render();updateStats();
 });
 
-function syncing(on){document.getElementById('sync').classList.toggle('on',on)}
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2600)}
+const $=id=>document.getElementById(id);
+function syncing(on){$('sync').classList.toggle('on',on)}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2600)}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 
-// ── tabs & filters ──
 window.switchTab=t=>{
-  curTab=t;
-  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
-  document.getElementById('fbar').style.display=t==='timeline'?'none':'flex';
-  document.getElementById('cards').style.display=t==='timeline'?'none':'flex';
-  document.getElementById('timeline').style.display=t==='timeline'?'block':'none';
+  tab=t;
+  document.querySelectorAll('.ntab').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  $('tbar').style.display=t==='timeline'?'none':'flex';
+  $('list').style.display=t==='timeline'?'none':'flex';
+  $('tl').style.display=t==='timeline'?'block':'none';
   render();
 };
-window.setFilter=f=>{
-  curFilter=f;
-  document.querySelectorAll('.fbtn').forEach(b=>b.classList.toggle('on',b.dataset.f===f));
+window.setF=f=>{
+  flt=f;
+  document.querySelectorAll('.tpill').forEach(b=>b.classList.toggle('on',b.dataset.f===f));
   render();
 };
 
-// ── render cards ──
+function updateStats(){
+  const w=items.filter(x=>x.status==='watched').length;
+  const tot=items.length;
+  $('stats').textContent=`${tot} title${tot!==1?'s':''} — ${w} watched`;
+}
+
 function render(){
-  if(curTab==='timeline'){renderTimeline();return;}
-  const el=document.getElementById('cards');
-  let list=items.filter(x=>curTab==='all'||x.status===curTab);
-  if(curFilter!=='all')list=list.filter(x=>x.type===curFilter);
-  if(!list.length){el.innerHTML='<div class="empty">nothing here yet ✦</div>';return;}
+  if(tab==='timeline'){renderTL();return;}
+  const el=$('list');
+  let list=items.filter(x=>tab==='all'||x.status===tab);
+  if(flt!=='all')list=list.filter(x=>x.type===flt);
+  if(!list.length){el.innerHTML='<div class="empty">nothing here yet<br>add something with the + button</div>';return;}
   el.innerHTML=list.map(x=>{
-    const who=(x.watchedBy||[]).map(w=>`<div class="who-dot on" title="${w}">${w[0]}</div>`).join('');
-    const whoEmpty=['Danvanth','Raksha'].filter(w=>!(x.watchedBy||[]).includes(w)).map(w=>`<div class="who-dot" title="${w}">${w[0]}</div>`).join('');
-    const stars=x.rating?'♥'.repeat(x.rating)+'♡'.repeat(5-x.rating):'';
-    return`<div class="card" onclick="openDetail('${x.id}')">
-      <div class="card-bar ${x.type}"></div>
-      <div class="card-icon">${GENRE_EMOJI[x.genre]||'🎞️'}</div>
+    const init=esc((x.title||'?')[0].toUpperCase());
+    const typeTag=x.type==='tv'?'<span class="type-tag type-tv">Series</span>':'<span class="type-tag type-film">Film</span>';
+    const statusMap={want:'dot-want',watching:'dot-watching',watched:'dot-watched'};
+    const statusLabel={want:'To watch',watching:'Watching',watched:'Watched'};
+    const who=['Danvanth','Raksha'].map(w=>`<div class="who-av${(x.watchedBy||[]).includes(w)?' on':''}">${w[0]}</div>`).join('');
+    const dots=x.rating?[1,2,3,4,5].map(i=>`<div class="rdot${i<=x.rating?' on':''}"></div>`).join(''):'';
+    return`<div class="card ${x.type==='tv'?'tv':'film'}" onclick="openDet('${x.id}')">
+      <div class="card-accent"></div>
+      <div class="card-thumb">${init}</div>
       <div class="card-body">
-        <div class="card-title">${esc(x.title)}</div>
+        <div class="card-top">
+          <span class="card-title">${esc(x.title)}</span>
+          ${typeTag}
+        </div>
         <div class="card-meta">
-          <span class="badge badge-${x.type}">${x.type==='tv'?'tv show':'movie'}</span>
-          <span class="badge badge-${x.status}">${x.status==='want'?'to watch':x.status}</span>
-          <span>${x.genre||''}</span>
+          <span class="status-dot ${statusMap[x.status||'want']}"></span>
+          <span>${statusLabel[x.status||'want']}</span>
+          <span>${esc(x.genre||'')}</span>
           ${x.watchedOn?`<span>${x.watchedOn}</span>`:''}
         </div>
-        <div class="who" style="margin-top:.4rem">${who}${whoEmpty}</div>
-        ${stars?`<div class="stars" style="margin-top:.3rem;font-size:.8rem">${stars}</div>`:''}
+        <div class="who">${who}</div>
+        ${dots?`<div class="rdots" style="margin-top:.4rem">${dots}</div>`:''}
       </div>
     </div>`;
   }).join('');
 }
 
-// ── timeline ──
-function renderTimeline(){
-  const watched=items.filter(x=>x.status==='watched'&&x.watchedOn).sort((a,b)=>a.watchedOn>b.watchedOn?1:-1);
-  if(!watched.length){document.getElementById('timeline').innerHTML='<div class="empty">no watched items with dates yet ✦</div>';return;}
+function renderTL(){
+  const watched=items.filter(x=>x.status==='watched'&&x.watchedOn).sort((a,b)=>a.watchedOn<b.watchedOn?1:-1);
+  const el=$('tl');
+  if(!watched.length){el.innerHTML='<div class="empty">no watched entries with dates yet</div>';return;}
   const months={};
-  watched.forEach(x=>{
-    const [y,m]=x.watchedOn.split('-');
-    const key=`${y}-${m}`;
-    if(!months[key])months[key]=[];
-    months[key].push(x);
-  });
-  const mNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const html=Object.entries(months).map(([k,arr])=>{
-    const [y,m]=k.split('-');
-    return`<div class="tl-month">
-      <div class="tl-label">${mNames[+m-1]} ${y}</div>
-      ${arr.map(x=>`<div class="tl-card" onclick="openDetail('${x.id}')">
-        ${GENRE_EMOJI[x.genre]||'🎞️'} ${esc(x.title)}
-        <small>${x.watchedOn} ${x.rating?'♥'.repeat(x.rating):''}</small>
-      </div>`).join('')}
-    </div>`;
-  }).join('');
-  document.getElementById('timeline').innerHTML=`<div class="tl-grid">${html}</div>`;
+  watched.forEach(x=>{const k=x.watchedOn.slice(0,7);if(!months[k])months[k]=[];months[k].push(x);});
+  const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  el.innerHTML=`<div class="tl-wrap">${Object.entries(months).map(([k,arr])=>{
+    const[y,m]=k.split('-');
+    return`<div class="tl-col"><div class="tl-month">${mn[+m-1]} ${y}</div>${arr.map(x=>{
+      const dots=x.rating?[1,2,3,4,5].map(i=>i<=x.rating?'●':'○').join(''):'';
+      return`<div class="tl-item" onclick="openDet('${x.id}')">
+        <div class="tl-ttl">${esc(x.title)}</div>
+        <div class="tl-meta">${x.type==='tv'?'Series':'Film'} · ${esc(x.genre||'')}${dots?' · '+dots:''}</div>
+      </div>`;
+    }).join('')}</div>`;
+  }).join('')}</div>`;
 }
 
-// ── add ──
 window.openAdd=()=>{
-  document.getElementById('in-title').value='';
-  document.getElementById('in-notes').value='';
-  document.getElementById('add-modal').classList.add('on');
-  setTimeout(()=>document.getElementById('in-title').focus(),100);
+  $('a-ttl').value='';$('a-notes').value='';
+  $('add-ov').classList.add('on');
+  setTimeout(()=>$('a-ttl').focus(),80);
 };
-window.saveItem=async()=>{
-  const title=document.getElementById('in-title').value.trim();
-  if(!title){toast('add a title ✦');return;}
+window.saveNew=async()=>{
+  const t=$('a-ttl').value.trim();
+  if(!t){toast('please add a title');return;}
   syncing(true);
-  await addDoc(col,{
-    title,type:document.getElementById('in-type').value,
-    genre:document.getElementById('in-genre').value,
-    addedBy:document.getElementById('in-addedby').value,
-    notes:document.getElementById('in-notes').value.trim(),
-    status:'want',watchedBy:[],watchedOn:'',rating:0,
-    createdAt:serverTimestamp()
-  });
-  syncing(false);toast('added ✦');closeModals();
+  await addDoc(col,{title:t,type:$('a-type').value,genre:$('a-genre').value,
+    addedBy:$('a-by').value,notes:$('a-notes').value.trim(),
+    status:'want',watchedBy:[],watchedOn:'',rating:0,createdAt:serverTimestamp()});
+  syncing(false);toast('added');closeAll();
 };
 
-// ── detail ──
-window.openDetail=id=>{
+window.openDet=id=>{
   const x=items.find(i=>i.id===id);if(!x)return;
-  editId=id;detWho=[...(x.watchedBy||[])];detRating=x.rating||0;
-  document.getElementById('det-title').textContent=x.title;
-  document.getElementById('det-status').value=x.status||'want';
-  document.getElementById('det-date').value=x.watchedOn||'';
-  document.getElementById('det-notes').value=x.notes||'';
-  document.getElementById('wt-d').classList.toggle('on',detWho.includes('Danvanth'));
-  document.getElementById('wt-r').classList.toggle('on',detWho.includes('Raksha'));
-  renderHearts();
-  document.getElementById('det-modal').classList.add('on');
+  eid=id;eWho=[...(x.watchedBy||[])];eR=x.rating||0;
+  $('d-ttl').textContent=x.title;
+  $('d-status').value=x.status||'want';
+  $('d-date').value=x.watchedOn||'';
+  $('d-notes').value=x.notes||'';
+  $('wt-d').classList.toggle('on',eWho.includes('Danvanth'));
+  $('wt-r').classList.toggle('on',eWho.includes('Raksha'));
+  renderStars();
+  $('det-ov').classList.add('on');
 };
-window.toggleWho=w=>{
-  if(detWho.includes(w))detWho=detWho.filter(x=>x!==w);
-  else detWho.push(w);
-  document.getElementById('wt-d').classList.toggle('on',detWho.includes('Danvanth'));
-  document.getElementById('wt-r').classList.toggle('on',detWho.includes('Raksha'));
+window.togWho=w=>{
+  eWho=eWho.includes(w)?eWho.filter(x=>x!==w):[...eWho,w];
+  $('wt-d').classList.toggle('on',eWho.includes('Danvanth'));
+  $('wt-r').classList.toggle('on',eWho.includes('Raksha'));
 };
-window.setRating=v=>{detRating=v;renderHearts();};
-function renderHearts(){
-  document.querySelectorAll('.heart').forEach(h=>h.classList.toggle('on',+h.dataset.v<=detRating));
-}
-window.updateItem=async()=>{
+window.setR=v=>{eR=v;renderStars();};
+function renderStars(){document.querySelectorAll('.rstar').forEach(s=>s.classList.toggle('on',+s.dataset.v<=eR));}
+window.saveEdit=async()=>{
   syncing(true);
-  await setDoc(doc(db,'watchlist',editId),{
-    status:document.getElementById('det-status').value,
-    watchedBy:detWho,
-    watchedOn:document.getElementById('det-date').value,
-    rating:detRating,
-    notes:document.getElementById('det-notes').value.trim()
-  },{merge:true});
-  syncing(false);toast('saved ✦');closeModals();
+  await setDoc(doc(db,'watchlist',eid),{status:$('d-status').value,watchedBy:eWho,
+    watchedOn:$('d-date').value,rating:eR,notes:$('d-notes').value.trim()},{merge:true});
+  syncing(false);toast('saved');closeAll();
 };
-window.deleteItem=async()=>{
-  if(!confirm('delete this entry?'))return;
-  syncing(true);
-  await deleteDoc(doc(db,'watchlist',editId));
-  syncing(false);toast('deleted');closeModals();
+window.delItem=async()=>{
+  if(!confirm('Remove this from the watchlist?'))return;
+  syncing(true);await deleteDoc(doc(db,'watchlist',eid));syncing(false);toast('removed');closeAll();
 };
-window.closeModals=()=>{
-  document.getElementById('add-modal').classList.remove('on');
-  document.getElementById('det-modal').classList.remove('on');
-};
-['add-modal','det-modal'].forEach(id=>
-  document.getElementById(id).addEventListener('click',e=>{if(e.target===e.currentTarget)closeModals();})
-);
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModals();});
-
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-setTimeout(()=>{document.getElementById('wa').classList.add('show');document.getElementById('wb').classList.add('show');},300);
+window.closeAll=()=>{$('add-ov').classList.remove('on');$('det-ov').classList.remove('on');};
+['add-ov','det-ov'].forEach(id=>$(id).addEventListener('click',e=>{if(e.target===e.currentTarget)closeAll();}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll();});
+setTimeout(()=>{$('wa').classList.add('show');$('wb').classList.add('show');},300);
 </script>
 </body>
 </html>
