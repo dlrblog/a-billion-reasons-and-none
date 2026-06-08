@@ -40,6 +40,7 @@ jobs:
           NOTES_GITHUB_REPO:           ${{ secrets.NOTES_GITHUB_REPO }}
           GOOGLE_CLIENT_ID:            ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_API_KEY:              ${{ secrets.GOOGLE_API_KEY }}
+          TMDB_API_KEY:                ${{ secrets.TMDB_API_KEY }}
         run: |
           # Files that contain Firebase config placeholders
           FIREBASE_FILES=(
@@ -74,6 +75,11 @@ jobs:
             -e "s|%%GOOGLE_CLIENT_ID%%|${GOOGLE_CLIENT_ID}|g" \
             -e "s|%%GOOGLE_API_KEY%%|${GOOGLE_API_KEY}|g" \
             "music/index.html"
+
+          # watchlist needs TMDB key for movie/TV search
+          sed -i \
+            -e "s|%%TMDB_API_KEY%%|${TMDB_API_KEY}|g" \
+            "watchlist/index.html"
 
       # ── Deploy to GitHub Pages ───────────────────────────────────────────────
       - name: Setup Pages
