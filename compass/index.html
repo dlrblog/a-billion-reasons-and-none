@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>find me ✦</title>
+
+<script>
+  const FIREBASE_CONFIG = {
+    apiKey:            "%%FIREBASE_API_KEY%%",
+    authDomain:        "%%FIREBASE_AUTH_DOMAIN%%",
+    projectId:         "%%FIREBASE_PROJECT_ID%%",
+    storageBucket:     "%%FIREBASE_STORAGE_BUCKET%%",
+    messagingSenderId: "%%FIREBASE_MESSAGING_SENDER_ID%%",
+    appId:             "%%FIREBASE_APP_ID%%"
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:ital,wght@0,300;1,300&family=Caveat:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream: #e8f3fb;
+  --ink: #0d1f2d;
+  --ink-light: #3a5a72;
+  --ink-faint: #8aafcc;
+  --accent: #5b9ec9;
+  --accent-dark: #2a6a96;
+  --paper: #d4eaf7;
+  --paper-dark: #b8d8ef;
+  --lb0: #f0f8ff;
+  --lb1: #daeeff;
+  --lb2: #b8dcf7;
+  --lb3: #87bfe8;
+  --lb4: #5ba3d9;
+  --lb5: #3585c0;
+  --lb6: #1a6aa8;
+  --muted: #5a7e99;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  min-height: 100vh;
+  background: var(--cream);
+  color: var(--ink);
+  overflow-x: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* paper texture */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0; opacity: 0.6;
+}
+
+/* ruled lines */
+.ruled {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image: repeating-linear-gradient(
+    to bottom, transparent,
+    transparent calc(1.95em * 1.3 - 1px),
+    rgba(139,175,204,0.1) calc(1.95em * 1.3 - 1px),
+    rgba(139,175,204,0.1) calc(1.95em * 1.3)
+  );
+  background-size: 100% calc(1.95em * 1.3);
+  background-position: 0 5.5rem;
+}
+
+.margin-line {
+  position: fixed; left: clamp(2.2rem,7vw,5rem); top: 0; bottom: 0;
+  width: 1px; background: rgba(91,158,201,0.18); z-index: 1; pointer-events: none;
+}
+
+/* wash blobs */
+.wash {
+  position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+  filter: blur(90px); opacity: 0; transition: opacity 3s ease;
+}
+.wash.show { opacity: 1; }
+.wash1 { width:600px; height:500px; background: radial-gradient(ellipse,#c8e4f5 0%,transparent 70%); top:-80px; left:-120px; }
+.wash2 { width:500px; height:450px; background: radial-gradient(ellipse,#daeef8 0%,transparent 70%); bottom:-60px; right:-100px; }
+
+/* ── Page wrapper ── */
+.page {
+  position: relative; z-index: 2;
+  width: 100%; max-width: 520px;
+  padding: 3rem 1.5rem 5rem;
+  display: flex; flex-direction: column; align-items: center; gap: 1.8rem;
+}
+
+/* ── Header ── */
+.eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--muted); text-align: center;
+}
+h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2rem, 6vw, 2.8rem);
+  font-weight: 400; color: var(--lb6); text-align: center;
+  line-height: 1.2;
+}
+h1 em { font-style: italic; color: var(--accent); }
+
+/* ── Identity card ── */
+.identity-card {
+  width: 100%; background: #fff;
+  border: 1px solid var(--lb1); border-radius: 16px;
+  padding: 1.2rem 1.5rem; display: flex;
+  align-items: center; gap: 1rem;
+}
+.identity-label {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  text-transform: uppercase; letter-spacing: .15em; color: var(--muted); margin-bottom: .3rem;
+}
+.identity-btns { display: flex; gap: .6rem; flex-wrap: wrap; }
+.who-btn {
+  padding: .45rem 1.1rem; border-radius: 99px;
+  border: 1.5px solid var(--lb2); background: var(--lb0);
+  font-family: 'Cormorant Garamond', serif; font-size: 1.05rem;
+  color: var(--ink-light); cursor: pointer; transition: all .2s;
+}
+.who-btn:hover { border-color: var(--lb4); background: var(--lb1); }
+.who-btn.active {
+  background: var(--lb4); color: #fff; border-color: var(--lb4);
+  box-shadow: 0 3px 12px rgba(91,163,217,.35);
+}
+
+/* ── Status strip ── */
+.status-strip {
+  width: 100%; display: flex; gap: .8rem; align-items: center;
+  background: #fff; border: 1px solid var(--lb1); border-radius: 12px;
+  padding: .75rem 1.1rem;
+}
+.status-dot {
+  width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0;
+  background: var(--lb3); transition: background .4s;
+}
+.status-dot.online { background: #82c99a; box-shadow: 0 0 0 3px rgba(130,201,154,.2); }
+.status-dot.offline { background: var(--ink-faint); }
+.status-text {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--muted); letter-spacing: .06em;
+}
+
+/* ── Compass ── */
+.compass-wrap {
+  position: relative; width: 260px; height: 260px;
+}
+
+.compass-ring {
+  width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #f0f8ff 0%, #d4eaf7 55%, #b8d8ef 100%);
+  border: 2px solid var(--lb2);
+  box-shadow: 0 4px 32px rgba(91,158,201,.18), inset 0 2px 8px rgba(255,255,255,.7);
+  position: relative; display: flex; align-items: center; justify-content: center;
+  transition: box-shadow .3s;
+}
+.compass-ring.has-bearing {
+  box-shadow: 0 6px 40px rgba(91,158,201,.28), inset 0 2px 8px rgba(255,255,255,.7);
+}
+
+/* cardinal marks */
+.cardinal {
+  position: absolute; font-family: 'DM Mono', monospace;
+  font-size: 11px; color: var(--ink-faint); font-weight: 300; letter-spacing: .04em;
+}
+.cardinal.N { top: 14px; left: 50%; transform: translateX(-50%); }
+.cardinal.S { bottom: 14px; left: 50%; transform: translateX(-50%); }
+.cardinal.E { right: 14px; top: 50%; transform: translateY(-50%); }
+.cardinal.W { left: 14px; top: 50%; transform: translateY(-50%); }
+
+/* tick marks */
+.compass-ring::before {
+  content: '';
+  position: absolute; inset: 14px; border-radius: 50%;
+  border: 1px dashed rgba(139,175,204,.3);
+}
+
+/* needle */
+.needle-wrap {
+  width: 100%; height: 100%;
+  position: absolute; top: 0; left: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.8s cubic-bezier(.34,1.2,.64,1);
+}
+.needle {
+  width: 6px; height: 120px; position: relative;
+}
+.needle-north {
+  width: 6px; height: 60px;
+  background: linear-gradient(to top, var(--lb4), var(--lb6));
+  border-radius: 3px 3px 0 0;
+  position: absolute; top: 0; left: 0;
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+}
+.needle-south {
+  width: 6px; height: 60px;
+  background: linear-gradient(to bottom, var(--paper-dark), var(--lb1));
+  border-radius: 0 0 3px 3px;
+  position: absolute; bottom: 0; left: 0;
+  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+}
+.needle-center {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #fff;
+  border: 2.5px solid var(--lb4);
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  box-shadow: 0 2px 6px rgba(91,158,201,.3);
+}
+
+/* heart at tip when pointing */
+.needle-heart {
+  position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+  font-size: 13px; opacity: 0; transition: opacity .4s;
+}
+.needle-heart.show { opacity: 1; }
+
+/* ── Distance pill ── */
+.distance-pill {
+  background: var(--lb0); border: 1px solid var(--lb2);
+  border-radius: 99px; padding: .4rem 1.1rem;
+  font-family: 'DM Mono', monospace; font-size: 12px; color: var(--lb6);
+  text-align: center; min-width: 140px; transition: all .3s;
+}
+.distance-pill.near { background: #f0fff4; border-color: #82c99a; color: #2e7d52; }
+
+/* ── Info box ── */
+.info-box {
+  width: 100%; background: #fff; border: 1px solid var(--lb1);
+  border-radius: 16px; padding: 1.2rem 1.5rem;
+  display: grid; grid-template-columns: 1fr 1fr; gap: .8rem 1.2rem;
+}
+.info-item { }
+.info-item .lbl {
+  font-family: 'DM Mono', monospace; font-size: 9.5px;
+  text-transform: uppercase; letter-spacing: .15em; color: var(--muted); margin-bottom: 3px;
+}
+.info-item .val {
+  font-size: 1rem; color: var(--ink-light); font-weight: 500;
+}
+
+/* ── GPS button ── */
+.gps-btn {
+  width: 100%; padding: .85rem;
+  background: linear-gradient(135deg, var(--lb4), var(--lb6));
+  color: #fff; border: none; border-radius: 12px;
+  font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;
+  cursor: pointer; letter-spacing: .04em;
+  box-shadow: 0 4px 18px rgba(91,163,217,.35);
+  transition: all .2s;
+}
+.gps-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(91,163,217,.4); }
+.gps-btn:disabled { opacity: .55; cursor: default; transform: none; }
+
+/* ── Note ── */
+.note {
+  font-family: 'DM Mono', monospace; font-size: 10.5px;
+  color: var(--muted); text-align: center; line-height: 1.8;
+  letter-spacing: .04em; opacity: .8;
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 1.8rem; left: 50%; transform: translateX(-50%);
+  background: var(--lb6); color: #fff; padding: .55rem 1.4rem;
+  border-radius: 99px; font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: .06em; opacity: 0; transition: opacity .3s;
+  pointer-events: none; white-space: nowrap; z-index: 50;
+}
+.toast.show { opacity: 1; }
+
+/* ── Sync bar ── */
+.sync-bar {
+  position: fixed; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--lb3); z-index: 100; display: none;
+}
+.sync-bar.active { display: block; animation: syncpulse 1s ease-in-out infinite alternate; }
+@keyframes syncpulse { from { opacity:.4; } to { opacity:1; } }
+
+/* ── Poem footer ── */
+.poem-footer {
+  text-align: center; padding-top: .5rem;
+  font-family: 'Caveat', cursive; font-size: 1.25rem;
+  color: var(--accent-dark); opacity: .7; line-height: 1.7;
+}
+
+@media (max-width: 420px) {
+  .compass-wrap { width: 220px; height: 220px; }
+  .compass-ring { width: 220px; height: 220px; }
+  .needle { height: 100px; }
+  .needle-north, .needle-south { height: 50px; }
+}
+</style>
+</head>
+<body>
+
+<div class="ruled"></div>
+<div class="margin-line"></div>
+<div class="wash wash1" id="w1"></div>
+<div class="wash wash2" id="w2"></div>
+<div class="sync-bar" id="sync-bar"></div>
+<div class="toast" id="toast"></div>
+
+<div class="page">
+
+  <div style="text-align:center">
+    <div class="eyebrow">our little world</div>
+    <h1>find me <em>✦</em></h1>
+  </div>
+
+  <!-- Who are you? -->
+  <div class="identity-card">
+    <div style="flex:1">
+      <div class="identity-label">I am…</div>
+      <div class="identity-btns">
+        <button class="who-btn" id="btn-d" onclick="setIdentity('Danvanth')">Danvanth</button>
+        <button class="who-btn" id="btn-r" onclick="setIdentity('Raksha')">Raksha</button>
+      </div>
+    </div>
+    <div style="font-size:1.6rem">🧭</div>
+  </div>
+
+  <!-- Status -->
+  <div class="status-strip">
+    <div class="status-dot" id="my-dot"></div>
+    <div class="status-text" id="my-status">my location — not sharing</div>
+    <div style="flex:1"></div>
+    <div class="status-dot" id="other-dot" style="background:var(--ink-faint)"></div>
+    <div class="status-text" id="other-status">other — offline</div>
+  </div>
+
+  <!-- Compass -->
+  <div class="compass-wrap">
+    <div class="compass-ring" id="compass-ring">
+      <span class="cardinal N">N</span>
+      <span class="cardinal S">S</span>
+      <span class="cardinal E">E</span>
+      <span class="cardinal W">W</span>
+      <div class="needle-wrap" id="needle-wrap">
+        <div class="needle">
+          <div class="needle-heart" id="needle-heart">💙</div>
+          <div class="needle-north"></div>
+          <div class="needle-center"></div>
+          <div class="needle-south"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Distance -->
+  <div class="distance-pill" id="distance-pill">— waiting for both locations —</div>
+
+  <!-- Info grid -->
+  <div class="info-box">
+    <div class="info-item">
+      <div class="lbl">My lat</div>
+      <div class="val" id="my-lat">—</div>
+    </div>
+    <div class="info-item">
+      <div class="lbl">My lng</div>
+      <div class="val" id="my-lng">—</div>
+    </div>
+    <div class="info-item">
+      <div class="lbl">Their lat</div>
+      <div class="val" id="their-lat">—</div>
+    </div>
+    <div class="info-item">
+      <div class="lbl">Their lng</div>
+      <div class="val" id="their-lng">—</div>
+    </div>
+  </div>
+
+  <!-- GPS Button -->
+  <button class="gps-btn" id="gps-btn" onclick="startSharing()" disabled>
+    choose who you are first ✦
+  </button>
+
+  <div class="note">
+    gps is shared live &amp; saved persistently<br>
+    compass points toward the other person ✦
+  </div>
+
+  <div class="poem-footer">no matter where you are,<br>i'm always pointing home</div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+import { getFirestore, doc, setDoc, onSnapshot, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+const db = getFirestore(initializeApp(FIREBASE_CONFIG));
+
+// ── State ──
+let myId = null;          // 'Danvanth' | 'Raksha'
+let otherId = null;
+let myLat = null, myLng = null;
+let theirLat = null, theirLng = null;
+let deviceHeading = 0;   // degrees from north, device orientation
+let watchId = null;
+let sharing = false;
+let unsubOther = null;
+
+// ── Toast ──
+function toast(msg, dur = 2800) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+function sync(on) {
+  document.getElementById('sync-bar').classList.toggle('active', on);
+}
+
+// ── Identity ──
+window.setIdentity = function(id) {
+  myId = id;
+  otherId = (id === 'Danvanth') ? 'Raksha' : 'Danvanth';
+  document.getElementById('btn-d').classList.toggle('active', id === 'Danvanth');
+  document.getElementById('btn-r').classList.toggle('active', id === 'Raksha');
+  document.getElementById('gps-btn').disabled = false;
+  document.getElementById('gps-btn').textContent = sharing
+    ? 'stop sharing ✦' : 'share my location ✦';
+  // Subscribe to other's location
+  subscribeOther();
+  toast(`you are ${id} ✦`);
+};
+
+// ── Subscribe to other ──
+function subscribeOther() {
+  if (unsubOther) unsubOther();
+  if (!otherId) return;
+  unsubOther = onSnapshot(doc(db, 'compass', otherId), snap => {
+    if (snap.exists()) {
+      const d = snap.data();
+      theirLat = d.lat; theirLng = d.lng;
+      document.getElementById('their-lat').textContent = theirLat.toFixed(5);
+      document.getElementById('their-lng').textContent = theirLng.toFixed(5);
+      const dot = document.getElementById('other-dot');
+      dot.classList.add('online'); dot.classList.remove('offline');
+      document.getElementById('other-status').textContent = `${otherId} — live`;
+      updateCompass();
+    } else {
+      theirLat = null; theirLng = null;
+      document.getElementById('their-lat').textContent = '—';
+      document.getElementById('their-lng').textContent = '—';
+      document.getElementById('other-dot').classList.add('offline');
+      document.getElementById('other-status').textContent = `${otherId} — offline`;
+      updateCompass();
+    }
+  });
+}
+
+// ── GPS sharing ──
+window.startSharing = function() {
+  if (!myId) return;
+  if (sharing) { stopSharing(); return; }
+  if (!navigator.geolocation) { toast('geolocation not supported'); return; }
+
+  const btn = document.getElementById('gps-btn');
+  btn.disabled = true; btn.textContent = 'getting location…';
+
+  watchId = navigator.geolocation.watchPosition(
+    pos => {
+      sharing = true;
+      btn.disabled = false; btn.textContent = 'stop sharing ✦';
+      myLat = pos.coords.latitude; myLng = pos.coords.longitude;
+      document.getElementById('my-lat').textContent = myLat.toFixed(5);
+      document.getElementById('my-lng').textContent = myLng.toFixed(5);
+      document.getElementById('my-dot').classList.add('online');
+      document.getElementById('my-status').textContent = 'my location — live ✦';
+      // Push to Firestore
+      sync(true);
+      setDoc(doc(db, 'compass', myId), {
+        lat: myLat, lng: myLng, updatedAt: serverTimestamp()
+      }).finally(() => sync(false));
+      updateCompass();
+    },
+    err => {
+      btn.disabled = false; btn.textContent = 'share my location ✦';
+      toast('location error: ' + err.message);
+    },
+    { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+  );
+
+  // Device orientation for compass heading
+  if (typeof DeviceOrientationEvent !== 'undefined' &&
+      typeof DeviceOrientationEvent.requestPermission === 'function') {
+    DeviceOrientationEvent.requestPermission()
+      .then(r => { if (r === 'granted') listenOrientation(); })
+      .catch(() => {});
+  } else {
+    listenOrientation();
+  }
+};
+
+function stopSharing() {
+  if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+  sharing = false;
+  document.getElementById('gps-btn').textContent = 'share my location ✦';
+  document.getElementById('my-dot').classList.remove('online');
+  document.getElementById('my-status').textContent = 'my location — stopped';
+  toast('stopped sharing ✦');
+}
+
+// ── Device orientation ──
+function listenOrientation() {
+  window.addEventListener('deviceorientationabsolute', handleOrientation, true);
+  window.addEventListener('deviceorientation', handleOrientation, true);
+}
+
+function handleOrientation(e) {
+  let heading = null;
+  if (e.webkitCompassHeading !== undefined) {
+    heading = e.webkitCompassHeading; // iOS
+  } else if (e.absolute && e.alpha !== null) {
+    heading = 360 - e.alpha;          // Android absolute
+  } else if (e.alpha !== null) {
+    heading = 360 - e.alpha;
+  }
+  if (heading !== null) {
+    deviceHeading = heading;
+    updateCompass();
+  }
+}
+
+// ── Compass math ──
+function toRad(d) { return d * Math.PI / 180; }
+function toDeg(r) { return r * 180 / Math.PI; }
+
+function bearingTo(lat1, lng1, lat2, lng2) {
+  const φ1 = toRad(lat1), φ2 = toRad(lat2);
+  const Δλ = toRad(lng2 - lng1);
+  const y = Math.sin(Δλ) * Math.cos(φ2);
+  const x = Math.cos(φ1)*Math.sin(φ2) - Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ);
+  return (toDeg(Math.atan2(y, x)) + 360) % 360;
+}
+
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = toRad(lat2 - lat1), dLon = toRad(lng2 - lng1);
+  const a = Math.sin(dLat/2)**2 +
+            Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function updateCompass() {
+  const needle = document.getElementById('needle-wrap');
+  const pill   = document.getElementById('distance-pill');
+  const ring   = document.getElementById('compass-ring');
+  const heart  = document.getElementById('needle-heart');
+
+  if (myLat === null || theirLat === null) {
+    pill.textContent = '— waiting for both locations —';
+    pill.classList.remove('near');
+    ring.classList.remove('has-bearing');
+    heart.classList.remove('show');
+    return;
+  }
+
+  const bearing = bearingTo(myLat, myLng, theirLat, theirLng);
+  const needleAngle = bearing - deviceHeading;
+
+  needle.style.transform = `rotate(${needleAngle}deg)`;
+  ring.classList.add('has-bearing');
+  heart.classList.add('show');
+
+  const km = haversineKm(myLat, myLng, theirLat, theirLng);
+  let distText;
+  if (km < 0.05) { distText = 'right here with you 💙'; pill.classList.add('near'); }
+  else if (km < 1) { distText = `${Math.round(km*1000)} m away`; pill.classList.remove('near'); }
+  else { distText = `${km.toFixed(1)} km away`; pill.classList.remove('near'); }
+  pill.textContent = distText;
+}
+
+// ── Init washes ──
+setTimeout(() => {
+  document.getElementById('w1').classList.add('show');
+  document.getElementById('w2').classList.add('show');
+}, 300);
+</script>
+</body>
+</html>

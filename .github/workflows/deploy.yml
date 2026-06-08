@@ -48,6 +48,7 @@ jobs:
             "goals/index.html"
             "notnotes/notes.html"
             "lovedle/index.html"
+            "compass/index.html"
           )
 
           for f in "${FIREBASE_FILES[@]}"; do
