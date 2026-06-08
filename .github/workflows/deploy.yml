@@ -77,8 +77,9 @@ jobs:
             "music/index.html"
 
           # watchlist needs TMDB key for movie/TV search
+          # printf strips trailing newlines that sneak in from copy-paste
           sed -i \
-            -e "s|%%TMDB_API_KEY%%|${TMDB_API_KEY}|g" \
+            -e "s|%%TMDB_API_KEY%%|$(printf '%s' "${TMDB_API_KEY}")|g" \
             "watchlist/index.html"
 
       # ── Deploy to GitHub Pages ───────────────────────────────────────────────
