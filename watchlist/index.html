@@ -1,451 +1,1317 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>our watchlist</title>
-<script>const FIREBASE_CONFIG={apiKey:"%%FIREBASE_API_KEY%%",authDomain:"%%FIREBASE_AUTH_DOMAIN%%",projectId:"%%FIREBASE_PROJECT_ID%%",storageBucket:"%%FIREBASE_STORAGE_BUCKET%%",messagingSenderId:"%%FIREBASE_MESSAGING_SENDER_ID%%",appId:"%%FIREBASE_APP_ID%%"};const TMDB_KEY="%%TMDB_API_KEY%%";</script>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@300;400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--cr:#e8f3fb;--ink:#0d1f2d;--il:#3a5a72;--mu:#5a7e99;--lb0:#f0f8ff;--lb1:#daeeff;--lb2:#b8dcf7;--lb3:#87bfe8;--lb4:#5ba3d9;--lb6:#1a6aa8;--pk:#c0627a;--rd:8px}
-body{font-family:'Inter',sans-serif;min-height:100vh;background:var(--cr);color:var(--ink)}
-body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.5}
-.wash{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(90px);opacity:0;transition:opacity 3s}
-.w1{width:500px;height:400px;background:radial-gradient(ellipse,#c8e4f5,transparent 70%);top:-80px;left:-100px}
-.w2{width:450px;height:380px;background:radial-gradient(ellipse,#daeef8,transparent 70%);bottom:-60px;right:-80px}
-.show{opacity:1!important}
-.pg{position:relative;z-index:2;max-width:680px;margin:0 auto;padding:2.5rem 1.25rem 6rem}
-/* header */
-.hdr{margin-bottom:2rem}
-.eyebrow{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mu);margin-bottom:.5rem}
-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,2.6rem);font-weight:400;color:var(--lb6);line-height:1.2}
-h1 span{font-style:italic;color:var(--lb4)}
-.stats{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu);margin-top:.5rem;letter-spacing:.05em}
-/* nav tabs — underline style */
-.nav{display:flex;gap:0;border-bottom:1px solid var(--lb2);margin-bottom:1.5rem;overflow-x:auto}
-.ntab{padding:.65rem 1.1rem;border:none;background:none;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:500;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .18s;letter-spacing:.01em}
-.ntab:hover{color:var(--lb4)}
-.ntab.on{color:var(--lb6);border-bottom-color:var(--lb4)}
-/* type filter */
-.tbar{display:flex;gap:.5rem;margin-bottom:1.2rem}
-.tpill{padding:.3rem .85rem;border:1px solid var(--lb2);border-radius:99px;background:#fff;font-family:'Inter',sans-serif;font-size:.75rem;font-weight:500;color:var(--mu);cursor:pointer;transition:all .15s}
-.tpill:hover{border-color:var(--lb4);color:var(--lb4)}
-.tpill.on{background:var(--lb4);color:#fff;border-color:var(--lb4)}
-/* cards list */
-.list{display:flex;flex-direction:column;gap:.6rem}
-.card{background:#fff;border:1px solid #e8f0f7;border-radius:12px;display:flex;align-items:stretch;overflow:hidden;cursor:pointer;transition:all .18s}
-.card:hover{box-shadow:0 4px 20px rgba(91,158,201,.15);transform:translateY(-1px);border-color:var(--lb2)}
-.card-accent{width:3px;flex-shrink:0}
-.film .card-accent{background:var(--lb4)}
-.tv .card-accent{background:var(--pk)}
-.card-thumb{width:52px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--lb0);font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:500;color:var(--lb6);overflow:hidden}
-.card-thumb img{width:100%;height:100%;object-fit:cover}
-/* search dropdown */
-.srch-wrap{position:relative}
-.srch-drop{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid var(--lb2);border-radius:10px;z-index:10;box-shadow:0 8px 24px rgba(26,106,168,.14);max-height:280px;overflow-y:auto;display:none}
-.srch-drop.open{display:block}
-.srch-item{display:flex;gap:.7rem;align-items:center;padding:.6rem .8rem;cursor:pointer;border-bottom:1px solid var(--lb1);transition:background .15s}
-.srch-item:last-child{border-bottom:none}
-.srch-item:hover{background:var(--lb0)}
-.srch-poster{width:32px;height:46px;border-radius:4px;object-fit:cover;background:var(--lb1);flex-shrink:0}
-.srch-poster-ph{width:32px;height:46px;border-radius:4px;background:var(--lb1);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--lb6)}
-.srch-info{min-width:0}
-.srch-name{font-family:'Inter',sans-serif;font-size:.82rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.srch-sub{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--mu);margin-top:2px}
-/* poster in detail modal */
-.det-poster{width:80px;height:116px;border-radius:8px;object-fit:cover;flex-shrink:0}
-.det-header{display:flex;gap:1rem;align-items:flex-start;margin-bottom:1rem}
-.det-overview{font-size:.82rem;color:var(--mu);line-height:1.6;margin-top:.5rem;font-style:italic}
-.card-body{flex:1;padding:.85rem 1rem;min-width:0}
-.card-top{display:flex;align-items:baseline;gap:.6rem;margin-bottom:.3rem;flex-wrap:wrap}
-.card-title{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
-.type-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:.15rem .45rem;border-radius:4px;flex-shrink:0}
-.type-film{background:#daeeff;color:var(--lb6)}
-.type-tv{background:#fce8ef;color:var(--pk)}
-.card-meta{font-family:'Inter',sans-serif;font-size:.73rem;color:var(--mu);display:flex;gap:.7rem;align-items:center;flex-wrap:wrap}
-.status-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;display:inline-block}
-.dot-want{background:#aac}
-.dot-watching{background:#e6b84a}
-.dot-watched{background:#5cb88a}
-/* who-badges */
-.who{display:flex;gap:.3rem;margin-top:.5rem}
-.who-av{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:8px;font-weight:400;border:1.5px solid var(--lb3);background:#fff;color:var(--mu);transition:all .18s}
-.who-av.on{background:var(--lb4);color:#fff;border-color:var(--lb4)}
-/* rating dots */
-.rdots{display:flex;gap:3px;margin-top:.4rem}
-.rdot{width:6px;height:6px;border-radius:50%;background:var(--lb2);transition:background .15s}
-.rdot.on{background:var(--lb4)}
-/* empty */
-.empty{text-align:center;padding:4rem 1rem;color:var(--mu);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.08em;line-height:2}
-/* timeline */
-.tl{overflow-x:auto;padding-bottom:1rem}
-.tl-wrap{display:flex;gap:1rem;min-width:max-content;align-items:flex-start}
-.tl-col{width:170px}
-.tl-month{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--mu);padding-bottom:.4rem;margin-bottom:.5rem;border-bottom:1px solid var(--lb2)}
-.tl-item{background:#fff;border:1px solid #e8f0f7;border-radius:8px;padding:.55rem .7rem;margin-bottom:.4rem;cursor:pointer;transition:all .15s;display:flex;gap:.55rem;align-items:flex-start}
-.tl-item:hover{border-color:var(--lb3);box-shadow:0 2px 8px rgba(91,158,201,.1)}
-.tl-poster{width:34px;height:50px;border-radius:4px;object-fit:cover;flex-shrink:0}
-.tl-poster-ph{width:34px;height:50px;border-radius:4px;background:var(--lb1);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:.85rem;color:var(--lb6)}
-.tl-body{min-width:0;flex:1}
-.tl-ttl{font-family:'Cormorant Garamond',serif;font-size:.95rem;color:var(--ink)}
-.tl-meta{font-family:'DM Mono',monospace;font-size:9px;color:var(--mu);margin-top:2px}
-/* fab */
-.fab{position:fixed;bottom:1.8rem;right:1.8rem;background:var(--lb6);color:#fff;border:none;border-radius:50%;width:52px;height:52px;font-size:1.6rem;cursor:pointer;box-shadow:0 4px 18px rgba(26,106,168,.35);z-index:20;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.fab:hover{transform:scale(1.07);background:var(--lb4)}
-/* modal */
-.ov{display:none;position:fixed;inset:0;background:rgba(13,31,45,.3);backdrop-filter:blur(6px);z-index:30;align-items:center;justify-content:center;padding:1rem}
-.ov.on{display:flex;animation:fi .2s ease}
-@keyframes fi{from{opacity:0}to{opacity:1}}
-.mdl{background:#fff;border-radius:18px;padding:1.75rem;width:100%;max-width:400px;border:1px solid var(--lb1);max-height:88vh;overflow-y:auto;box-shadow:0 16px 48px rgba(26,106,168,.15)}
-.mdl-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:400;color:var(--lb6);margin-bottom:1.25rem}
-lbl,label{display:block;font-family:'DM Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--mu);margin:.85rem 0 .3rem}
-input[type=text],input[type=date],select,textarea{width:100%;border:1px solid var(--lb2);border-radius:8px;padding:.6rem .8rem;font-size:.9rem;font-family:'Inter',sans-serif;color:var(--ink);background:var(--lb0);outline:none;transition:border .18s;-webkit-appearance:none}
-input:focus,select:focus,textarea:focus{border-color:var(--lb4)}
-textarea{min-height:60px;resize:vertical}
-.mrow{display:flex;gap:.6rem;margin-top:1.2rem}
-.btn{flex:1;padding:.7rem;border-radius:9px;border:none;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .18s}
-.btn-p{background:var(--lb6);color:#fff}
-.btn-p:hover{background:var(--lb4)}
-.btn-s{background:var(--lb0);color:var(--mu);border:1px solid var(--lb2)}
-.btn-d{background:#fff5f5;color:#b03030;border:1px solid #f0c0c0}
-/* who toggles in modal */
-.who-row{display:flex;gap:.6rem;margin-top:.35rem}
-.wtog{padding:.4rem 1rem;border-radius:8px;border:1.5px solid var(--lb2);background:var(--lb0);font-family:'Inter',sans-serif;font-size:.8rem;color:var(--mu);cursor:pointer;transition:all .18s}
-.wtog.on{background:var(--lb4);color:#fff;border-color:var(--lb4)}
-/* rating in modal */
-.rrow{display:flex;gap:.4rem;margin-top:.35rem}
-.rstar{width:24px;height:24px;border-radius:50%;background:var(--lb1);border:1.5px solid var(--lb2);cursor:pointer;transition:all .15s;font-family:'DM Mono',monospace;font-size:10px;display:flex;align-items:center;justify-content:center;color:var(--mu)}
-.rstar.on{background:var(--lb4);border-color:var(--lb4);color:#fff}
-/* toast + sync */
-.toast{position:fixed;bottom:1.6rem;left:50%;transform:translateX(-50%);background:var(--lb6);color:#fff;padding:.5rem 1.25rem;border-radius:99px;font-family:'DM Mono',monospace;font-size:10.5px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;z-index:50;letter-spacing:.06em}
-.toast.on{opacity:1}
-.sync{position:fixed;top:0;left:0;right:0;height:2px;background:var(--lb3);z-index:100;display:none}
-.sync.on{display:block;animation:sp 1s ease-in-out infinite alternate}
-@keyframes sp{from{opacity:.4}to{opacity:1}}
-@media(max-width:500px){.card-title{max-width:180px}.nav{gap:0}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>our watchlist</title>
+  <script>const FIREBASE_CONFIG = { apiKey: "%%FIREBASE_API_KEY%%", authDomain: "%%FIREBASE_AUTH_DOMAIN%%", projectId: "%%FIREBASE_PROJECT_ID%%", storageBucket: "%%FIREBASE_STORAGE_BUCKET%%", messagingSenderId: "%%FIREBASE_MESSAGING_SENDER_ID%%", appId: "%%FIREBASE_APP_ID%%" }; const TMDB_KEY = "%%TMDB_API_KEY%%";</script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@300;400&family=Inter:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --cr: #e8f3fb;
+      --ink: #0d1f2d;
+      --il: #3a5a72;
+      --mu: #5a7e99;
+      --lb0: #f0f8ff;
+      --lb1: #daeeff;
+      --lb2: #b8dcf7;
+      --lb3: #87bfe8;
+      --lb4: #5ba3d9;
+      --lb6: #1a6aa8;
+      --pk: #c0627a;
+      --rd: 8px
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background: var(--cr);
+      color: var(--ink)
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: .5
+    }
+
+    .wash {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(90px);
+      opacity: 0;
+      transition: opacity 3s
+    }
+
+    .w1 {
+      width: 500px;
+      height: 400px;
+      background: radial-gradient(ellipse, #c8e4f5, transparent 70%);
+      top: -80px;
+      left: -100px
+    }
+
+    .w2 {
+      width: 450px;
+      height: 380px;
+      background: radial-gradient(ellipse, #daeef8, transparent 70%);
+      bottom: -60px;
+      right: -80px
+    }
+
+    .show {
+      opacity: 1 !important
+    }
+
+    .pg {
+      position: relative;
+      z-index: 2;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 6rem
+    }
+
+    /* header */
+    .hdr {
+      margin-bottom: 2rem
+    }
+
+    .eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 9.5px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--mu);
+      margin-bottom: .5rem
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 5vw, 2.6rem);
+      font-weight: 400;
+      color: var(--lb6);
+      line-height: 1.2
+    }
+
+    h1 span {
+      font-style: italic;
+      color: var(--lb4)
+    }
+
+    .stats {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--mu);
+      margin-top: .5rem;
+      letter-spacing: .05em
+    }
+
+    /* nav tabs — underline style */
+    .nav {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--lb2);
+      margin-bottom: 1.5rem;
+      overflow-x: auto
+    }
+
+    .ntab {
+      padding: .65rem 1.1rem;
+      border: none;
+      background: none;
+      font-family: 'Inter', sans-serif;
+      font-size: .8rem;
+      font-weight: 500;
+      color: var(--mu);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      white-space: nowrap;
+      transition: all .18s;
+      letter-spacing: .01em
+    }
+
+    .ntab:hover {
+      color: var(--lb4)
+    }
+
+    .ntab.on {
+      color: var(--lb6);
+      border-bottom-color: var(--lb4)
+    }
+
+    /* type filter */
+    .tbar {
+      display: flex;
+      gap: .5rem;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    .tpill {
+      padding: .3rem .85rem;
+      border: 1px solid var(--lb2);
+      border-radius: 99px;
+      background: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: .75rem;
+      font-weight: 500;
+      color: var(--mu);
+      cursor: pointer;
+      transition: all .15s
+    }
+
+    .tpill:hover {
+      border-color: var(--lb4);
+      color: var(--lb4)
+    }
+
+    .tpill.on {
+      background: var(--lb4);
+      color: #fff;
+      border-color: var(--lb4)
+    }
+
+    .qsrch {
+      flex: 1;
+      min-width: 120px;
+      border: 1px solid var(--lb2);
+      border-radius: 99px;
+      padding: .3rem .9rem;
+      font-family: 'Inter', sans-serif;
+      font-size: .75rem;
+      color: var(--ink);
+      background: #fff;
+      outline: none;
+      transition: border .15s
+    }
+
+    .qsrch:focus {
+      border-color: var(--lb4)
+    }
+
+    .sortsel {
+      border: 1px solid var(--lb2);
+      border-radius: 99px;
+      padding: .3rem .7rem;
+      font-family: 'Inter', sans-serif;
+      font-size: .75rem;
+      color: var(--mu);
+      background: #fff;
+      outline: none;
+      cursor: pointer;
+      -webkit-appearance: none
+    }
+
+    .surprise {
+      border: 1px solid var(--lb2);
+      border-radius: 99px;
+      padding: .3rem .9rem;
+      font-family: 'Inter', sans-serif;
+      font-size: .75rem;
+      color: var(--lb6);
+      background: #fff;
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap
+    }
+
+    .surprise:hover {
+      background: var(--lb4);
+      color: #fff;
+      border-color: var(--lb4)
+    }
+
+    /* cards list */
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: .6rem
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e8f0f7;
+      border-radius: 12px;
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all .18s
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 20px rgba(91, 158, 201, .15);
+      transform: translateY(-1px);
+      border-color: var(--lb2)
+    }
+
+    .card-accent {
+      width: 3px;
+      flex-shrink: 0
+    }
+
+    .film .card-accent {
+      background: var(--lb4)
+    }
+
+    .tv .card-accent {
+      background: var(--pk)
+    }
+
+    .card-thumb {
+      width: 52px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--lb0);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: var(--lb6);
+      overflow: hidden;
+      transition: filter .15s
+    }
+
+    .card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .card-thumb:hover {
+      filter: brightness(.92)
+    }
+
+    /* search dropdown */
+    .srch-wrap {
+      position: relative
+    }
+
+    .srch-drop {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid var(--lb2);
+      border-radius: 10px;
+      z-index: 10;
+      box-shadow: 0 8px 24px rgba(26, 106, 168, .14);
+      max-height: 280px;
+      overflow-y: auto;
+      display: none
+    }
+
+    .srch-drop.open {
+      display: block
+    }
+
+    .srch-item {
+      display: flex;
+      gap: .7rem;
+      align-items: center;
+      padding: .6rem .8rem;
+      cursor: pointer;
+      border-bottom: 1px solid var(--lb1);
+      transition: background .15s
+    }
+
+    .srch-item:last-child {
+      border-bottom: none
+    }
+
+    .srch-item:hover,
+    .srch-item.kb {
+      background: var(--lb0)
+    }
+
+    .srch-poster {
+      width: 32px;
+      height: 46px;
+      border-radius: 4px;
+      object-fit: cover;
+      background: var(--lb1);
+      flex-shrink: 0
+    }
+
+    .srch-poster-ph {
+      width: 32px;
+      height: 46px;
+      border-radius: 4px;
+      background: var(--lb1);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      color: var(--lb6)
+    }
+
+    .srch-info {
+      min-width: 0;
+      flex: 1
+    }
+
+    .srch-name {
+      font-family: 'Inter', sans-serif;
+      font-size: .82rem;
+      font-weight: 500;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .srch-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 9.5px;
+      color: var(--mu);
+      margin-top: 2px;
+      display: flex;
+      gap: .4rem;
+      align-items: center
+    }
+
+    .srch-rating {
+      background: var(--lb1);
+      color: var(--lb6);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-weight: 400
+    }
+
+    /* poster in detail modal */
+    .det-poster {
+      width: 80px;
+      height: 116px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: transform .15s
+    }
+
+    .det-poster:hover {
+      transform: scale(1.03)
+    }
+
+    .det-header {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 1rem
+    }
+
+    .det-overview {
+      font-size: .82rem;
+      color: var(--mu);
+      line-height: 1.6;
+      margin-top: .5rem;
+      font-style: italic
+    }
+
+    .card-body {
+      flex: 1;
+      padding: .85rem 1rem;
+      min-width: 0
+    }
+
+    .card-top {
+      display: flex;
+      align-items: baseline;
+      gap: .6rem;
+      margin-bottom: .3rem;
+      flex-wrap: wrap
+    }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 260px
+    }
+
+    .type-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: .15rem .45rem;
+      border-radius: 4px;
+      flex-shrink: 0
+    }
+
+    .type-film {
+      background: #daeeff;
+      color: var(--lb6)
+    }
+
+    .type-tv {
+      background: #fce8ef;
+      color: var(--pk)
+    }
+
+    .card-meta {
+      font-family: 'Inter', sans-serif;
+      font-size: .73rem;
+      color: var(--mu);
+      display: flex;
+      gap: .7rem;
+      align-items: center;
+      flex-wrap: wrap
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: inline-block
+    }
+
+    .dot-want {
+      background: #aac
+    }
+
+    .dot-watching {
+      background: #e6b84a
+    }
+
+    .dot-watched {
+      background: #5cb88a
+    }
+
+    /* who-badges */
+    .who {
+      display: flex;
+      gap: .3rem;
+      margin-top: .5rem
+    }
+
+    .who-av {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 8px;
+      font-weight: 400;
+      border: 1.5px solid var(--lb3);
+      background: #fff;
+      color: var(--mu);
+      transition: all .18s
+    }
+
+    .who-av.on {
+      background: var(--lb4);
+      color: #fff;
+      border-color: var(--lb4)
+    }
+
+    /* rating dots */
+    .rdots {
+      display: flex;
+      gap: 3px;
+      margin-top: .4rem
+    }
+
+    .rdot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--lb2);
+      transition: background .15s
+    }
+
+    .rdot.on {
+      background: var(--lb4)
+    }
+
+    /* empty */
+    .empty {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--mu);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .08em;
+      line-height: 2
+    }
+
+    /* timeline */
+    .tl {
+      overflow-x: auto;
+      padding-bottom: 1rem
+    }
+
+    .tl-wrap {
+      display: flex;
+      gap: 1rem;
+      min-width: max-content;
+      align-items: flex-start
+    }
+
+    .tl-col {
+      width: 170px
+    }
+
+    .tl-month {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--mu);
+      padding-bottom: .4rem;
+      margin-bottom: .5rem;
+      border-bottom: 1px solid var(--lb2)
+    }
+
+    .tl-item {
+      background: #fff;
+      border: 1px solid #e8f0f7;
+      border-radius: 8px;
+      padding: .55rem .7rem;
+      margin-bottom: .4rem;
+      cursor: pointer;
+      transition: all .15s;
+      display: flex;
+      gap: .55rem;
+      align-items: flex-start
+    }
+
+    .tl-item:hover {
+      border-color: var(--lb3);
+      box-shadow: 0 2px 8px rgba(91, 158, 201, .1)
+    }
+
+    .tl-poster {
+      width: 34px;
+      height: 50px;
+      border-radius: 4px;
+      object-fit: cover;
+      flex-shrink: 0
+    }
+
+    .tl-poster-ph {
+      width: 34px;
+      height: 50px;
+      border-radius: 4px;
+      background: var(--lb1);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: .85rem;
+      color: var(--lb6)
+    }
+
+    .tl-body {
+      min-width: 0;
+      flex: 1
+    }
+
+    .tl-ttl {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: .95rem;
+      color: var(--ink)
+    }
+
+    .tl-meta {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: var(--mu);
+      margin-top: 2px
+    }
+
+    /* fab */
+    .fab {
+      position: fixed;
+      bottom: 1.8rem;
+      right: 1.8rem;
+      background: var(--lb6);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 52px;
+      height: 52px;
+      font-size: 1.6rem;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(26, 106, 168, .35);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s
+    }
+
+    .fab:hover {
+      transform: scale(1.07);
+      background: var(--lb4)
+    }
+
+    /* modal */
+    .ov {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(13, 31, 45, .3);
+      backdrop-filter: blur(6px);
+      z-index: 30;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem
+    }
+
+    .ov.on {
+      display: flex;
+      animation: fi .2s ease
+    }
+
+    @keyframes fi {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .mdl {
+      background: #fff;
+      border-radius: 18px;
+      padding: 1.75rem;
+      width: 100%;
+      max-width: 400px;
+      border: 1px solid var(--lb1);
+      max-height: 88vh;
+      overflow-y: auto;
+      box-shadow: 0 16px 48px rgba(26, 106, 168, .15)
+    }
+
+    .mdl-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: var(--lb6);
+      margin-bottom: 1.25rem
+    }
+
+    lbl,
+    label {
+      display: block;
+      font-family: 'DM Mono', monospace;
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--mu);
+      margin: .85rem 0 .3rem
+    }
+
+    input[type=text],
+    input[type=date],
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--lb2);
+      border-radius: 8px;
+      padding: .6rem .8rem;
+      font-size: .9rem;
+      font-family: 'Inter', sans-serif;
+      color: var(--ink);
+      background: var(--lb0);
+      outline: none;
+      transition: border .18s;
+      -webkit-appearance: none
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--lb4)
+    }
+
+    textarea {
+      min-height: 60px;
+      resize: vertical
+    }
+
+    .mrow {
+      display: flex;
+      gap: .6rem;
+      margin-top: 1.2rem
+    }
+
+    .btn {
+      flex: 1;
+      padding: .7rem;
+      border-radius: 9px;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: .85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .18s
+    }
+
+    .btn-p {
+      background: var(--lb6);
+      color: #fff
+    }
+
+    .btn-p:hover {
+      background: var(--lb4)
+    }
+
+    .btn-s {
+      background: var(--lb0);
+      color: var(--mu);
+      border: 1px solid var(--lb2)
+    }
+
+    .btn-d {
+      background: #fff5f5;
+      color: #b03030;
+      border: 1px solid #f0c0c0
+    }
+
+    /* who toggles in modal */
+    .who-row {
+      display: flex;
+      gap: .6rem;
+      margin-top: .35rem
+    }
+
+    .wtog {
+      padding: .4rem 1rem;
+      border-radius: 8px;
+      border: 1.5px solid var(--lb2);
+      background: var(--lb0);
+      font-family: 'Inter', sans-serif;
+      font-size: .8rem;
+      color: var(--mu);
+      cursor: pointer;
+      transition: all .18s
+    }
+
+    .wtog.on {
+      background: var(--lb4);
+      color: #fff;
+      border-color: var(--lb4)
+    }
+
+    /* rating in modal */
+    .rrow {
+      display: flex;
+      gap: .4rem;
+      margin-top: .35rem
+    }
+
+    .rstar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--lb1);
+      border: 1.5px solid var(--lb2);
+      cursor: pointer;
+      transition: all .15s;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--mu)
+    }
+
+    .rstar.on {
+      background: var(--lb4);
+      border-color: var(--lb4);
+      color: #fff
+    }
+
+    /* toast + sync */
+    .toast {
+      position: fixed;
+      bottom: 1.6rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--lb6);
+      color: #fff;
+      padding: .5rem 1.25rem;
+      border-radius: 99px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10.5px;
+      opacity: 0;
+      transition: opacity .3s;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 50;
+      letter-spacing: .06em
+    }
+
+    .toast.on {
+      opacity: 1
+    }
+
+    .sync {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--lb3);
+      z-index: 100;
+      display: none
+    }
+
+    .sync.on {
+      display: block;
+      animation: sp 1s ease-in-out infinite alternate
+    }
+
+    @keyframes sp {
+      from {
+        opacity: .4
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    /* lightbox */
+    .lb-ov {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(13, 31, 45, .55);
+      backdrop-filter: blur(4px);
+      z-index: 40;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem
+    }
+
+    .lb-ov.on {
+      display: flex;
+      animation: fi .2s ease
+    }
+
+    .lb-ov img {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 10px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, .3)
+    }
+
+    @media(max-width:500px) {
+      .card-title {
+        max-width: 180px
+      }
+
+      .nav {
+        gap: 0
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="wash w1" id="wa"></div>
-<div class="wash w2" id="wb"></div>
-<div class="sync" id="sync"></div>
-<div class="toast" id="toast"></div>
-
-<div class="pg">
-  <div class="hdr">
-    <div class="eyebrow">our little world</div>
-    <h1>our watchlist <span>&#10022;</span></h1>
-    <div class="stats" id="stats"></div>
-  </div>
-
-  <nav class="nav">
-    <button class="ntab on" data-t="all" onclick="switchTab('all')">All</button>
-    <button class="ntab" data-t="want" onclick="switchTab('want')">To Watch</button>
-    <button class="ntab" data-t="watching" onclick="switchTab('watching')">Watching</button>
-    <button class="ntab" data-t="watched" onclick="switchTab('watched')">Watched</button>
-    <button class="ntab" data-t="timeline" onclick="switchTab('timeline')">Timeline</button>
-  </nav>
-
-  <div class="tbar" id="tbar">
-    <button class="tpill on" data-f="all" onclick="setF('all')">All</button>
-    <button class="tpill" data-f="movie" onclick="setF('movie')">Films</button>
-    <button class="tpill" data-f="tv" onclick="setF('tv')">Series</button>
-  </div>
-
-  <div class="list" id="list"></div>
-  <div class="tl" id="tl" style="display:none"></div>
-</div>
-
-<button class="fab" onclick="openAdd()" title="Add">+</button>
-
-<div class="ov" id="add-ov">
-  <div class="mdl">
-    <div class="mdl-title">Add to watchlist</div>
-    <label>Search title</label>
-    <div class="srch-wrap">
-      <input type="text" id="a-srch" placeholder="Start typing to search..." autocomplete="off" oninput="onSearch()">
-      <div class="srch-drop" id="srch-drop"></div>
+  <div class="wash w1" id="wa"></div>
+  <div class="wash w2" id="wb"></div>
+  <div class="sync" id="sync"></div>
+  <div class="toast" id="toast"></div>
+  <div class="pg">
+    <div class="hdr">
+      <div class="eyebrow">our little world</div>
+      <h1>our watchlist <span>&#10022;</span></h1>
+      <div class="stats" id="stats"></div>
     </div>
-    <div id="a-picked" style="display:none;margin-top:.8rem">
-      <div style="display:flex;gap:.8rem;align-items:flex-start;background:var(--lb0);border:1px solid var(--lb2);border-radius:10px;padding:.7rem">
-        <img id="a-poster-img" class="det-poster" src="" alt="" style="display:none">
-        <div style="min-width:0;flex:1">
-          <div id="a-picked-title" style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:500;color:var(--ink)"></div>
-          <div id="a-picked-meta" style="font-family:'DM Mono',monospace;font-size:9.5px;color:var(--mu);margin:.25rem 0"></div>
-          <div id="a-picked-overview" class="det-overview"></div>
+    <nav class="nav">
+      <button class="ntab on" data-t="all" onclick="switchTab('all')">All</button>
+      <button class="ntab" data-t="want" onclick="switchTab('want')">To Watch</button>
+      <button class="ntab" data-t="watching" onclick="switchTab('watching')">Watching</button>
+      <button class="ntab" data-t="watched" onclick="switchTab('watched')">Watched</button>
+      <button class="ntab" data-t="timeline" onclick="switchTab('timeline')">Timeline</button>
+    </nav>
+    <div class="tbar" id="tbar">
+      <button class="tpill on" data-f="all" onclick="setF('all')">All</button>
+      <button class="tpill" data-f="movie" onclick="setF('movie')">Films</button>
+      <button class="tpill" data-f="tv" onclick="setF('tv')">Series</button>
+      <input type="text" class="qsrch" id="q" placeholder="search your list..." oninput="render()">
+      <select class="sortsel" id="sortsel" onchange="render()">
+        <option value="added">Newest added</option>
+        <option value="rating">Top rated</option>
+        <option value="alpha">A–Z</option>
+      </select>
+      <button class="surprise" onclick="surpriseMe()">&#127922; Surprise me</button>
+    </div>
+    <div class="list" id="list"></div>
+    <div class="tl" id="tl" style="display:none"></div>
+  </div>
+  <button class="fab" onclick="openAdd()" title="Add">+</button>
+  <div class="ov" id="add-ov">
+    <div class="mdl">
+      <div class="mdl-title">Add to watchlist</div>
+      <label>Search title</label>
+      <div class="srch-wrap">
+        <input type="text" id="a-srch" placeholder="Start typing to search..." autocomplete="off" oninput="onSearch()"
+          onkeydown="srchKey(event)">
+        <div class="srch-drop" id="srch-drop"></div>
+      </div>
+      <div id="a-picked" style="display:none;margin-top:.8rem">
+        <div
+          style="display:flex;gap:.8rem;align-items:flex-start;background:var(--lb0);border:1px solid var(--lb2);border-radius:10px;padding:.7rem">
+          <img id="a-poster-img" class="det-poster" src="" alt="" style="display:none;cursor:default">
+          <div style="min-width:0;flex:1">
+            <div id="a-picked-title"
+              style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:500;color:var(--ink)"></div>
+            <div id="a-picked-meta"
+              style="font-family:'DM Mono',monospace;font-size:9.5px;color:var(--mu);margin:.25rem 0"></div>
+            <div id="a-picked-overview" class="det-overview"></div>
+          </div>
+          <button onclick="clearPick()"
+            style="background:none;border:none;color:var(--mu);cursor:pointer;font-size:1rem;line-height:1">&#x2715;</button>
         </div>
-        <button onclick="clearPick()" style="background:none;border:none;color:var(--mu);cursor:pointer;font-size:1rem;line-height:1">&#x2715;</button>
+      </div>
+      <label style="margin-top:.8rem">Or enter manually</label>
+      <input type="text" id="a-ttl" placeholder="Title" style="display:none">
+      <label>Type</label>
+      <select id="a-type">
+        <option value="movie">Film</option>
+        <option value="tv">Series</option>
+      </select>
+      <label>Genre</label>
+      <select id="a-genre">
+        <option>romance</option>
+        <option>comedy</option>
+        <option>drama</option>
+        <option>thriller</option>
+        <option>horror</option>
+        <option>sci-fi</option>
+        <option>fantasy</option>
+        <option>animation</option>
+        <option>documentary</option>
+        <option>action</option>
+        <option>mystery</option>
+        <option>other</option>
+      </select>
+      <label>Added by</label>
+      <select id="a-by">
+        <option>Danvanth</option>
+        <option>Raksha</option>
+      </select>
+      <label>Notes</label><textarea id="a-notes" placeholder="Why we should watch this..."></textarea>
+      <div class="mrow">
+        <button class="btn btn-s" onclick="closeAll()">Cancel</button>
+        <button class="btn btn-p" onclick="saveNew()">Add</button>
       </div>
     </div>
-    <label style="margin-top:.8rem">Or enter manually</label>
-    <input type="text" id="a-ttl" placeholder="Title" style="display:none">
-    <label>Type</label>
-    <select id="a-type"><option value="movie">Film</option><option value="tv">Series</option></select>
-    <label>Genre</label>
-    <select id="a-genre">
-      <option>romance</option><option>comedy</option><option>drama</option>
-      <option>thriller</option><option>horror</option><option>sci-fi</option>
-      <option>fantasy</option><option>animation</option><option>documentary</option>
-      <option>action</option><option>mystery</option><option>other</option>
-    </select>
-    <label>Added by</label>
-    <select id="a-by"><option>Danvanth</option><option>Raksha</option></select>
-    <label>Notes</label><textarea id="a-notes" placeholder="Why we should watch this..."></textarea>
-    <div class="mrow">
-      <button class="btn btn-s" onclick="closeAll()">Cancel</button>
-      <button class="btn btn-p" onclick="saveNew()">Add</button>
-    </div>
   </div>
-</div>
-
-<div class="ov" id="det-ov">
-  <div class="mdl">
-    <div class="mdl-title" id="d-ttl"></div>
-    <div class="det-header" id="d-hdr" style="display:none">
-      <img id="d-poster" class="det-poster" src="" alt="">
-      <div style="min-width:0;flex:1">
-        <div id="d-meta-line" style="font-family:'DM Mono',monospace;font-size:9.5px;color:var(--mu)"></div>
-        <div id="d-overview" class="det-overview"></div>
+  <div class="ov" id="det-ov">
+    <div class="mdl">
+      <div class="mdl-title" id="d-ttl"></div>
+      <div class="det-header" id="d-hdr" style="display:none">
+        <img id="d-poster" class="det-poster" src="" alt="" onclick="openLightbox()">
+        <div style="min-width:0;flex:1">
+          <div id="d-meta-line" style="font-family:'DM Mono',monospace;font-size:9.5px;color:var(--mu)"></div>
+          <div id="d-overview" class="det-overview"></div>
+        </div>
+      </div>
+      <label>Status</label>
+      <select id="d-status">
+        <option value="want">To Watch</option>
+        <option value="watching">Watching</option>
+        <option value="watched">Watched</option>
+      </select>
+      <label>Watched by</label>
+      <div class="who-row">
+        <button class="wtog" id="wt-d" onclick="togWho('Danvanth')">Danvanth</button>
+        <button class="wtog" id="wt-r" onclick="togWho('Raksha')">Raksha</button>
+      </div>
+      <label>Date watched</label><input type="date" id="d-date">
+      <label>Rating (1-5)</label>
+      <div class="rrow" id="d-stars">
+        <button class="rstar" data-v="1" onclick="setR(1)">1</button>
+        <button class="rstar" data-v="2" onclick="setR(2)">2</button>
+        <button class="rstar" data-v="3" onclick="setR(3)">3</button>
+        <button class="rstar" data-v="4" onclick="setR(4)">4</button>
+        <button class="rstar" data-v="5" onclick="setR(5)">5</button>
+      </div>
+      <label>Notes / Review</label><textarea id="d-notes"></textarea>
+      <div class="mrow">
+        <button class="btn btn-d" onclick="delItem()">Delete</button>
+        <button class="btn btn-s" onclick="closeAll()">Cancel</button>
+        <button class="btn btn-p" onclick="saveEdit()">Save</button>
       </div>
     </div>
-    <label>Status</label>
-    <select id="d-status">
-      <option value="want">To Watch</option>
-      <option value="watching">Watching</option>
-      <option value="watched">Watched</option>
-    </select>
-    <label>Watched by</label>
-    <div class="who-row">
-      <button class="wtog" id="wt-d" onclick="togWho('Danvanth')">Danvanth</button>
-      <button class="wtog" id="wt-r" onclick="togWho('Raksha')">Raksha</button>
-    </div>
-    <label>Date watched</label><input type="date" id="d-date">
-    <label>Rating (1-5)</label>
-    <div class="rrow" id="d-stars">
-      <button class="rstar" data-v="1" onclick="setR(1)">1</button>
-      <button class="rstar" data-v="2" onclick="setR(2)">2</button>
-      <button class="rstar" data-v="3" onclick="setR(3)">3</button>
-      <button class="rstar" data-v="4" onclick="setR(4)">4</button>
-      <button class="rstar" data-v="5" onclick="setR(5)">5</button>
-    </div>
-    <label>Notes / Review</label><textarea id="d-notes"></textarea>
-    <div class="mrow">
-      <button class="btn btn-d" onclick="delItem()">Delete</button>
-      <button class="btn btn-s" onclick="closeAll()">Cancel</button>
-      <button class="btn btn-p" onclick="saveEdit()">Save</button>
-    </div>
   </div>
-</div>
-
-<script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-import{getFirestore,collection,doc,addDoc,setDoc,deleteDoc,onSnapshot,orderBy,query,serverTimestamp}from"https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
-const db=getFirestore(initializeApp(FIREBASE_CONFIG));
-const col=collection(db,'watchlist');
-let items=[],tab='all',flt='all',eid=null,eWho=[],eR=0;
-
-onSnapshot(query(col,orderBy('createdAt','desc')),s=>{
-  items=s.docs.map(d=>({id:d.id,...d.data()}));
-  render();updateStats();
-});
-
-const $=id=>document.getElementById(id);
-function syncing(on){$('sync').classList.toggle('on',on)}
-function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2600)}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-
-window.switchTab=t=>{
-  tab=t;
-  document.querySelectorAll('.ntab').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
-  $('tbar').style.display=t==='timeline'?'none':'flex';
-  $('list').style.display=t==='timeline'?'none':'flex';
-  $('tl').style.display=t==='timeline'?'block':'none';
-  render();
-};
-window.setF=f=>{
-  flt=f;
-  document.querySelectorAll('.tpill').forEach(b=>b.classList.toggle('on',b.dataset.f===f));
-  render();
-};
-
-function updateStats(){
-  const w=items.filter(x=>x.status==='watched').length;
-  const tot=items.length;
-  $('stats').textContent=`${tot} title${tot!==1?'s':''} — ${w} watched`;
-}
-
-function render(){
-  if(tab==='timeline'){renderTL();return;}
-  const el=$('list');
-  let list=items.filter(x=>tab==='all'||x.status===tab);
-  if(flt!=='all')list=list.filter(x=>x.type===flt);
-  if(!list.length){el.innerHTML='<div class="empty">nothing here yet<br>add something with the + button</div>';return;}
-  el.innerHTML=list.map(x=>{
-    const init=esc((x.title||'?')[0].toUpperCase());
-    const typeTag=x.type==='tv'?'<span class="type-tag type-tv">Series</span>':'<span class="type-tag type-film">Film</span>';
-    const statusMap={want:'dot-want',watching:'dot-watching',watched:'dot-watched'};
-    const statusLabel={want:'To watch',watching:'Watching',watched:'Watched'};
-    const who=['Danvanth','Raksha'].map(w=>`<div class="who-av${(x.watchedBy||[]).includes(w)?' on':''}">${w[0]}</div>`).join('');
-    const dots=x.rating?[1,2,3,4,5].map(i=>`<div class="rdot${i<=x.rating?' on':''}"></div>`).join(''):'';
-    const thumb=x.posterUrl?`<img src="${x.posterUrl}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:`${init}`;
-    return`<div class="card ${x.type==='tv'?'tv':'film'}" onclick="openDet('${x.id}')">
+  <div class="lb-ov" id="lb-ov" onclick="closeLightbox()"><img id="lb-img" src="" alt=""></div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getFirestore, collection, doc, addDoc, setDoc, deleteDoc, onSnapshot, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+    const db = getFirestore(initializeApp(FIREBASE_CONFIG));
+    const col = collection(db, 'watchlist');
+    let items = [], tab = 'all', flt = 'all', eid = null, eWho = [], eR = 0;
+    onSnapshot(query(col, orderBy('createdAt', 'desc')), s => {
+      items = s.docs.map(d => ({ id: d.id, ...d.data() }));
+      render(); updateStats();
+    });
+    const $ = id => document.getElementById(id);
+    function syncing(on) { $('sync').classList.toggle('on', on) }
+    function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('on'); setTimeout(() => t.classList.remove('on'), 2600) }
+    function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }
+    window.switchTab = t => {
+      tab = t;
+      document.querySelectorAll('.ntab').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+      $('tbar').style.display = t === 'timeline' ? 'none' : 'flex';
+      $('list').style.display = t === 'timeline' ? 'none' : 'flex';
+      $('tl').style.display = t === 'timeline' ? 'block' : 'none';
+      render();
+    };
+    window.setF = f => {
+      flt = f;
+      document.querySelectorAll('.tpill').forEach(b => b.classList.toggle('on', b.dataset.f === f));
+      render();
+    };
+    function updateStats() {
+      const w = items.filter(x => x.status === 'watched').length;
+      const tot = items.length;
+      $('stats').textContent = `${tot} title${tot !== 1 ? 's' : ''} — ${w} watched`;
+    }
+    function getFiltered() {
+      let list = items.filter(x => tab === 'all' || x.status === tab);
+      if (flt !== 'all') list = list.filter(x => x.type === flt);
+      const q = ($('q').value || '').trim().toLowerCase();
+      if (q) list = list.filter(x => (x.title || '').toLowerCase().includes(q) || (x.genre || '').toLowerCase().includes(q) || (x.notes || '').toLowerCase().includes(q));
+      const sort = $('sortsel').value;
+      if (sort === 'rating') list = [...list].sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      else if (sort === 'alpha') list = [...list].sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+      return list;
+    }
+    function render() {
+      if (tab === 'timeline') { renderTL(); return; }
+      const el = $('list');
+      const list = getFiltered();
+      if (!list.length) { el.innerHTML = '<div class="empty">nothing here yet<br>add something with the + button</div>'; return; }
+      el.innerHTML = list.map(x => {
+        const init = esc((x.title || '?')[0].toUpperCase());
+        const typeTag = x.type === 'tv' ? '<span class="type-tag type-tv">Series</span>' : '<span class="type-tag type-film">Film</span>';
+        const statusMap = { want: 'dot-want', watching: 'dot-watching', watched: 'dot-watched' };
+        const statusLabel = { want: 'To watch', watching: 'Watching', watched: 'Watched' };
+        const who = ['Danvanth', 'Raksha'].map(w => `<div class="who-av${(x.watchedBy || []).includes(w) ? ' on' : ''}">${w[0]}</div>`).join('');
+        const dots = x.rating ? [1, 2, 3, 4, 5].map(i => `<div class="rdot${i <= x.rating ? ' on' : ''}"></div>`).join('') : '';
+        const thumb = x.posterUrl ? `<img src="${x.posterUrl}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">` : `${init}`;
+        return `<div class="card ${x.type === 'tv' ? 'tv' : 'film'}">
       <div class="card-accent"></div>
-      <div class="card-thumb">${thumb}</div>
-      <div class="card-body">
+      <div class="card-thumb" onclick="event.stopPropagation();openDet('${x.id}',true)" title="View poster & info">${thumb}</div>
+      <div class="card-body" onclick="openDet('${x.id}')">
         <div class="card-top">
           <span class="card-title">${esc(x.title)}</span>
-          ${typeTag}
+${typeTag}
         </div>
         <div class="card-meta">
-          <span class="status-dot ${statusMap[x.status||'want']}"></span>
-          <span>${statusLabel[x.status||'want']}</span>
-          <span>${esc(x.genre||'')}</span>
-          ${x.watchedOn?`<span>${x.watchedOn}</span>`:''}
+          <span class="status-dot ${statusMap[x.status || 'want']}"></span>
+          <span>${statusLabel[x.status || 'want']}</span>
+          <span>${esc(x.genre || '')}</span>
+${x.watchedOn ? `<span>${x.watchedOn}</span>` : ''}
         </div>
         <div class="who">${who}</div>
-        ${dots?`<div class="rdots" style="margin-top:.4rem">${dots}</div>`:''}
+${dots ? `<div class="rdots" style="margin-top:.4rem">${dots}</div>` : ''}
       </div>
     </div>`;
-  }).join('');
-}
-
-function renderTL(){
-  const watched=items.filter(x=>x.status==='watched'&&x.watchedOn).sort((a,b)=>a.watchedOn<b.watchedOn?1:-1);
-  const el=$('tl');
-  if(!watched.length){el.innerHTML='<div class="empty">no watched entries with dates yet</div>';return;}
-  const months={};
-  watched.forEach(x=>{const k=x.watchedOn.slice(0,7);if(!months[k])months[k]=[];months[k].push(x);});
-  const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  el.innerHTML=`<div class="tl-wrap">${Object.entries(months).map(([k,arr])=>{
-    const[y,m]=k.split('-');
-    return`<div class="tl-col"><div class="tl-month">${mn[+m-1]} ${y}</div>${arr.map(x=>{
-      const dots=x.rating?[1,2,3,4,5].map(i=>i<=x.rating?'●':'○').join(''):'';
-      const poster=x.posterUrl?`<img class="tl-poster" src="${x.posterUrl}" alt="" loading="lazy">`:`<div class="tl-poster-ph">${esc((x.title||'?')[0])}</div>`;
-      return`<div class="tl-item" onclick="openDet('${x.id}')">
-        ${poster}
+      }).join('');
+    }
+    function renderTL() {
+      const watched = items.filter(x => x.status === 'watched' && x.watchedOn).sort((a, b) => a.watchedOn < b.watchedOn ? 1 : -1);
+      const el = $('tl');
+      if (!watched.length) { el.innerHTML = '<div class="empty">no watched entries with dates yet<br>set a "date watched" to see it here</div>'; return; }
+      const months = {};
+      watched.forEach(x => { const k = x.watchedOn.slice(0, 7); if (!months[k]) months[k] = []; months[k].push(x); });
+      const mn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      el.innerHTML = `<div class="tl-wrap">${Object.entries(months).map(([k, arr]) => {
+        const [y, m] = k.split('-');
+        return `<div class="tl-col"><div class="tl-month">${mn[+m - 1]} ${y}</div>${arr.map(x => {
+          const dots = x.rating ? [1, 2, 3, 4, 5].map(i => i <= x.rating ? '●' : '○').join('') : '';
+          const poster = x.posterUrl ? `<img class="tl-poster" src="${x.posterUrl}" alt="" loading="lazy">` : `<div class="tl-poster-ph">${esc((x.title || '?')[0])}</div>`;
+          return `<div class="tl-item" onclick="openDet('${x.id}')">
+${poster}
         <div class="tl-body">
           <div class="tl-ttl">${esc(x.title)}</div>
-          <div class="tl-meta">${x.type==='tv'?'Series':'Film'} · ${esc(x.genre||'')}${dots?' · '+dots:''}</div>
+          <div class="tl-meta">${x.type === 'tv' ? 'Series' : 'Film'} · ${esc(x.genre || '')}${dots ? ' · ' + dots : ''}</div>
         </div>
       </div>`;
-    }).join('')}</div>`;
-  }).join('')}</div>`;
-}
-
-// ── TMDB search ──
-let pickedItem=null,srchTimer=null;
-const IMG='https://image.tmdb.org/t/p/w154';
-const IMG_L='https://image.tmdb.org/t/p/w500';
-
-window.onSearch=()=>{
-  clearTimeout(srchTimer);
-  const q=$('a-srch').value.trim();
-  if(q.length<2){$('srch-drop').classList.remove('open');return;}
-  srchTimer=setTimeout(()=>doSearch(q),320);
-};
-async function doSearch(q){
-  try{
-    const r=await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(q)}&page=1`);
-    const d=await r.json();
-    const res=(d.results||[]).filter(x=>x.media_type==='movie'||x.media_type==='tv').slice(0,7);
-    const drop=$('srch-drop');
-    if(!res.length){drop.innerHTML='<div class="srch-item"><div class="srch-info"><div class="srch-name">No results</div></div></div>';drop.classList.add('open');return;}
-    drop.innerHTML=res.map(x=>{
-      const title=x.title||x.name||'Unknown';
-      const year=(x.release_date||x.first_air_date||'').slice(0,4);
-      const type=x.media_type==='tv'?'Series':'Film';
-      const poster=x.poster_path?`<img class="srch-poster" src="${IMG}${x.poster_path}" alt="">`:`<div class="srch-poster-ph">${title[0]}</div>`;
-      return`<div class="srch-item" onclick='pickResult(${JSON.stringify(JSON.stringify(x))})'>${poster}<div class="srch-info"><div class="srch-name">${esc(title)}</div><div class="srch-sub">${type}${year?' · '+year:''}</div></div></div>`;
-    }).join('');
-    drop.classList.add('open');
-  }catch(e){console.error(e);}
-}
-window.pickResult=raw=>{
-  const x=JSON.parse(raw);
-  pickedItem=x;
-  const title=x.title||x.name||'';
-  const year=(x.release_date||x.first_air_date||'').slice(0,4);
-  const type=x.media_type==='tv'?'tv':'movie';
-  $('a-type').value=type;
-  $('a-ttl').value=title;
-  // auto-pick genre from TMDB genre IDs
-  const GENRE_MAP={28:'action',12:'action',16:'animation',35:'comedy',80:'thriller',99:'documentary',18:'drama',10751:'drama',14:'fantasy',27:'horror',10402:'other',9648:'mystery',10749:'romance',878:'sci-fi',10770:'drama',53:'thriller',10752:'action',37:'action',10759:'action',10762:'animation',10763:'other',10764:'other',10765:'sci-fi',10766:'drama',10767:'other',10768:'action'};
-  const gIds=x.genre_ids||[];
-  const mapped=gIds.map(id=>GENRE_MAP[id]).find(Boolean);
-  if(mapped)$('a-genre').value=mapped;
-  $('a-picked-title').textContent=title;
-  $('a-picked-meta').textContent=(type==='tv'?'Series':'Film')+(year?' · '+year:'');
-  $('a-picked-overview').textContent=(x.overview||'').slice(0,180)+(x.overview&&x.overview.length>180?'…':'');
-  const pImg=$('a-poster-img');
-  if(x.poster_path){pImg.src=`${IMG_L}${x.poster_path}`;pImg.style.display='block';}else{pImg.style.display='none';}
-  $('a-picked').style.display='block';
-  $('srch-drop').classList.remove('open');
-  $('a-srch').value='';
-};
-window.clearPick=()=>{pickedItem=null;$('a-picked').style.display='none';$('a-ttl').value='';$('a-srch').value='';$('a-poster-img').src='';};
-document.addEventListener('click',e=>{if(!e.target.closest('.srch-wrap'))$('srch-drop').classList.remove('open');});
-
-window.openAdd=()=>{
-  pickedItem=null;
-  $('a-srch').value='';$('a-ttl').value='';$('a-notes').value='';
-  $('a-picked').style.display='none';
-  $('srch-drop').classList.remove('open');
-  $('add-ov').classList.add('on');
-  setTimeout(()=>$('a-srch').focus(),80);
-};
-window.saveNew=async()=>{
-  const t=(pickedItem?(pickedItem.title||pickedItem.name):$('a-ttl').value).trim();
-  if(!t){toast('please add a title');return;}
-  const posterUrl=pickedItem&&pickedItem.poster_path?`${IMG_L}${pickedItem.poster_path}`:'';
-  const overview=pickedItem?(pickedItem.overview||''):'';
-  const tmdbId=pickedItem?pickedItem.id:null;
-  syncing(true);
-  await addDoc(col,{title:t,type:$('a-type').value,genre:$('a-genre').value,
-    addedBy:$('a-by').value,notes:$('a-notes').value.trim(),
-    posterUrl,overview,tmdbId,
-    status:'want',watchedBy:[],watchedOn:'',rating:0,createdAt:serverTimestamp()});
-  syncing(false);toast('added');closeAll();
-};
-
-window.openDet=id=>{
-  const x=items.find(i=>i.id===id);if(!x)return;
-  eid=id;eWho=[...(x.watchedBy||[])];eR=x.rating||0;
-  $('d-ttl').textContent=x.title;
-  // poster & overview
-  const hdr=$('d-hdr');
-  if(x.posterUrl){$('d-poster').src=x.posterUrl;hdr.style.display='flex';}else{hdr.style.display='none';}
-  const typeLbl=x.type==='tv'?'Series':'Film';
-  $('d-meta-line').textContent=[typeLbl,x.genre,x.addedBy?'Added by '+x.addedBy:''].filter(Boolean).join(' · ');
-  $('d-overview').textContent=x.overview||'';
-  $('d-status').value=x.status||'want';
-  $('d-date').value=x.watchedOn||'';
-  $('d-notes').value=x.notes||'';
-  $('wt-d').classList.toggle('on',eWho.includes('Danvanth'));
-  $('wt-r').classList.toggle('on',eWho.includes('Raksha'));
-  renderStars();
-  $('det-ov').classList.add('on');
-};
-window.togWho=w=>{
-  eWho=eWho.includes(w)?eWho.filter(x=>x!==w):[...eWho,w];
-  $('wt-d').classList.toggle('on',eWho.includes('Danvanth'));
-  $('wt-r').classList.toggle('on',eWho.includes('Raksha'));
-};
-window.setR=v=>{eR=v;renderStars();};
-function renderStars(){document.querySelectorAll('.rstar').forEach(s=>s.classList.toggle('on',+s.dataset.v<=eR));}
-window.saveEdit=async()=>{
-  syncing(true);
-  await setDoc(doc(db,'watchlist',eid),{status:$('d-status').value,watchedBy:eWho,
-    watchedOn:$('d-date').value,rating:eR,notes:$('d-notes').value.trim()},{merge:true});
-  syncing(false);toast('saved');closeAll();
-};
-window.delItem=async()=>{
-  if(!confirm('Remove this from the watchlist?'))return;
-  syncing(true);await deleteDoc(doc(db,'watchlist',eid));syncing(false);toast('removed');closeAll();
-};
-window.closeAll=()=>{$('add-ov').classList.remove('on');$('det-ov').classList.remove('on');};
-['add-ov','det-ov'].forEach(id=>$(id).addEventListener('click',e=>{if(e.target===e.currentTarget)closeAll();}));
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll();});
-setTimeout(()=>{$('wa').classList.add('show');$('wb').classList.add('show');},300);
-</script>
+        }).join('')}</div>`;
+      }).join('')}</div>`;
+    }
+    window.surpriseMe = () => {
+      const pool = items.filter(x => (x.status || 'want') === 'want');
+      if (!pool.length) { toast('nothing left to watch — add something!'); return; }
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      openDet(pick.id);
+      toast('how about this?');
+    };
+    // ── TMDB search ──
+    let pickedItem = null, srchTimer = null, srchResults = [], srchIdx = -1;
+    const IMG = 'https://image.tmdb.org/t/p/w154';
+    const IMG_L = 'https://image.tmdb.org/t/p/w500';
+    window.onSearch = () => {
+      clearTimeout(srchTimer);
+      const q = $('a-srch').value.trim();
+      if (q.length < 2) { $('srch-drop').classList.remove('open'); srchResults = []; srchIdx = -1; return; }
+      srchTimer = setTimeout(() => doSearch(q), 320);
+    };
+    async function doSearch(q) {
+      try {
+        const r = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(q)}&page=1`);
+        const d = await r.json();
+        srchResults = (d.results || []).filter(x => x.media_type === 'movie' || x.media_type === 'tv').slice(0, 7);
+        srchIdx = -1;
+        renderSrchDrop();
+      } catch (e) { console.error(e); $('srch-drop').innerHTML = '<div class="srch-item"><div class="srch-info"><div class="srch-name">Search failed — try again</div></div></div>'; $('srch-drop').classList.add('open'); }
+    }
+    function renderSrchDrop() {
+      const drop = $('srch-drop');
+      if (!srchResults.length) { drop.innerHTML = '<div class="srch-item"><div class="srch-info"><div class="srch-name">No results</div></div></div>'; drop.classList.add('open'); return; }
+      drop.innerHTML = srchResults.map((x, i) => {
+        const title = x.title || x.name || 'Unknown';
+        const year = (x.release_date || x.first_air_date || '').slice(0, 4);
+        const type = x.media_type === 'tv' ? 'Series' : 'Film';
+        const rating = x.vote_average ? `<span class="srch-rating">★ ${x.vote_average.toFixed(1)}</span>` : '';
+        const poster = x.poster_path ? `<img class="srch-poster" src="${IMG}${x.poster_path}" alt="">` : `<div class="srch-poster-ph">${title[0]}</div>`;
+        return `<div class="srch-item${i === srchIdx ? ' kb' : ''}" onclick="pickResult(${i})">${poster}<div class="srch-info"><div class="srch-name">${esc(title)}</div><div class="srch-sub">${type}${year ? ' · ' + year : ''}${rating}</div></div></div>`;
+      }).join('');
+      drop.classList.add('open');
+    }
+    window.srchKey = e => {
+      if (!srchResults.length) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); srchIdx = Math.min(srchIdx + 1, srchResults.length - 1); renderSrchDrop(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); srchIdx = Math.max(srchIdx - 1, 0); renderSrchDrop(); }
+      else if (e.key === 'Enter') { e.preventDefault(); if (srchIdx >= 0) pickResult(srchIdx); }
+    };
+    const GENRE_MAP = { 28: 'action', 12: 'action', 16: 'animation', 35: 'comedy', 80: 'thriller', 99: 'documentary', 18: 'drama', 10751: 'drama', 14: 'fantasy', 27: 'horror', 10402: 'other', 9648: 'mystery', 10749: 'romance', 878: 'sci-fi', 10770: 'drama', 53: 'thriller', 10752: 'action', 37: 'action', 10759: 'action', 10762: 'animation', 10763: 'other', 10764: 'other', 10765: 'sci-fi', 10766: 'drama', 10767: 'other', 10768: 'action' };
+    window.pickResult = i => {
+      const x = srchResults[i]; if (!x) return;
+      pickedItem = x;
+      const title = x.title || x.name || '';
+      const year = (x.release_date || x.first_air_date || '').slice(0, 4);
+      const type = x.media_type === 'tv' ? 'tv' : 'movie';
+      $('a-type').value = type;
+      $('a-ttl').value = title;
+      const gIds = x.genre_ids || [];
+      const mapped = gIds.map(id => GENRE_MAP[id]).find(Boolean);
+      if (mapped) $('a-genre').value = mapped;
+      $('a-picked-title').textContent = title;
+      $('a-picked-meta').textContent = (type === 'tv' ? 'Series' : 'Film') + (year ? ' · ' + year : '') + (x.vote_average ? ` · ★ ${x.vote_average.toFixed(1)}` : '');
+      $('a-picked-overview').textContent = (x.overview || '').slice(0, 180) + (x.overview && x.overview.length > 180 ? '…' : '');
+      const pImg = $('a-poster-img');
+      if (x.poster_path) { pImg.src = `${IMG_L}${x.poster_path}`; pImg.style.display = 'block'; } else { pImg.style.display = 'none'; }
+      $('a-picked').style.display = 'block';
+      $('srch-drop').classList.remove('open');
+      $('a-srch').value = '';
+    };
+    window.clearPick = () => { pickedItem = null; $('a-picked').style.display = 'none'; $('a-ttl').value = ''; $('a-srch').value = ''; $('a-poster-img').src = ''; };
+    document.addEventListener('click', e => { if (!e.target.closest('.srch-wrap')) $('srch-drop').classList.remove('open'); });
+    window.openAdd = () => {
+      pickedItem = null;
+      $('a-srch').value = ''; $('a-ttl').value = ''; $('a-notes').value = '';
+      $('a-picked').style.display = 'none';
+      $('srch-drop').classList.remove('open');
+      $('add-ov').classList.add('on');
+      setTimeout(() => $('a-srch').focus(), 80);
+    };
+    window.saveNew = async () => {
+      const t = (pickedItem ? (pickedItem.title || pickedItem.name) : $('a-ttl').value).trim();
+      if (!t) { toast('please add a title'); return; }
+      const posterUrl = pickedItem && pickedItem.poster_path ? `${IMG_L}${pickedItem.poster_path}` : '';
+      const overview = pickedItem ? (pickedItem.overview || '') : '';
+      const tmdbId = pickedItem ? pickedItem.id : null;
+      const tmdbRating = pickedItem ? (pickedItem.vote_average || 0) : 0;
+      syncing(true);
+      await addDoc(col, {
+        title: t, type: $('a-type').value, genre: $('a-genre').value,
+        addedBy: $('a-by').value, notes: $('a-notes').value.trim(),
+        posterUrl, overview, tmdbId, tmdbRating,
+        status: 'want', watchedBy: [], watchedOn: '', rating: 0, createdAt: serverTimestamp()
+      });
+      syncing(false); toast('added'); closeAll();
+    };
+    window.openDet = (id, focusPoster) => {
+      const x = items.find(i => i.id === id); if (!x) return;
+      eid = id; eWho = [...(x.watchedBy || [])]; eR = x.rating || 0;
+      $('d-ttl').textContent = x.title;
+      // poster & overview
+      const hdr = $('d-hdr');
+      if (x.posterUrl) { $('d-poster').src = x.posterUrl; hdr.style.display = 'flex'; } else { hdr.style.display = 'none'; }
+      const typeLbl = x.type === 'tv' ? 'Series' : 'Film';
+      $('d-meta-line').textContent = [typeLbl, x.genre, x.tmdbRating ? '★ ' + x.tmdbRating.toFixed(1) : '', x.addedBy ? 'Added by ' + x.addedBy : ''].filter(Boolean).join(' · ');
+      $('d-overview').textContent = x.overview || '';
+      $('d-status').value = x.status || 'want';
+      $('d-date').value = x.watchedOn || '';
+      $('d-notes').value = x.notes || '';
+      $('wt-d').classList.toggle('on', eWho.includes('Danvanth'));
+      $('wt-r').classList.toggle('on', eWho.includes('Raksha'));
+      renderStars();
+      $('det-ov').classList.add('on');
+      if (focusPoster && x.posterUrl) setTimeout(() => openLightbox(), 150);
+    };
+    window.openLightbox = () => {
+      const src = $('d-poster').src;
+      if (!src) return;
+      $('lb-img').src = src;
+      $('lb-ov').classList.add('on');
+    };
+    window.closeLightbox = () => $('lb-ov').classList.remove('on');
+    window.togWho = w => {
+      eWho = eWho.includes(w) ? eWho.filter(x => x !== w) : [...eWho, w];
+      $('wt-d').classList.toggle('on', eWho.includes('Danvanth'));
+      $('wt-r').classList.toggle('on', eWho.includes('Raksha'));
+    };
+    window.setR = v => { eR = v; renderStars(); };
+    function renderStars() { document.querySelectorAll('.rstar').forEach(s => s.classList.toggle('on', +s.dataset.v <= eR)); }
+    window.saveEdit = async () => {
+      syncing(true);
+      await setDoc(doc(db, 'watchlist', eid), {
+        status: $('d-status').value, watchedBy: eWho,
+        watchedOn: $('d-date').value, rating: eR, notes: $('d-notes').value.trim()
+      }, { merge: true });
+      syncing(false); toast('saved'); closeAll();
+    };
+    window.delItem = async () => {
+      if (!confirm('Remove this from the watchlist?')) return;
+      syncing(true); await deleteDoc(doc(db, 'watchlist', eid)); syncing(false); toast('removed'); closeAll();
+    };
+    window.closeAll = () => { $('add-ov').classList.remove('on'); $('det-ov').classList.remove('on'); closeLightbox(); };
+    ['add-ov', 'det-ov'].forEach(id => $(id).addEventListener('click', e => { if (e.target === e.currentTarget) closeAll(); }));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeLightbox(); closeAll(); } });
+    setTimeout(() => { $('wa').classList.add('show'); $('wb').classList.add('show'); }, 300);
+  </script>
 </body>
+
 </html>
