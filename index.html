@@ -1,441 +1,542 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>i love you</title>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Mono:ital,wght@0,300;1,300&family=Caveat:wght@400;500&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>i love you</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Mono:ital,wght@0,300;1,300&family=Caveat:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-:root {
-  --cream: #e8f3fb;
-  --ink: #0d1f2d;
-  --ink-light: #3a5a72;
-  --ink-faint: #8aafcc;
-  --accent: #5b9ec9;
-  --accent-dark: #2a6a96;
-  --paper: #d4eaf7;
-  --paper-dark: #b8d8ef;
-}
+    :root {
+      --cream: #e8f3fb;
+      --ink: #0d1f2d;
+      --ink-light: #3a5a72;
+      --ink-faint: #8aafcc;
+      --accent: #5b9ec9;
+      --accent-dark: #2a6a96;
+      --paper: #d4eaf7;
+      --paper-dark: #b8d8ef;
+    }
 
-html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+    }
 
-body {
-  min-height: 100vh;
-  background: var(--cream);
-  overflow-x: hidden;
-  position: relative;
-}
+    body {
+      min-height: 100vh;
+      background: var(--cream);
+      overflow-x: hidden;
+      position: relative;
+    }
 
-/* paper texture via SVG noise */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.6;
-}
+    /* paper texture via SVG noise */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+    }
 
-/* watercolor wash blobs */
-.wash {
-  position: fixed;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-  filter: blur(90px);
-  opacity: 0;
-  transition: opacity 3s ease;
-}
-.wash.show { opacity: 1; }
-.wash1 { width: 600px; height: 500px; background: radial-gradient(ellipse, #c8e4f5 0%, transparent 70%); top: -80px; left: -120px; }
-.wash2 { width: 500px; height: 450px; background: radial-gradient(ellipse, #daeef8 0%, transparent 70%); bottom: -60px; right: -100px; }
-.wash3 { width: 350px; height: 300px; background: radial-gradient(ellipse, #b8d8ef 0%, transparent 70%); top: 35%; left: 50%; transform: translateX(-50%); opacity: 0 !important; transition: opacity 4s ease !important; }
-.wash3.show { opacity: 0.5 !important; }
+    /* watercolor wash blobs */
+    .wash {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(90px);
+      opacity: 0;
+      transition: opacity 3s ease;
+    }
 
-/* warm ending wash — hidden until end */
-.wash-warm {
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(ellipse at center, #fde8d8 0%, transparent 65%);
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0;
-  transition: opacity 3s ease;
-  filter: blur(40px);
-}
-.wash-warm.glow { opacity: 0.35; }
+    .wash.show {
+      opacity: 1;
+    }
 
-/* ruled lines — like stationery */
-.ruled {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent,
-    transparent calc(1.95em * 1.3 - 1px),
-    rgba(139, 175, 204, 0.1) calc(1.95em * 1.3 - 1px),
-    rgba(139, 175, 204, 0.1) calc(1.95em * 1.3)
-  );
-  background-size: 100% calc(1.95em * 1.3);
-  background-position: 0 5.5rem;
-}
+    .wash1 {
+      width: 600px;
+      height: 500px;
+      background: radial-gradient(ellipse, #c8e4f5 0%, transparent 70%);
+      top: -80px;
+      left: -120px;
+    }
 
-/* left margin line */
-.margin-line {
-  position: fixed;
-  left: clamp(2.2rem, 7vw, 5rem);
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: rgba(91, 158, 201, 0.18);
-  z-index: 1;
-  pointer-events: none;
-}
+    .wash2 {
+      width: 500px;
+      height: 450px;
+      background: radial-gradient(ellipse, #daeef8 0%, transparent 70%);
+      bottom: -60px;
+      right: -100px;
+    }
 
-/* progress bar */
-#progress {
-  position: fixed;
-  right: 0; top: 0;
-  width: 2px;
-  height: 0%;
-  background: var(--accent);
-  opacity: 0.35;
-  z-index: 10;
-  transition: height 0.1s linear;
-}
+    .wash3 {
+      width: 350px;
+      height: 300px;
+      background: radial-gradient(ellipse, #b8d8ef 0%, transparent 70%);
+      top: 35%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0 !important;
+      transition: opacity 4s ease !important;
+    }
 
-main {
-  position: relative;
-  z-index: 2;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  padding: clamp(3.5rem, 9vw, 6rem) clamp(1.5rem, 5vw, 3rem);
-  padding-left: clamp(3.5rem, 10vw, 7rem);
-}
+    .wash3.show {
+      opacity: 0.5 !important;
+    }
 
-.poem-container {
-  width: 100%;
-  max-width: 580px;
-}
+    /* warm ending wash — hidden until end */
+    .wash-warm {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, #fde8d8 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 3s ease;
+      filter: blur(40px);
+    }
 
-/* --- line types --- */
-.line {
-  display: block;
-  font-family: 'Lora', Georgia, serif;
-  font-size: clamp(14.5px, 2.2vw, 16px);
-  line-height: 1.95;
-  color: var(--ink-light);
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.7s ease, transform 0.7s ease, color 1.5s ease;
-}
-.line.visible { opacity: 1; transform: translateY(0); }
+    .wash-warm.glow {
+      opacity: 0.35;
+    }
 
-/* her words — caveat handwriting, warmer */
-.line.her {
-  font-family: 'Caveat', cursive;
-  font-size: clamp(17px, 2.8vw, 20px);
-  color: var(--accent-dark);
-  letter-spacing: 0.01em;
-}
+    /* ruled lines — like stationery */
+    .ruled {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image: repeating-linear-gradient(to bottom,
+          transparent,
+          transparent calc(1.95em * 1.3 - 1px),
+          rgba(139, 175, 204, 0.1) calc(1.95em * 1.3 - 1px),
+          rgba(139, 175, 204, 0.1) calc(1.95em * 1.3));
+      background-size: 100% calc(1.95em * 1.3);
+      background-position: 0 5.5rem;
+    }
 
-/* meta / margin notes — mono, pencil-like */
-.line.meta {
-  font-family: 'DM Mono', monospace;
-  font-size: clamp(11.5px, 1.7vw, 13px);
-  color: var(--ink-light);
-  padding-left: 0.5rem;
-  border-left: 1.5px solid rgba(138,175,204,0.3);
-}
-.line.meta.visible { opacity: 0.75; }
+    /* left margin line */
+    .margin-line {
+      position: fixed;
+      left: clamp(2.2rem, 7vw, 5rem);
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: rgba(91, 158, 201, 0.18);
+      z-index: 1;
+      pointer-events: none;
+    }
 
-/* tender lines near ending */
-.line.tender {
-  color: var(--ink);
-}
+    /* progress bar */
+    #progress {
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 2px;
+      height: 0%;
+      background: var(--accent);
+      opacity: 0.35;
+      z-index: 10;
+      transition: height 0.1s linear;
+    }
 
-/* the shake line */
-.line.scared.visible {
-  animation: tremble 0.5s ease 0.4s both;
-}
-@keyframes tremble {
-  0%   { transform: translateX(0); }
-  15%  { transform: translateX(-2px); }
-  30%  { transform: translateX(2px); }
-  45%  { transform: translateX(-1.5px); }
-  60%  { transform: translateX(1.5px); }
-  75%  { transform: translateX(-1px); }
-  90%  { transform: translateX(0.5px); }
-  100% { transform: translateX(0); }
-}
+    main {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: clamp(3.5rem, 9vw, 6rem) clamp(1.5rem, 5vw, 3rem);
+      padding-left: clamp(3.5rem, 10vw, 7rem);
+    }
 
-/* final ending line */
-.line.ending {
-  font-family: 'Lora', Georgia, serif;
-  font-size: clamp(26px, 5vw, 38px);
-  font-weight: 500;
-  color: var(--ink);
-  letter-spacing: 0.01em;
-  margin-top: 0.5rem;
-  line-height: 1.6;
-}
+    .poem-container {
+      width: 100%;
+      max-width: 580px;
+    }
 
-.divider {
-  display: block;
-  height: 1.6rem;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  position: relative;
-}
-.divider.visible { opacity: 1; }
-.divider::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 24px;
-  height: 1px;
-  background: var(--ink-faint);
-  opacity: 0.35;
-}
+    /* --- line types --- */
+    .line {
+      display: block;
+      font-family: 'Lora', Georgia, serif;
+      font-size: clamp(14.5px, 2.2vw, 16px);
+      line-height: 1.95;
+      color: var(--ink-light);
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.7s ease, transform 0.7s ease, color 1.5s ease;
+    }
 
-/* particles for the ending */
-#particles {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 5;
-  overflow: hidden;
-}
-.particle {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0;
-  animation: floatUp linear forwards;
-}
-@keyframes floatUp {
-  0%   { opacity: 0; transform: translateY(0) scale(0.5); }
-  15%  { opacity: 0.7; }
-  85%  { opacity: 0.4; }
-  100% { opacity: 0; transform: translateY(-120vh) scale(1.2); }
-}
+    .line.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-/* wax seal */
-.seal {
-  display: inline-block;
-  margin-top: 2.5rem;
-  width: 42px;
-  height: 42px;
-  opacity: 0;
-  transition: opacity 1.5s ease 0.8s;
-}
-.seal.visible { opacity: 0.55; }
+    /* her words — caveat handwriting, warmer */
+    .line.her {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(17px, 2.8vw, 20px);
+      color: var(--accent-dark);
+      letter-spacing: 0.01em;
+    }
 
-/* scroll hint */
-#hint {
-  position: fixed;
-  bottom: 1.8rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'DM Mono', monospace;
-  font-size: 10.5px;
-  color: var(--ink-light);
-  letter-spacing: 0.14em;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.6s;
-}
-#hint.show { opacity: 0.5; }
-</style>
+    /* meta / margin notes — mono, pencil-like */
+    .line.meta {
+      font-family: 'DM Mono', monospace;
+      font-size: clamp(11.5px, 1.7vw, 13px);
+      color: var(--ink-light);
+      padding-left: 0.5rem;
+      border-left: 1.5px solid rgba(138, 175, 204, 0.3);
+    }
+
+    .line.meta.visible {
+      opacity: 0.75;
+    }
+
+    /* tender lines near ending */
+    .line.tender {
+      color: var(--ink);
+    }
+
+    /* the shake line */
+    .line.scared.visible {
+      animation: tremble 0.5s ease 0.4s both;
+    }
+
+    @keyframes tremble {
+      0% {
+        transform: translateX(0);
+      }
+
+      15% {
+        transform: translateX(-2px);
+      }
+
+      30% {
+        transform: translateX(2px);
+      }
+
+      45% {
+        transform: translateX(-1.5px);
+      }
+
+      60% {
+        transform: translateX(1.5px);
+      }
+
+      75% {
+        transform: translateX(-1px);
+      }
+
+      90% {
+        transform: translateX(0.5px);
+      }
+
+      100% {
+        transform: translateX(0);
+      }
+    }
+
+    /* final ending line */
+    .line.ending {
+      font-family: 'Lora', Georgia, serif;
+      font-size: clamp(26px, 5vw, 38px);
+      font-weight: 500;
+      color: var(--ink);
+      letter-spacing: 0.01em;
+      margin-top: 0.5rem;
+      line-height: 1.6;
+    }
+
+    .divider {
+      display: block;
+      height: 1.6rem;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      position: relative;
+    }
+
+    .divider.visible {
+      opacity: 1;
+    }
+
+    .divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 24px;
+      height: 1px;
+      background: var(--ink-faint);
+      opacity: 0.35;
+    }
+
+    /* particles for the ending */
+    #particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0;
+      animation: floatUp linear forwards;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.5);
+      }
+
+      15% {
+        opacity: 0.7;
+      }
+
+      85% {
+        opacity: 0.4;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-120vh) scale(1.2);
+      }
+    }
+
+    /* wax seal */
+    .seal {
+      display: inline-block;
+      margin-top: 2.5rem;
+      width: 42px;
+      height: 42px;
+      opacity: 0;
+      transition: opacity 1.5s ease 0.8s;
+    }
+
+    .seal.visible {
+      opacity: 0.55;
+    }
+
+    /* scroll hint */
+    #hint {
+      position: fixed;
+      bottom: 1.8rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'DM Mono', monospace;
+      font-size: 10.5px;
+      color: var(--ink-light);
+      letter-spacing: 0.14em;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s;
+    }
+
+    #hint.show {
+      opacity: 0.5;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="wash wash1" id="w1"></div>
-<div class="wash wash2" id="w2"></div>
-<div class="wash wash3" id="w3"></div>
-<div class="wash-warm" id="warmWash"></div>
-<div class="ruled"></div>
-<div class="margin-line"></div>
-<div id="progress"></div>
-<div id="particles"></div>
+  <div class="wash wash1" id="w1"></div>
+  <div class="wash wash2" id="w2"></div>
+  <div class="wash wash3" id="w3"></div>
+  <div class="wash-warm" id="warmWash"></div>
+  <div class="ruled"></div>
+  <div class="margin-line"></div>
+  <div id="progress"></div>
+  <div id="particles"></div>
 
-<main>
-  <div class="poem-container" id="poem">
+  <main>
+    <div class="poem-container" id="poem">
 
-    <span class="line">Nah, but i cant get this poem right</span>
-    <span class="line her">oh , its fine darling ill love it regardless</span>
-    <span class="line">No what if its not something that idk, you can remember?</span>
-    <span class="line her">no I like it that you are using your creative freedom to make a weird poem</span>
-    <span class="line her">and you, writing my character yourself</span>
+      <span class="line">yeah, but i cant get this poem right</span>
+      <span class="line her">oh , its fine darling ill love it regardless</span>
+      <span class="line">No what if its not something that idk, you can remember?</span>
+      <span class="line her">no I like it that you are using your creative freedom to make a weird poem</span>
+      <span class="line her">and you, writing my character yourself</span>
 
-    <span class="divider"></span>
+      <span class="divider"></span>
 
-    <span class="line meta">can we tell this is a poem tho?</span>
-    <span class="line meta">cause it just feels like 2 people talking</span>
+      <span class="line meta">can we tell this is a poem tho?</span>
+      <span class="line meta">cause it just feels like 2 people talking</span>
 
-    <span class="divider"></span>
+      <span class="divider"></span>
 
-    <span class="line">my love are you gone??….</span>
-    <span class="line">guess i have to write it myself then</span>
-    <span class="line">alright lets poem , or what ever piece of literature this is</span>
-    <span class="line meta">and I guess you are gone??</span>
+      <span class="line">my love are you gone??….</span>
+      <span class="line">guess i have to write it myself then</span>
+      <span class="line">alright lets poem , or what ever piece of literature this is</span>
+      <span class="line meta">and I guess you are gone??</span>
 
-    <span class="divider"></span>
+      <span class="divider"></span>
 
-    <span class="line">oh no, im nervous now, oh no i am anxious</span>
-    <span class="line">i have to do something unique</span>
-    <span class="line">something out of the ordinary….</span>
-    <span class="line">but no words in the english dictionary are new</span>
-    <span class="line">but a combination of those can really be unthinkable</span>
+      <span class="line">oh no, im nervous now, oh no i am anxious</span>
+      <span class="line">i have to do something unique</span>
+      <span class="line">something out of the ordinary….</span>
+      <span class="line">but no words in the english dictionary are new</span>
+      <span class="line">but a combination of those can really be unthinkable</span>
 
-    <span class="divider"></span>
+      <span class="divider"></span>
 
-    <span class="line meta">how about these next lines??</span>
-    <span class="line meta">yes yes i keep saying all this stuff,</span>
-    <span class="line meta">but not writing stuff down….</span>
+      <span class="line meta">how about these next lines??</span>
+      <span class="line meta">yes yes i keep saying all this stuff,</span>
+      <span class="line meta">but not writing stuff down….</span>
 
-    <span class="divider"></span>
+      <span class="divider"></span>
 
-    <span class="line">i have to write something thats personal</span>
-    <span class="line">how about writing "…."</span>
-    <span class="line">those "…" convey how I pause when I pretend like</span>
-    <span class="line">I am thinking something when i talk to you</span>
-    <span class="line scared">but i am really scared of you???</span>
+      <span class="line">i have to write something thats personal</span>
+      <span class="line">how about writing "…."</span>
+      <span class="line">those "…" convey how I pause when I pretend like</span>
+      <span class="line">I am thinking something when i talk to you</span>
+      <span class="line scared">but i am really scared of you???</span>
 
-    <span class="divider"></span>
+      <span class="divider"></span>
 
-    <span class="line meta">can a poem really capture emotions?</span>
-    <span class="line meta">isnt all this just a proof it can?</span>
-    <span class="line meta">its for the reader to say</span>
-    <span class="line meta">then again those lines were based on the</span>
-    <span class="line meta">assumption that the reader will consider this emotional</span>
-    <span class="line meta">and wanting reassurance that it is</span>
-    <span class="line meta">but these are just plain words</span>
+      <span class="line meta">can a poem really capture emotions?</span>
+      <span class="line meta">isnt all this just a proof it can?</span>
+      <span class="line meta">its for the reader to say</span>
+      <span class="line meta">then again those lines were based on the</span>
+      <span class="line meta">assumption that the reader will consider this emotional</span>
+      <span class="line meta">and wanting reassurance that it is</span>
+      <span class="line meta">but these are just plain words</span>
 
-    <span class="divider"></span>
+      <span class="divider"></span>
 
-    <span class="line">how about the words "you mean so much to me?"</span>
-    <span class="line">what should i tell her</span>
-    <span class="line">should i tell her that want another picture</span>
-    <span class="line">of her best art to keep as my wallpaper?</span>
+      <span class="line">how about the words "you mean so much to me?"</span>
+      <span class="line">what should i tell her</span>
+      <span class="line">should i tell her that want another picture</span>
+      <span class="line">of her best art to keep as my wallpaper?</span>
 
-    <span class="divider"></span>
+      <span class="divider"></span>
 
-    <span class="line meta">oh but somethimes i think so much i dont even love</span>
-    <span class="line meta">the stanzas they dont even rhyme</span>
-    <span class="line meta">im yours and you are mine?</span>
-    <span class="line meta">is that intentional?</span>
-    <span class="line meta">is it just going to be I love you in the end…</span>
-    <span class="line meta">thats the suspense??</span>
+      <span class="line meta">oh but somethimes i think so much i dont even love</span>
+      <span class="line meta">the stanzas they dont even rhyme</span>
+      <span class="line meta">im yours and you are mine?</span>
+      <span class="line meta">is that intentional?</span>
+      <span class="line meta">is it just going to be I love you in the end…</span>
+      <span class="line meta">thats the suspense??</span>
 
-    <span class="divider"></span>
+      <span class="divider"></span>
 
-    <span class="line">even if i am telling that it must be better than that</span>
-    <span class="line">somehow this "i love you" must be better than all the</span>
-    <span class="line">other "i love you"s ,I have told you</span>
-    <span class="line">oh but i should have atleast saved that "i love you"</span>
-    <span class="line">for the end of the poem so it carries more weight</span>
+      <span class="line">even if i am telling that it must be better than that</span>
+      <span class="line">somehow this "i love you" must be better than all the</span>
+      <span class="line">other "i love you"s ,I have told you</span>
+      <span class="line">oh but i should have atleast saved that "i love you"</span>
+      <span class="line">for the end of the poem so it carries more weight</span>
 
-    <span class="divider"></span>
+      <span class="divider"></span>
 
-    <span class="line">how about something like?</span>
-    <span class="line tender">me wanting to cry on your arms</span>
-    <span class="line tender">and holding your hands and walking down</span>
-    <span class="line tender">a random street</span>
-    <span class="line tender">how about spending rest of my days with you</span>
-    <span class="line tender">and growing old together</span>
-    <span class="line">how about…..</span>
+      <span class="line">how about something like?</span>
+      <span class="line tender">me wanting to cry on your arms</span>
+      <span class="line tender">and holding your hands and walking down</span>
+      <span class="line tender">a random street</span>
+      <span class="line tender">how about spending rest of my days with you</span>
+      <span class="line tender">and growing old together</span>
+      <span class="line">how about…..</span>
 
-    <span class="divider"></span>
+      <span class="divider"></span>
 
-    <span class="line ending" id="endingLine">i love you</span>
+      <span class="line ending" id="endingLine">i love you</span>
 
-    <!-- wax seal svg -->
-    <span class="seal" id="seal">
-      <svg viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="21" cy="21" r="19" fill="#b8d8ef" opacity="0.7"/>
-        <circle cx="21" cy="21" r="15" fill="none" stroke="#5b9ec9" stroke-width="0.8" opacity="0.6"/>
-        <text x="21" y="25.5" text-anchor="middle" font-family="Lora,serif" font-size="10" fill="#2a6a96" opacity="0.8">♡</text>
-      </svg>
-    </span>
+      <!-- wax seal svg -->
+      <span class="seal" id="seal">
+        <svg viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="21" cy="21" r="19" fill="#b8d8ef" opacity="0.7" />
+          <circle cx="21" cy="21" r="15" fill="none" stroke="#5b9ec9" stroke-width="0.8" opacity="0.6" />
+          <text x="21" y="25.5" text-anchor="middle" font-family="Lora,serif" font-size="10" fill="#2a6a96"
+            opacity="0.8">♡</text>
+        </svg>
+      </span>
 
-  </div>
-</main>
+    </div>
+  </main>
 
-<p id="hint">scroll ↓</p>
+  <p id="hint">scroll ↓</p>
 
-<script>
-// washes fade in
-setTimeout(() => {
-  document.getElementById('w1').classList.add('show');
-  document.getElementById('w2').classList.add('show');
-}, 400);
-setTimeout(() => document.getElementById('w3').classList.add('show'), 1200);
-
-// scroll progress
-window.addEventListener('scroll', () => {
-  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
-  document.getElementById('progress').style.height = Math.min(pct, 100) + '%';
-}, { passive: true });
-
-// scroll hint
-const hint = document.getElementById('hint');
-setTimeout(() => hint.classList.add('show'), 1500);
-window.addEventListener('scroll', () => {
-  if (window.scrollY > 60) hint.classList.remove('show');
-}, { passive: true, once: true });
-
-// intersection observer
-const items = document.querySelectorAll('.line, .divider');
-let endingTriggered = false;
-
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (!entry.isIntersecting) return;
-    const el = entry.target;
-    const siblings = Array.from(el.parentNode.children);
-    const idx = siblings.indexOf(el);
-    const delay = (idx % 5) * 55;
-    setTimeout(() => el.classList.add('visible'), delay);
-
-    // ending triggers
-    if (el.id === 'endingLine' && !endingTriggered) {
-      endingTriggered = true;
-      setTimeout(triggerEnding, 600);
-    }
-    obs.unobserve(el);
-  });
-}, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
-
-items.forEach(el => obs.observe(el));
-
-// ending sequence
-function triggerEnding() {
-  // warm wash
-  document.getElementById('warmWash').classList.add('glow');
-  // seal
-  setTimeout(() => document.getElementById('seal').classList.add('visible'), 1200);
-  // particles
-  setTimeout(launchParticles, 300);
-}
-
-function launchParticles() {
-  const container = document.getElementById('particles');
-  const colors = ['#b8d8ef', '#d4eaf7', '#8aafcc', '#e8f3fb', '#5b9ec9'];
-  const count = 38;
-
-  for (let i = 0; i < count; i++) {
+  <script>
+    // washes fade in
     setTimeout(() => {
-      const p = document.createElement('div');
-      p.className = 'particle';
-      const size = Math.random() * 6 + 2;
-      p.style.cssText = `
+      document.getElementById('w1').classList.add('show');
+      document.getElementById('w2').classList.add('show');
+    }, 400);
+    setTimeout(() => document.getElementById('w3').classList.add('show'), 1200);
+
+    // scroll progress
+    window.addEventListener('scroll', () => {
+      const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+      document.getElementById('progress').style.height = Math.min(pct, 100) + '%';
+    }, { passive: true });
+
+    // scroll hint
+    const hint = document.getElementById('hint');
+    setTimeout(() => hint.classList.add('show'), 1500);
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 60) hint.classList.remove('show');
+    }, { passive: true, once: true });
+
+    // intersection observer
+    const items = document.querySelectorAll('.line, .divider');
+    let endingTriggered = false;
+
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        const siblings = Array.from(el.parentNode.children);
+        const idx = siblings.indexOf(el);
+        const delay = (idx % 5) * 55;
+        setTimeout(() => el.classList.add('visible'), delay);
+
+        // ending triggers
+        if (el.id === 'endingLine' && !endingTriggered) {
+          endingTriggered = true;
+          setTimeout(triggerEnding, 600);
+        }
+        obs.unobserve(el);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+
+    items.forEach(el => obs.observe(el));
+
+    // ending sequence
+    function triggerEnding() {
+      // warm wash
+      document.getElementById('warmWash').classList.add('glow');
+      // seal
+      setTimeout(() => document.getElementById('seal').classList.add('visible'), 1200);
+      // particles
+      setTimeout(launchParticles, 300);
+    }
+
+    function launchParticles() {
+      const container = document.getElementById('particles');
+      const colors = ['#b8d8ef', '#d4eaf7', '#8aafcc', '#e8f3fb', '#5b9ec9'];
+      const count = 38;
+
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          const p = document.createElement('div');
+          p.className = 'particle';
+          const size = Math.random() * 6 + 2;
+          p.style.cssText = `
         width:${size}px;
         height:${size}px;
         left:${Math.random() * 100}%;
@@ -445,11 +546,12 @@ function launchParticles() {
         animation-delay:${Math.random() * 2}s;
         opacity:0;
       `;
-      container.appendChild(p);
-      setTimeout(() => p.remove(), 9000);
-    }, i * 80);
-  }
-}
-</script>
+          container.appendChild(p);
+          setTimeout(() => p.remove(), 9000);
+        }, i * 80);
+      }
+    }
+  </script>
 </body>
+
 </html>
