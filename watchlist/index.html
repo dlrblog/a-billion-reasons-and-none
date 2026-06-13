@@ -82,8 +82,11 @@ h1 span{font-style:italic;color:var(--lb4)}
 .tl-wrap{display:flex;gap:1rem;min-width:max-content;align-items:flex-start}
 .tl-col{width:170px}
 .tl-month{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--mu);padding-bottom:.4rem;margin-bottom:.5rem;border-bottom:1px solid var(--lb2)}
-.tl-item{background:#fff;border:1px solid #e8f0f7;border-radius:8px;padding:.55rem .7rem;margin-bottom:.4rem;cursor:pointer;transition:all .15s}
+.tl-item{background:#fff;border:1px solid #e8f0f7;border-radius:8px;padding:.55rem .7rem;margin-bottom:.4rem;cursor:pointer;transition:all .15s;display:flex;gap:.55rem;align-items:flex-start}
 .tl-item:hover{border-color:var(--lb3);box-shadow:0 2px 8px rgba(91,158,201,.1)}
+.tl-poster{width:34px;height:50px;border-radius:4px;object-fit:cover;flex-shrink:0}
+.tl-poster-ph{width:34px;height:50px;border-radius:4px;background:var(--lb1);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:.85rem;color:var(--lb6)}
+.tl-body{min-width:0;flex:1}
 .tl-ttl{font-family:'Cormorant Garamond',serif;font-size:.95rem;color:var(--ink)}
 .tl-meta{font-family:'DM Mono',monospace;font-size:9px;color:var(--mu);margin-top:2px}
 /* fab */
@@ -198,6 +201,13 @@ textarea{min-height:60px;resize:vertical}
 <div class="ov" id="det-ov">
   <div class="mdl">
     <div class="mdl-title" id="d-ttl"></div>
+    <div class="det-header" id="d-hdr" style="display:none">
+      <img id="d-poster" class="det-poster" src="" alt="">
+      <div style="min-width:0;flex:1">
+        <div id="d-meta-line" style="font-family:'DM Mono',monospace;font-size:9.5px;color:var(--mu)"></div>
+        <div id="d-overview" class="det-overview"></div>
+      </div>
+    </div>
     <label>Status</label>
     <select id="d-status">
       <option value="want">To Watch</option>
@@ -310,9 +320,13 @@ function renderTL(){
     const[y,m]=k.split('-');
     return`<div class="tl-col"><div class="tl-month">${mn[+m-1]} ${y}</div>${arr.map(x=>{
       const dots=x.rating?[1,2,3,4,5].map(i=>i<=x.rating?'●':'○').join(''):'';
+      const poster=x.posterUrl?`<img class="tl-poster" src="${x.posterUrl}" alt="" loading="lazy">`:`<div class="tl-poster-ph">${esc((x.title||'?')[0])}</div>`;
       return`<div class="tl-item" onclick="openDet('${x.id}')">
-        <div class="tl-ttl">${esc(x.title)}</div>
-        <div class="tl-meta">${x.type==='tv'?'Series':'Film'} · ${esc(x.genre||'')}${dots?' · '+dots:''}</div>
+        ${poster}
+        <div class="tl-body">
+          <div class="tl-ttl">${esc(x.title)}</div>
+          <div class="tl-meta">${x.type==='tv'?'Series':'Film'} · ${esc(x.genre||'')}${dots?' · '+dots:''}</div>
+        </div>
       </div>`;
     }).join('')}</div>`;
   }).join('')}</div>`;
@@ -354,6 +368,11 @@ window.pickResult=raw=>{
   const type=x.media_type==='tv'?'tv':'movie';
   $('a-type').value=type;
   $('a-ttl').value=title;
+  // auto-pick genre from TMDB genre IDs
+  const GENRE_MAP={28:'action',12:'action',16:'animation',35:'comedy',80:'thriller',99:'documentary',18:'drama',10751:'drama',14:'fantasy',27:'horror',10402:'other',9648:'mystery',10749:'romance',878:'sci-fi',10770:'drama',53:'thriller',10752:'action',37:'action',10759:'action',10762:'animation',10763:'other',10764:'other',10765:'sci-fi',10766:'drama',10767:'other',10768:'action'};
+  const gIds=x.genre_ids||[];
+  const mapped=gIds.map(id=>GENRE_MAP[id]).find(Boolean);
+  if(mapped)$('a-genre').value=mapped;
   $('a-picked-title').textContent=title;
   $('a-picked-meta').textContent=(type==='tv'?'Series':'Film')+(year?' · '+year:'');
   $('a-picked-overview').textContent=(x.overview||'').slice(0,180)+(x.overview&&x.overview.length>180?'…':'');
@@ -392,6 +411,12 @@ window.openDet=id=>{
   const x=items.find(i=>i.id===id);if(!x)return;
   eid=id;eWho=[...(x.watchedBy||[])];eR=x.rating||0;
   $('d-ttl').textContent=x.title;
+  // poster & overview
+  const hdr=$('d-hdr');
+  if(x.posterUrl){$('d-poster').src=x.posterUrl;hdr.style.display='flex';}else{hdr.style.display='none';}
+  const typeLbl=x.type==='tv'?'Series':'Film';
+  $('d-meta-line').textContent=[typeLbl,x.genre,x.addedBy?'Added by '+x.addedBy:''].filter(Boolean).join(' · ');
+  $('d-overview').textContent=x.overview||'';
   $('d-status').value=x.status||'want';
   $('d-date').value=x.watchedOn||'';
   $('d-notes').value=x.notes||'';
