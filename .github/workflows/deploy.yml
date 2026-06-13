@@ -90,7 +90,3 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'   # upload the whole repo root (same as "Deploy from branch")
-
-      - name: Deploy to GitHub Pages
-        id: deploymentThis is the compass app. The user is referring to a different file — the shared watchlist app. Let me check the previous conversation for context on the watchlist.
-        uses: actions/deploy-pages@v4
